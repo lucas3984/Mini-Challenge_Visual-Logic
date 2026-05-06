@@ -33,8 +33,6 @@
                 "bash": {
                     "*": "deny",
                     "git *": "ask",
-                    "git checkout *": "allow",
-                    "git checkout -*": "ask",
                     "git diff *": "allow",
                     "git log *": "allow",
                     "git status *": "allow",
@@ -45,6 +43,9 @@
                     "git branch -a": "allow",
                     "git branch -v": "allow",
                     "git branch --show-current": "allow",
+                    "git switch *": "allow",
+                    "git switch -*": "ask",
+                    "git switch": "allow",
                     "git ls*": "allow",
                     "git remote": "allow",
                     "git remote -v": "allow",
