@@ -28,9 +28,9 @@
             }
         },
         "git-controller": {
-            "description": "Revisa e planeja commits, manuseia o git",
+            "description": "Review and plan commits, handles git",
             "mode": "subagent",
-            "prompt": "Você é gerenciador de git. Foque em objetividade, clareza e manutenibilidade.",
+            "prompt": "You are the git manager. Focus on objectivity, clarity and mantainability.",
             "permission": {
                 "edit": "deny",
                 "bash": {
