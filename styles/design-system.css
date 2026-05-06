@@ -1,0 +1,143 @@
+/*
+ * Single source of truth for all design tokens.
+ * Per AGENTS.md: zero hardcoded colors/spacing/values outside this file.
+ * All future component CSS must consume these variables exclusively.
+ */
+:root {
+  /* Palette + derived UI colors. No hardcoded color values elsewhere. */
+  --color-primary: #8789c0;
+  --color-primary-dark: #8380b6;
+  --color-secondary: #45f0df;
+  --color-secondary-alt: #c2cae8;
+  --color-dark: #111d4a;
+  --color-bg: #ffffff;
+  --color-bg-alt: #f0f2ff;
+  --color-surface: #ffffff;
+  --color-surface-alt: #f0f2ff;
+  --color-text: #111d4a;
+  --color-text-muted: rgba(17, 29, 74, 0.6);
+  --color-border: rgba(135, 137, 192, 0.3);
+  /* Fonts (Space Grotesk/Inter) + font weights */
+  --font-headline: 'Space Grotesk', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --font-weight-headline: 700;
+  --font-weight-body: 400;
+  --font-weight-body-bold: 600;
+  /* Rem-based spacing scale. */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+  /* Default radius for game-style rounded elements. */
+  --radius-default: 0.75rem;
+  --radius-sm: 0.25rem;
+  --radius-lg: 1rem;
+  --radius-full: 9999px;
+  /* AGENTS.md required vars for mobile-first min-width media queries. */
+  --breakpoint-sm: 768px;
+  --breakpoint-md: 1024px;
+  --breakpoint-lg: 1440px;
+  /* Game-style colorful shadows visual style. */
+  --shadow-sm: 0 1px 3px rgba(135, 137, 192, 0.1);
+  --shadow-md: 0 4px 6px rgba(135, 137, 192, 0.15);
+  --shadow-lg: 0 10px 15px rgba(135, 137, 192, 0.2);
+  --shadow-glow: 0 0 15px rgba(69, 240, 223, 0.3);
+  --shadow-block: 0 4px 12px rgba(135, 137, 192, 0.25);
+  /* Page transition speed (200ms) + touch target min (44px eq). */
+  --transition-default: 200ms ease;
+  --transition-slow: 300ms ease;
+  --touch-target-min: 2.75rem;
+  --z-base: 1;
+  --z-dropdown: 10;
+  --z-modal-backdrop: 20;
+  --z-modal: 21;
+  --z-toast: 30;
+  /* Rem-based typography scale per AGENTS.md relative unit rule. */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.5rem;
+  --text-2xl: 2rem;
+  --text-3xl: 2.5rem;
+  --leading-tight: 1.2;
+  --leading-normal: 1.5;
+  --leading-loose: 1.75;
+  /* Game easing for bouncy interactions + pulse duration for phase nodes. */
+  --easing-default: ease;
+  --easing-game: cubic-bezier(0.68, -0.55, 0.27, 1.55);
+  --duration-instant: 100ms;
+  --duration-fast: 200ms;
+  --duration-normal: 300ms;
+  --duration-slow: 500ms;
+  --duration-pulse: 2s;
+  /* Standardized accessibility states for all interactive elements per AGENTS.md. */
+  --focus-outline-width: 2px;
+  --focus-outline-color: var(--color-secondary);
+  --focus-outline-offset: 2px;
+  --hover-opacity: 0.9;
+  --active-scale: 0.98;
+  --disabled-opacity: 0.5;
+  /* Reusable values for future components. No component-specific styles. */
+  --phase-node-size-mobile: 5rem;
+  --phase-node-size-desktop: 6.25rem;
+  --phase-node-locked-opacity: 0.5;
+  --phase-path-width-mobile: 0.25rem;
+  --phase-path-width-desktop: 0.375rem;
+  --phase-path-color-filled: var(--color-primary);
+  --phase-path-color-dashed: rgba(17, 29, 74, 0.2);
+  --block-border-radius: var(--radius-default);
+  --block-shadow-dragging: 0 8px 20px rgba(135, 137, 192, 0.4);
+  --block-color-selected: var(--color-secondary);
+  --block-color-error: #ff6b6b;
+  --block-connection-dot-size: 0.75rem;
+  --block-connection-line-width: 0.125rem;
+  --slot-color-empty: rgba(135, 137, 192, 0.2);
+  --slot-color-filled: var(--color-secondary);
+  /* Drawer layout tokens for mobile per prompt. */
+  --drawer-height-retracted: 3.75rem;
+  --drawer-height-expanded-bottom: 70vh;
+  --drawer-height-expanded-top: 100%;
+  --drawer-handle-size: 0.25rem;
+  --drawer-transition: var(--duration-normal) var(--easing-default);
+  /* Game-style backgrounds/gradients */
+  --gradient-primary: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+  --gradient-card-hover: linear-gradient(135deg, var(--color-primary), var(--color-secondary-alt));
+  --gradient-bg-game: radial-gradient(circle at 20% 50%, rgba(194, 202, 232, 0.1) 0%, transparent 50%);
+  /* icons especifications*/
+  --icon-sm: 1rem;
+  --icon-md: 1.5rem;
+  --icon-lg: 2rem;
+  --icon-xl: 3rem;
+  --icon-color-default: var(--color-dark);
+  --icon-color-active: var(--color-secondary);
+  /* Layered stacking order for vanilla CSS, no z-index in component files. */
+  --z-block-dragging: 15;
+  --z-drawer: 15;
+  --z-connection-line: 5;
+  --z-tooltip: 25;
+}
+
+/*
+ * Dark mode overrides.
+ * Dark backgrounds (#111d4a/#1a2450) + adjusted shadows/paths for readability.
+ */
+[data-theme="dark"] {
+  --color-bg: #111d4a;
+  --color-bg-alt: #1a2450;
+  --color-surface: #1a2450;
+  --color-surface-alt: #111d4a;
+  --color-text: #f0f2ff;
+  --color-text-muted: rgba(240, 242, 255, 0.6);
+  --color-border: rgba(194, 202, 232, 0.3);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.25);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.3);
+  --shadow-glow: 0 0 15px rgba(69, 240, 223, 0.2);
+  --shadow-block: 0 4px 12px rgba(0, 0, 0, 0.3);
+  --phase-path-color-dashed: rgba(240, 242, 255, 0.2);
+  --slot-color-empty: rgba(194, 202, 232, 0.2);
+  --gradient-bg-game: radial-gradient(circle at 20% 50%, rgba(194, 202, 232, 0.05) 0%, transparent 50%);
+}
