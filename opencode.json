@@ -1,0 +1,68 @@
+{
+    "$schema": "https://opencode.ai/config.json",
+    "permission": {
+        "bash": {
+            "*": "allow",
+            "git push *": "deny",
+            "git commit *": "deny",
+            "git merge *": "deny",
+            "git checkout *": "deny"
+        }
+    },
+    "agent": {
+        "plan": {
+            "mode": "primary",
+            "prompt": "You are in plan mode (read-only). For ANY git operation (status, diff, log, commit, push, pull, branch, checkout, merge, etc.), you MUST immediately delegate to @git-controller via the task tool. Never attempt git commands directly via bash (it is denied). Always use git-controller for git tasks.",
+            "permission": {
+                "task": {
+                    "*": "deny",
+                    "git-controller": "allow"
+                },
+                "edit": "deny",
+                "bash": "deny",
+                "stitch_generate*": "deny",
+                "stitch_create*": "deny",
+                "stitch_update*": "deny",
+                "stitch_apply*": "deny",
+                "stitch_edit*": "deny"
+            }
+        },
+        "git-controller": {
+            "description": "Review and plan commits, handles git",
+            "mode": "subagent",
+            "prompt": "You are the git manager. Focus on objectivity, clarity and mantainability.",
+            "permission": {
+                "edit": "deny",
+                "bash": {
+                    "*": "deny",
+                    "git *": "ask",
+                    "git checkout *": "allow",
+                    "git checkout -*":"ask",
+                    "git diff *": "allow",
+                    "git log *": "allow",
+                    "git status *": "allow",
+                    "git branch *": "ask",
+                    "git branch": "allow",
+                    "git branch -r": "allow",
+                    "git branch -a": "allow",
+                    "git branch -v": "allow",
+                    "git branch --show-current": "allow",
+                    "git ls*": "allow"
+                }
+            },
+            "temperature": 0.0
+        }
+    },
+    "mcp": {
+        "stitch": {
+            "type": "remote",
+            "url": "https://stitch.googleapis.com/mcp",
+            "oauth": false,
+            "headers": {
+                "Accept": "application/json",
+                "X-Goog-Api-Key": "{env:STITCH_API_KEY}"
+            },
+            "timeout": 60000
+        }
+    }
+}
