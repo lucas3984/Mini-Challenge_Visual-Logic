@@ -1,0 +1,693 @@
+/*
+ * Base element styles — typography, layout, and component resets.
+ * box-sizing: border-box everywhere prevents padding from inflating
+ * element dimensions, which simplifies the responsive layout math.
+ */
+html {
+  box-sizing: border-box;
+}
+
+*, *::before, *::after {
+  box-sizing: inherit;
+}
+
+/*
+ * Body sets the global typography baseline and dot-pattern background.
+ * overflow-x: hidden prevents horizontal scroll from fixed-position
+ * elements or wide content on small viewports.
+ */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-body);
+  font-size: var(--text-md);
+  line-height: var(--leading-normal);
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  background-image: var(--gradient-bg-game);
+  background-size: 32px 32px;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/*
+ * Heading resets — zero margin so layout spacing is controlled by
+ * the parent container's gap/flex properties, not by unpredictable
+ * browser defaults. Headlines use Space Grotesk for the game-brand feel.
+ */
+h1 {
+  font-family: var(--font-headline);
+  font-size: var(--text-4xl);
+  font-weight: var(--font-weight-headline);
+  line-height: var(--leading-compact);
+  letter-spacing: var(--tracking-tight);
+  margin: 0;
+}
+
+h2 {
+  font-family: var(--font-headline);
+  font-size: var(--text-2xl);
+  font-weight: var(--font-weight-headline);
+  line-height: var(--leading-tight);
+  margin: 0;
+}
+
+h3 {
+  font-family: var(--font-headline);
+  font-size: var(--text-xl);
+  font-weight: var(--font-weight-headline);
+  line-height: var(--leading-tight);
+  margin: 0;
+}
+
+p {
+  margin: 0;
+}
+
+/*
+ * Button reset removes all native button styling (border, background,
+ * font) so the component-level CSS classes own the appearance entirely.
+ * Headline font + uppercase tracking reinforces the game UI aesthetic.
+ */
+button {
+  font-family: var(--font-headline);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-headline);
+  line-height: var(--leading-none);
+  letter-spacing: var(--tracking-wide);
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/*
+ * Material Symbols icon class — forces the font rendering properties
+ * that Google's icon font requires. Without these resets, icons may
+ * render with incorrect spacing, alignment, or missing glyphs.
+ * -webkit-font-smoothing: antialiased improves icon crispness on macOS.
+ */
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-style: normal;
+  font-weight: normal;
+  text-transform: none;
+  letter-spacing: normal;
+  word-break: normal;
+  white-space: normal;
+  display: inline-block;
+  line-height: 1;
+  vertical-align: middle;
+  -webkit-font-smoothing: antialiased;
+}
+
+/*
+ * Custom scrollbar styling — uses surface hierarchy tokens so it blends
+ * with the current theme (light or dark) automatically via CSS vars.
+ */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-surface);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-surface-highest);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--color-surface-highest) 70%, var(--color-text) 30%);
+}
+
+/*
+ * Home page body override — the home screen needs a solid dark background
+ * (no dot pattern). !important is necessary here because the body rule
+ * above already sets background-image; this second body rule overrides
+ * it specifically for the home route.
+ */
+body {
+  background-color: var(--color-bg-home) !important;
+  background-image: var(--gradient-bg-game-home) !important;
+}
+
+/*
+ * Home page container — vertical padding accounts for the fixed top
+ * app bar (100px) and bottom nav (120px) so content is not hidden
+ * behind them. Flex column + center alignment stacks sections vertically.
+ */
+.home-page {
+  padding-top: 100px;
+  padding-bottom: 120px;
+  padding-left: var(--space-md);
+  padding-right: var(--space-md);
+  max-width: 1280px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xl);
+}
+
+/*
+ * Fixed top app bar. backdrop-filter: blur(12px) creates a frosted-glass
+ * effect (content scrolls under while the bar stays legible).
+ * The hard shadow (0 4px 0 0) mimics a raised game-UI block feel.
+ */
+.top-app-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-md) var(--space-lg);
+  background-color: var(--color-bg-home);
+  backdrop-filter: blur(12px);
+  border-bottom: 2px solid var(--color-primary);
+  box-shadow: 0 4px 0 0 var(--color-dark);
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.top-app-bar__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.top-app-bar__logo {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-default);
+  background-color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--home-shadow-hard);
+}
+
+.top-app-bar__icon {
+  font-size: 24px;
+  color: var(--color-dark);
+}
+
+/*
+ * Brand title uses text-shadow instead of a separate pseudo-element
+ * for the hard-shadow effect — simpler maintenance, avoids layout shifts.
+ */
+.top-app-bar__title {
+  font-family: var(--font-headline);
+  font-size: var(--text-2xl);
+  font-weight: var(--font-weight-headline);
+  color: var(--color-primary);
+  text-shadow: 2px 2px 0 var(--color-dark);
+}
+
+.top-app-bar__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+/*
+ * 48x48px ensures the button meets the 44x44px minimum touch target
+ * required by AGENTS.md for interactive elements.
+ */
+.top-app-bar__btn {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-default);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-muted);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.top-app-bar__btn:hover {
+  transform: translateY(2px);
+  box-shadow: none;
+}
+
+.top-app-bar__btn:active {
+  transform: scale(0.95);
+}
+
+.top-app-bar__btn-icon {
+  font-size: var(--text-xl);
+}
+
+.top-app-bar__user {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  background-color: var(--home-color-surface-low);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-full);
+  border: 2px solid color-mix(in srgb, var(--color-primary) 20%, transparent);
+}
+
+.top-app-bar__username {
+  font-family: var(--font-headline);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-headline);
+  color: var(--color-text);
+}
+
+.top-app-bar__username--desktop {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .top-app-bar__username--desktop {
+    display: inline;
+  }
+}
+
+.top-app-bar__user-icon {
+  color: var(--color-secondary);
+  font-size: 20px;
+}
+
+/*
+ * cursor: default signals this is a read-only section, not interactive.
+ * inline-block content wrapper keeps the text centered without stretching.
+ */
+.hero-section {
+  text-align: center;
+  margin-bottom: var(--space-xl);
+  cursor: default;
+}
+
+.hero-section__content {
+  display: inline-block;
+}
+
+/*
+ * Subtle bounce animation makes the hero icon feel alive without being
+ * distracting. inline-block keeps the wrapper sized to its content so
+ * the glow (if enabled) and icon stay centered together.
+ */
+.hero-section__icon-wrapper {
+  position: relative;
+  display: inline-block;
+  animation: bounce-subtle 2s ease-in-out infinite;
+}
+
+@keyframes bounce-subtle {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+/*
+ * Glow element hidden by default; reserved for a future hover effect
+ * on the hero icon wrapper. Kept in the DOM but display:none so it
+ * doesn't affect layout.
+ */
+.hero-section__glow {
+  display: none;
+}
+
+.hero-section__content:hover .hero-section__glow {
+  opacity: 1;
+}
+
+.hero-section__icon {
+  position: relative;
+  font-size: 120px;
+  color: var(--color-primary);
+  text-shadow: 8px 8px 0 var(--color-dark);
+}
+
+.hero-section__title {
+  margin-top: var(--space-lg);
+  margin-bottom: var(--space-xs);
+  color: var(--color-primary);
+}
+
+/*
+ * max-width caps the subtitle line length for readability (~65 chars).
+ * auto margins center the block within the parent.
+ */
+.hero-section__subtitle {
+  font-family: var(--font-body);
+  font-size: var(--home-text-lg-body);
+  font-weight: var(--home-font-weight-medium);
+  color: var(--color-text-muted);
+  max-width: 432px;
+  margin: 0 auto;
+}
+
+.games-section {
+  width: 100%;
+  max-width: 1024px;
+}
+
+/*
+ * Mobile-first single column — switches to 2 columns at 768px (tablet+).
+ * This follows AGENTS.md mobile-first approach: base styles for mobile,
+ * min-width media queries for larger screens.
+ */
+.games-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-xl);
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .games-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.game-card {
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.game-card:hover {
+  transform: scale(1.05);
+}
+
+/*
+ * Gradient border trick: the wrapper has a gradient background and 2px
+ * padding. The inner content has its own solid background with a slightly
+ * smaller border-radius. The visible "border" is actually the wrapper's
+ * background showing through the padding gap — pure CSS, no extra markup.
+ */
+.game-card__gradient-border {
+  background: linear-gradient(135deg, var(--color-secondary), var(--color-primary-dark));
+  padding: 2px;
+  border-radius: 32px;
+  box-shadow: var(--home-shadow-hard);
+}
+
+.game-card__content {
+  position: relative;
+  background-color: var(--home-color-surface-low);
+  border-radius: 30px;
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  height: 100%;
+  overflow: hidden;
+}
+
+.game-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.game-card__icon-wrapper {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-default);
+  background-color: color-mix(in srgb, var(--color-primary) 20%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--color-primary);
+}
+
+.game-card__icon {
+  font-size: 36px;
+  color: var(--color-primary);
+}
+
+/*
+ * Difficulty badge consumes --badge-color and --badge-shadow from inline
+ * style on the parent — this allows each GameCard instance to set its
+ * own color scheme via CSS custom properties without additional classes.
+ */
+.game-card__difficulty {
+  font-family: var(--font-headline);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-headline);
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--radius-full);
+  background-color: var(--badge-color);
+  color: var(--home-color-on-secondary);
+  box-shadow: 0 4px 0 0 var(--badge-shadow);
+}
+
+.game-card__body {
+  flex: 1;
+}
+
+.game-card__title {
+  font-family: var(--font-headline);
+  font-size: var(--text-2xl);
+  font-weight: var(--font-weight-headline);
+  color: var(--color-text);
+  margin-bottom: var(--space-xs);
+}
+
+.game-card__description {
+  font-family: var(--font-body);
+  font-size: var(--text-md);
+  color: var(--color-text-muted);
+}
+
+.game-card__footer {
+  margin-top: auto;
+  padding-top: var(--space-lg);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.game-card__btn {
+  background-color: var(--color-secondary);
+  color: var(--home-color-on-secondary);
+  padding: var(--space-sm) var(--space-xl);
+  border-radius: var(--radius-default);
+  box-shadow: var(--home-shadow-hard);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.game-card__btn:hover {
+  box-shadow: 0 0 20px color-mix(in srgb, var(--color-secondary) 40%, transparent);
+}
+
+.game-card__btn:active {
+  transform: translateY(2px);
+  box-shadow: var(--home-shadow-hard-sm);
+}
+
+/*
+ * Large background icon as decorative watermark. pointer-events: none
+ * ensures it never intercepts clicks meant for the card content.
+ * The last card rotates the icon the opposite direction for visual variety.
+ */
+.game-card__bg-icon {
+  position: absolute;
+  bottom: -32px;
+  right: -32px;
+  font-size: 180px;
+  color: color-mix(in srgb, var(--color-text) 5%, transparent);
+  pointer-events: none;
+  transform: rotate(12deg);
+}
+
+.game-card__gradient-border:last-child .game-card__bg-icon {
+  transform: rotate(-12deg);
+}
+
+/*
+ * Progress stats panel — stacked vertically on mobile, side-by-side
+ * on tablet+. backdrop-filter: blur adds depth layering for the
+ * game-UI aesthetic. Mobile-first with min-width override at 768px.
+ */
+.progress-stats {
+  margin-top: var(--space-xl);
+  width: 100%;
+  backdrop-filter: blur(10px);
+  border: 2px solid var(--home-color-tertiary);
+  border-radius: calc(var(--radius-default) * 2);
+  padding: var(--space-lg);
+  background-color: var(--home-color-surface-low);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+@media (min-width: 768px) {
+  .progress-stats {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.progress-stats__info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.progress-stats__icon {
+  font-size: var(--text-2xl);
+  color: var(--color-primary);
+}
+
+.progress-stats__level {
+  display: flex;
+  flex-direction: column;
+}
+
+.progress-stats__label {
+  font-family: var(--font-headline);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-headline);
+  color: var(--color-text-muted);
+}
+
+.progress-stats__value {
+  font-family: var(--font-headline);
+  font-size: var(--text-xl);
+  font-weight: var(--font-weight-headline);
+  color: var(--color-text);
+}
+
+.progress-stats__bar-container {
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .progress-stats__bar-container {
+    width: 50%;
+  }
+}
+
+.progress-stats__bar-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--space-xs);
+}
+
+.progress-stats__bar-label {
+  font-family: var(--font-headline);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-headline);
+  color: var(--color-text);
+}
+
+.progress-stats__bar-value {
+  font-family: var(--font-headline);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-headline);
+  color: var(--color-secondary);
+}
+
+.progress-stats__bar {
+  height: 16px;
+  width: 100%;
+  background-color: var(--home-color-surface-highest);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+/*
+ * Gradient fill bar with width transition — the width is set inline by JS
+ * (dynamic data) while the appearance (colors, radius, transition) lives
+ * here in CSS (design concern).
+ */
+.progress-stats__bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-secondary), var(--color-primary), var(--color-dark));
+  border-radius: var(--radius-full);
+  transition: width 0.3s ease;
+}
+
+/*
+ * Fixed bottom navigation — negative box-shadow (0 -4px) creates a
+ * "pulled up from below" raised effect consistent with the game UI
+ * style. Top-left + top-right border-radius rounds only the top
+ * corners so the bar blends with the viewport edges at the bottom.
+ */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: var(--space-sm) var(--space-md) var(--space-lg);
+  background-color: var(--home-color-surface-high);
+  border-top: 4px solid var(--home-color-surface-highest);
+  box-shadow: 0 -4px 0 0 var(--color-dark);
+  border-radius: var(--radius-default) var(--radius-default) 0 0;
+}
+
+.bottom-nav__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-sm) var(--space-lg);
+  border-radius: var(--radius-default);
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+/*
+ * Active nav item lifts up 8px with a hard shadow for a 3D button effect.
+ * Inactive items use muted color with a hover glow and press-down scale
+ * for tactile feedback.
+ */
+.bottom-nav__item--active {
+  background-color: var(--color-secondary);
+  color: var(--home-color-on-secondary);
+  box-shadow: 0 4px 0 0 var(--color-dark);
+  transform: translateY(-8px);
+}
+
+.bottom-nav__item--inactive {
+  color: var(--color-text-muted);
+}
+
+.bottom-nav__item--inactive:hover {
+  color: var(--color-secondary);
+}
+
+.bottom-nav__item--inactive:active {
+  transform: scale(0.9);
+}
+
+.bottom-nav__label {
+  font-family: var(--font-headline);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-headline);
+  margin-top: var(--space-xs);
+}
+
+/*
+ * Global keyboard focus style — uses :focus-visible so the outline only
+ * appears when navigating via keyboard (Tab), not on mouse clicks.
+ * Meets AGENTS.md accessibility requirements for focus indicators.
+ */
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
