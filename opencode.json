@@ -3,10 +3,7 @@
     "permission": {
         "bash": {
             "*": "allow",
-            "git push *": "deny",
-            "git commit *": "deny",
-            "git merge *": "deny",
-            "git checkout *": "deny"
+            "git *": "deny"
         }
     },
     "agent": {
@@ -36,18 +33,33 @@
                 "bash": {
                     "*": "deny",
                     "git *": "ask",
-                    "git checkout *": "allow",
-                    "git checkout -*":"ask",
                     "git diff *": "allow",
                     "git log *": "allow",
                     "git status *": "allow",
+                    "git show *": "allow",
                     "git branch *": "ask",
                     "git branch": "allow",
                     "git branch -r": "allow",
                     "git branch -a": "allow",
                     "git branch -v": "allow",
                     "git branch --show-current": "allow",
-                    "git ls*": "allow"
+                    "git switch *": "allow",
+                    "git switch -*": "ask",
+                    "git switch": "allow",
+                    "git ls*": "allow",
+                    "git remote": "allow",
+                    "git remote -v": "allow",
+                    "git remote show *": "allow",
+                    "git tag -l *": "allow",
+                    "git config --list": "allow",
+                    "git config --get *": "allow",
+                    "git stash list": "allow",
+                    "git reflog": "allow",
+                    "git show-ref *": "allow",
+                    "git rev-parse *": "allow",
+                    "git merge-base *": "allow",
+                    "git shortlog *": "allow",
+                    "git describe *": "allow"
                 }
             },
             "temperature": 0.0

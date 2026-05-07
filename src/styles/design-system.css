@@ -1,199 +1,190 @@
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
 
+/*
+ * Single source of truth for all design tokens.
+ * Per AGENTS.md: zero hardcoded colors/spacing/values outside this file.
+ * All future component CSS must consume these variables exclusively.
+ */
 :root {
-  --color-on-secondary: #003732;
-  --color-surface-container-high: #2a292d;
-  --color-inverse-surface: #e5e1e6;
-  --color-surface-container-low: #1b1b1f;
-  --color-surface: #131316;
-  --color-on-error: #690005;
-  --color-secondary: #47f2e1;
-  --color-on-primary-container: #222455;
-  --color-surface-variant: #353438;
-  --color-outline-variant: #46464f;
-  --color-on-error-container: #ffdad6;
-  --color-background: #131316;
-  --color-on-background: #e5e1e6;
-  --color-tertiary-fixed: #dae2ff;
-  --color-tertiary-container: #8890ac;
-  --color-tertiary: #bec6e3;
-  --color-inverse-primary: #575a8d;
-  --color-secondary-container: #00d5c5;
-  --color-surface-bright: #39393d;
+  /* Palette + derived UI colors. No hardcoded color values elsewhere. */
+  --color-primary: #8789c0;
+  --color-primary-dark: #8380b6;
+  --color-secondary: #45f0df;
+  --color-secondary-alt: #c2cae8;
+  --color-dark: #111d4a;
+  --color-bg: #ffffff;
+  --color-bg-alt: #f0f2ff;
+  --color-surface: #ffffff;
+  --color-surface-alt: #f0f2ff;
+  --color-text: #111d4a;
+  --color-text-muted: rgba(17, 29, 74, 0.6);
+  --color-border: rgba(135, 137, 192, 0.3);
+  /* Home page surface hierarchy and on-colors. */
+  --color-on-secondary: #111d4a;
+  --color-tertiary: #8890ac;
+  --color-error: #ff6b6b;
+  --color-surface-low: #f0f0f0;
+  --color-surface-high: #e5e5e5;
+  --color-surface-highest: #d9d9d9;
   --color-secondary-fixed: #53fae9;
-  --color-on-tertiary: #273047;
-  --color-primary: #c0c2fc;
-  --color-primary-fixed: #e1e0ff;
-  --color-surface-container-highest: #353438;
-  --color-on-surface: #e5e1e6;
-  --color-tertiary-fixed-dim: #bec6e3;
-  --color-surface-dim: #131316;
-  --color-surface-tint: #c0c2fc;
-  --color-on-tertiary-container: #212940;
-  --color-on-secondary-fixed-variant: #005049;
-  --color-on-tertiary-fixed-variant: #3e465f;
-  --color-on-secondary-container: #005750;
-  --color-primary-container: #8a8cc3;
-  --color-surface-container: #201f23;
-  --color-on-primary: #292b5c;
-  --color-primary-fixed-dim: #c0c2fc;
-  --color-on-primary-fixed-variant: #404274;
-  --color-on-tertiary-fixed: #121b31;
-  --color-on-primary-fixed: #131546;
-  --color-secondary-fixed-dim: #23ddcd;
-  --color-on-secondary-fixed: #00201d;
-  --color-outline: #918f9a;
+  /* Fonts (Space Grotesk/Inter) + font weights */
+  --font-headline: 'Space Grotesk', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --font-weight-headline: 700;
+  --font-weight-body: 400;
+  --font-weight-body-bold: 600;
+  --font-weight-medium: 500;
+  /* Rem-based spacing scale. */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+  /* Default radius for game-style rounded elements. */
+  --radius-default: 0.75rem;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 1rem;
+  --radius-full: 9999px;
+  /* AGENTS.md required vars for mobile-first min-width media queries. */
+  --breakpoint-sm: 768px;
+  --breakpoint-md: 1024px;
+  --breakpoint-lg: 1440px;
+  /* Game-style colorful shadows visual style. */
+  --shadow-sm: 0 1px 3px rgba(135, 137, 192, 0.1);
+  --shadow-md: 0 4px 6px rgba(135, 137, 192, 0.15);
+  --shadow-lg: 0 10px 15px rgba(135, 137, 192, 0.2);
+  --shadow-glow: 0 0 15px rgba(69, 240, 223, 0.3);
+  --shadow-block: 0 4px 12px rgba(135, 137, 192, 0.25);
+  --shadow-hard: 4px 4px 0 0 var(--color-dark);
+  --shadow-hard-sm: 2px 2px 0 0 var(--color-dark);
+  /* Page transition speed (200ms) + touch target min (44px eq). */
+  --transition-default: 200ms ease;
+  --transition-slow: 300ms ease;
+  --touch-target-min: 2.75rem;
+  --z-base: 1;
+  --z-dropdown: 10;
+  --z-modal-backdrop: 20;
+  --z-modal: 21;
+  --z-toast: 30;
+  /* Rem-based typography scale per AGENTS.md relative unit rule. */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-md: 1rem;
+  --text-lg-body: 1.125rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.5rem;
+  --text-2xl: 2rem;
+  --text-3xl: 2.5rem;
+  --text-4xl: 3rem;
+  --leading-tight: 1.2;
+  --leading-normal: 1.5;
+  --leading-loose: 1.75;
+  --leading-none: 1;
+  --leading-compact: 1.1;
+  --tracking-tight: -0.02em;
+  --tracking-wide: 0.05em;
+  /* Game easing for bouncy interactions + pulse duration for phase nodes. */
+  --easing-default: ease;
+  --easing-game: cubic-bezier(0.68, -0.55, 0.27, 1.55);
+  --duration-instant: 100ms;
+  --duration-fast: 200ms;
+  --duration-normal: 300ms;
+  --duration-slow: 500ms;
+  --duration-pulse: 2s;
+  /* Standardized accessibility states for all interactive elements per AGENTS.md. */
+  --focus-outline-width: 2px;
+  --focus-outline-color: var(--color-secondary);
+  --focus-outline-offset: 2px;
+  --hover-opacity: 0.9;
+  --active-scale: 0.98;
+  --disabled-opacity: 0.5;
+  /* Reusable values for future components. No component-specific styles. */
+  --phase-node-size-mobile: 5rem;
+  --phase-node-size-desktop: 6.25rem;
+  --phase-node-locked-opacity: 0.5;
+  --phase-path-width-mobile: 0.25rem;
+  --phase-path-width-desktop: 0.375rem;
+  --phase-path-color-filled: var(--color-primary);
+  --phase-path-color-dashed: rgba(17, 29, 74, 0.2);
+  --block-border-radius: var(--radius-default);
+  --block-shadow-dragging: 0 8px 20px rgba(135, 137, 192, 0.4);
+  --block-color-selected: var(--color-secondary);
+  --block-color-error: #ff6b6b;
+  --block-connection-dot-size: 0.75rem;
+  --block-connection-line-width: 0.125rem;
+  --slot-color-empty: rgba(135, 137, 192, 0.2);
+  --slot-color-filled: var(--color-secondary);
+  /* Drawer layout tokens for mobile per prompt. */
+  --drawer-height-retracted: 3.75rem;
+  --drawer-height-expanded-bottom: 70vh;
+  --drawer-height-expanded-top: 100%;
+  --drawer-handle-size: 0.25rem;
+  --drawer-transition: var(--duration-normal) var(--easing-default);
+  /* Game-style backgrounds/gradients */
+  --gradient-primary: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+  --gradient-card-hover: linear-gradient(135deg, var(--color-primary), var(--color-secondary-alt));
+  --gradient-bg-game: radial-gradient(circle at 20% 50%, rgba(194, 202, 232, 0.1) 0%, transparent 50%);
+  --home-gradient-bg-game: radial-gradient(circle at 2px 2px, color-mix(in srgb, var(--color-primary) 5%, transparent) 1px, transparent 0);
+  /* icons especifications*/
+  --icon-sm: 1rem;
+  --icon-md: 1.5rem;
+  --icon-lg: 2rem;
+  --icon-xl: 3rem;
+  --icon-color-default: var(--color-dark);
+  --icon-color-active: var(--color-secondary);
+  /* Layered stacking order for vanilla CSS, no z-index in component files. */
+  --z-block-dragging: 15;
+  --z-drawer: 15;
+  --z-connection-line: 5;
+  --z-tooltip: 25;
+
+  /* Home page prefixed aliases — tokens consumed exclusively by home page components. */
+  --home-color-on-secondary: var(--color-on-secondary);
+  --home-color-tertiary: var(--color-tertiary);
+  --home-color-error: var(--color-error);
+  --home-color-surface-low: var(--color-surface-low);
+  --home-color-surface-high: var(--color-surface-high);
+  --home-color-surface-highest: var(--color-surface-highest);
+  --home-color-secondary-fixed: var(--color-secondary-fixed);
+  --home-font-weight-medium: var(--font-weight-medium);
+  --home-shadow-hard: var(--shadow-hard);
+  --home-shadow-hard-sm: var(--shadow-hard-sm);
+  --home-text-lg-body: var(--text-lg-body);
+}
+
+/*
+ * Dark mode overrides.
+ * Dark backgrounds (#111d4a/#1a2450) + adjusted shadows/paths for readability.
+ */
+[data-theme="dark"] {
+  --color-bg: #111d4a;
+  --color-bg-alt: #1a2450;
+  --color-bg-home: #131316;
+  --color-surface: #1a2450;
+  --color-surface-alt: #111d4a;
+  --color-text: #f0f2ff;
+  --color-text-muted: rgba(240, 242, 255, 0.6);
+  --color-border: rgba(194, 202, 232, 0.3);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.25);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.3);
+  --shadow-glow: 0 0 15px rgba(69, 240, 223, 0.2);
+  --shadow-block: 0 4px 12px rgba(0, 0, 0, 0.3);
+  --phase-path-color-dashed: rgba(240, 242, 255, 0.2);
+  --slot-color-empty: rgba(194, 202, 232, 0.2);
+  --gradient-bg-game: radial-gradient(circle at 20% 50%, rgba(194, 202, 232, 0.05) 0%, transparent 50%);
+  --gradient-bg-game-home: none;
+  /* Home page diff tokens — dark mode overrides. */
+  --color-on-secondary: #003732;
+  --color-tertiary: #bec6e3;
   --color-error: #ffb4ab;
-  --color-surface-container-lowest: #0e0e11;
-  --color-on-surface-variant: #c7c5d0;
-  --color-inverse-on-surface: #313034;
-  --color-error-container: #93000a;
-
-  --font-family-h1: 'Space Grotesk', sans-serif;
-  --font-family-h2: 'Space Grotesk', sans-serif;
-  --font-family-h3: 'Space Grotesk', sans-serif;
-  --font-family-body-lg: 'Inter', sans-serif;
-  --font-family-body-md: 'Inter', sans-serif;
-  --font-family-label-caps: 'Space Grotesk', sans-serif;
-
-  --font-size-h1: 48px;
-  --font-size-h2: 32px;
-  --font-size-h3: 24px;
-  --font-size-body-lg: 18px;
-  --font-size-body-md: 16px;
-  --font-size-label-caps: 14px;
-
-  --font-weight-h1: 700;
-  --font-weight-h2: 700;
-  --font-weight-h3: 700;
-  --font-weight-body-lg: 500;
-  --font-weight-body-md: 400;
-  --font-weight-label-caps: 700;
-
-  --line-height-h1: 1.1;
-  --line-height-h2: 1.2;
-  --line-height-h3: 1.2;
-  --line-height-body-lg: 1.5;
-  --line-height-body-md: 1.5;
-  --line-height-label-caps: 1.0;
-
-  --letter-spacing-h1: -0.02em;
-  --letter-spacing-label-caps: 0.05em;
-
-  --spacing-xs: 4px;
-  --spacing-sm: 8px;
-  --spacing-md: 16px;
-  --spacing-lg: 24px;
-  --spacing-xl: 32px;
-
-  --border-radius: 4px;
-  --border-radius-lg: 8px;
-  --border-radius-xl: 12px;
-  --border-radius-full: 9999px;
-
-  --shadow-puzzle-piece: 4px 4px 0px 0px #111D4A;
-  --shadow-puzzle-piece-active: 2px 2px 0px 0px #111D4A;
-
-  --breakpoint-sm: 640px;
-  --breakpoint-md: 768px;
-  --breakpoint-lg: 1024px;
-}
-
-html {
-  box-sizing: border-box;
-}
-
-*, *::before, *::after {
-  box-sizing: inherit;
-}
-
-body {
-  margin: 0;
-  padding: 0;
-  font-family: var(--font-family-body-md);
-  font-size: var(--font-size-body-md);
-  line-height: var(--line-height-body-md);
-  color: var(--color-on-background);
-  background-color: var(--color-background);
-  background-image: radial-gradient(circle at 2px 2px, rgba(192, 194, 252, 0.05) 1px, transparent 0);
-  background-size: 32px 32px;
-  min-height: 100vh;
-  overflow-x: hidden;
-}
-
-h1 {
-  font-family: var(--font-family-h1);
-  font-size: var(--font-size-h1);
-  font-weight: var(--font-weight-h1);
-  line-height: var(--line-height-h1);
-  letter-spacing: var(--letter-spacing-h1);
-  margin: 0;
-}
-
-h2 {
-  font-family: var(--font-family-h2);
-  font-size: var(--font-size-h2);
-  font-weight: var(--font-weight-h2);
-  line-height: var(--line-height-h2);
-  margin: 0;
-}
-
-h3 {
-  font-family: var(--font-family-h3);
-  font-size: var(--font-size-h3);
-  font-weight: var(--font-weight-h3);
-  line-height: var(--line-height-h3);
-  margin: 0;
-}
-
-p {
-  margin: 0;
-}
-
-button {
-  font-family: var(--font-family-label-caps);
-  font-size: var(--font-size-label-caps);
-  font-weight: var(--font-weight-label-caps);
-  line-height: var(--line-height-label-caps);
-  letter-spacing: var(--letter-spacing-label-caps);
-  cursor: pointer;
-  border: none;
-  background: none;
-}
-
-a {
-  text-decoration: none;
-  color: inherit;
-}
-
-.material-symbols-outlined {
-  font-family: 'Material Symbols Outlined';
-  font-style: normal;
-  font-weight: normal;
-  text-transform: none;
-  letter-spacing: normal;
-  word-break: normal;
-  white-space: normal;
-  display: inline-block;
-  line-height: 1;
-  vertical-align: middle;
-  -webkit-font-smoothing: antialiased;
-}
-
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--color-surface);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--color-surface-variant);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--color-outline-variant);
+  --color-surface-low: #1b1b1f;
+  --color-surface-high: #2a292d;
+  --color-surface-highest: #353438;
+  --shadow-hard: 4px 4px 0 0 #000000;
+  --shadow-hard-sm: 2px 2px 0 0 #000000;
+  --home-gradient-bg-game: none;
 }
