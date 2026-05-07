@@ -1,0 +1,511 @@
+/* =============================================================
+   Snake Tactical — Page tokens + layout
+   Dark theme provided by design-system via [data-theme="dark"].
+   ============================================================= */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ---- Tokens derived from design-system ---- */
+.page--snake {
+  --bg-app: var(--color-bg);
+  --bg-surface: var(--color-surface);
+  --bg-elevated: #243060;
+  --bg-grid-light: var(--color-bg-alt);
+  --bg-grid-dark: var(--color-surface-alt);
+  --bg-grid-line: var(--color-border);
+  --border-dark: var(--color-border);
+
+  --color-action: var(--color-primary);
+  --color-action-hover: #9b9dd4;
+  --color-action-text: var(--color-text);
+  --color-action-border: var(--color-primary-dark);
+
+  --color-control: var(--color-primary-dark);
+  --color-control-hover: #575a8d;
+  --color-control-text: var(--color-text);
+  --color-control-border: var(--color-dark);
+
+  --color-events: #575a8d;
+  --color-events-hover: #6b6ea3;
+  --color-events-text: var(--color-text);
+  --color-events-border: var(--color-dark);
+
+  --color-snake-head: var(--color-secondary);
+  --color-snake-glow: rgba(69, 240, 223, 0.5);
+  --color-snake-body: #00d5c5;
+
+  --color-apple: #ffb4ab;
+  --color-apple-glow: rgba(255, 180, 171, 0.5);
+
+  --color-obstacle: #918f9a;
+  --color-spike: #b0adb8;
+
+  --color-snap: var(--color-secondary-alt);
+  --color-executing: var(--color-secondary);
+  --color-executing-glow: rgba(69, 240, 223, 0.5);
+
+  --color-run: var(--color-secondary);
+  --color-run-hover: #69f5e7;
+  --color-pause: var(--color-secondary-alt);
+  --color-pause-hover: #d3d4ff;
+  --color-clear: #ffb4ab;
+
+  /* Snake entity colors (game-specific) */
+  --color-snake-eye: #00201d;
+  --color-apple-stem: #4a2828;
+  --color-apple-highlight: rgba(255, 255, 255, 0.3);
+  --color-wall-shadow: rgba(0, 0, 0, 0.6);
+  /* Header button colors */
+  --color-run-text: #00201d;
+  --color-run-shadow: #005049;
+  --color-pause-text: #131546;
+  /* C-block gradient bottoms */
+  --color-control-gradient-end: #35386a;
+  --color-events-gradient-end: #4a4d7a;
+  /* Snake body segment fade-out opacities */
+  --snake-body-opacity-far: 0.7;
+  --snake-body-opacity-mid: 0.85;
+
+  --color-shadow: var(--color-dark);
+
+  --font-ui: var(--font-body);
+  --font-mono: var(--font-headline);
+
+  --radius-md: 0.75rem;
+  --radius-full: 62.5rem;
+
+  --shadow-block: 4px 4px 0 0 var(--color-shadow);
+  --shadow-block-hover: 6px 6px 0 0 var(--color-shadow);
+  --shadow-elevated: 8px 8px 0 0 var(--color-shadow);
+  --shadow-run: 4px 4px 0 0 var(--color-snake-eye);
+  --shadow-pause: 4px 4px 0 0 var(--color-shadow);
+
+  --sidebar-width: 15rem;
+}
+
+/* ---- Page layout ---- */
+.page--snake {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--bg-app);
+  background-image: radial-gradient(circle, var(--color-grid-dot) 1px, transparent 1px);
+  background-size: 1.5rem 1.5rem;
+  font-family: var(--font-ui);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  color: var(--color-text);
+}
+
+/* ---- Scrollbar ---- */
+.page--snake ::-webkit-scrollbar {
+  width: 0.375rem;
+  height: 0.375rem;
+}
+
+.page--snake ::-webkit-scrollbar-track {
+  background: var(--bg-surface);
+}
+
+.page--snake ::-webkit-scrollbar-thumb {
+  background: var(--bg-grid-line);
+  border-radius: var(--radius-full);
+}
+
+.page--snake ::-webkit-scrollbar-thumb:hover {
+  background: var(--color-surface-hover);
+}
+
+/* ---- Top Nav Bar ---- */
+.page--snake .app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 var(--space-lg);
+  height: 4rem;
+  background: var(--bg-elevated);
+  border-bottom: var(--border-width-game) solid var(--border-dark);
+  box-shadow: 0 4px 0 0 var(--color-shadow);
+  flex-shrink: 0;
+  z-index: 50;
+}
+
+.page--snake .app-header__left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.page--snake .app-header__title {
+  font-family: var(--font-mono);
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--color-snap);
+  letter-spacing: -0.02em;
+}
+
+.page--snake .app-header__right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-between);
+}
+
+.page--snake .header-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm-md);
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform var(--duration-instant), box-shadow var(--duration-instant);
+  min-height: var(--touch-target-sm);
+  white-space: nowrap;
+  border-bottom: var(--border-width-game) solid transparent;
+}
+
+.page--snake .btn-icon {
+  width: var(--icon-between);
+  height: var(--icon-between);
+  flex-shrink: 0;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.page--snake .header-btn:active {
+  transform: translateY(var(--button-active-offset));
+  border-bottom-width: var(--button-active-offset);
+}
+
+.page--snake .header-btn--hub {
+  background: var(--color-action);
+  color: var(--color-action-text);
+  border-bottom-color: var(--color-action-border);
+  text-decoration: none;
+}
+
+.page--snake .header-btn--run {
+  background: var(--color-run);
+  color: var(--color-run-text);
+  box-shadow: var(--shadow-run);
+  border-bottom-color: var(--color-run-shadow);
+}
+
+.page--snake .header-btn--run:hover {
+  background: var(--color-run-hover);
+}
+
+.page--snake .header-btn--pause {
+  background: var(--color-pause);
+  color: var(--color-pause-text);
+  box-shadow: var(--shadow-pause);
+  border-bottom-color: var(--color-shadow);
+}
+
+.page--snake .header-btn--pause:hover {
+  background: var(--color-pause-hover);
+}
+
+.page--snake .header-btn--clear {
+  background: transparent;
+  color: var(--color-text-dim);
+  box-shadow: none;
+}
+
+.page--snake .header-divider {
+  width: 1px;
+  height: 1.5rem;
+  background: var(--border-dark);
+}
+
+/* ---- Level Bar ---- */
+.page--snake .level-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--bg-elevated);
+  border-bottom: 2px solid var(--border-dark);
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+}
+
+.page--snake .level-selector {
+  background: var(--bg-surface);
+  color: var(--color-text);
+  border: 2px solid var(--border-dark);
+  border-radius: var(--radius-md);
+  padding: var(--space-xs) var(--space-sm);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  cursor: pointer;
+  min-height: var(--touch-target-min);
+}
+
+.page--snake .level-selector:focus {
+  outline: 2px solid var(--color-executing);
+  outline-offset: 1px;
+}
+
+.page--snake .block-counter {
+  color: var(--color-text-muted);
+  font-weight: 700;
+  margin-left: auto;
+  transition: color var(--duration-normal) ease;
+}
+
+.page--snake .block-counter--limit {
+  color: var(--color-apple) !important;
+  animation: snakePulseLimit var(--duration-slow) ease-in-out 3;
+}
+
+@keyframes snakePulseLimit {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.4;
+  }
+}
+
+.page--snake .level-name {
+  color: var(--color-executing);
+  font-weight: 700;
+}
+
+.page--snake .progress-reset-btn {
+  background: var(--color-action);
+  color: var(--color-text);
+  border: none;
+  border-bottom: 2px solid var(--color-action-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-2xs) var(--space-between);
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  font-weight: 700;
+  cursor: pointer;
+  transition: background var(--duration-fast), transform var(--duration-instant);
+  min-height: 1.5rem;
+}
+
+.page--snake .progress-reset-btn:hover {
+  background: var(--color-action-hover);
+}
+
+.page--snake .progress-reset-btn:active {
+  transform: translateY(1px);
+  border-bottom-width: 1px;
+}
+
+/* ---- App Layout ---- */
+.page--snake .app-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+}
+
+@media (min-width: 48rem) {
+  .page--snake .app-container {
+    display: grid;
+    grid-template-columns: var(--sidebar-width) 1fr 40rem;
+    grid-template-rows: 1fr;
+  }
+}
+
+/* ---- Modal ---- */
+.page--snake .modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--color-overlay);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(var(--backdrop-blur-amount));
+}
+
+.page--snake .modal-overlay[hidden] {
+  display: none;
+}
+
+.page--snake .modal {
+  background: var(--bg-elevated);
+  border: var(--border-width-thin) solid var(--color-snap);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  max-width: var(--modal-max-width);
+  width: 90%;
+  box-shadow: 8px 8px 0 0 var(--color-shadow);
+}
+
+.page--snake .modal__title {
+  font-family: var(--font-mono);
+  font-size: var(--text-md-lg);
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: var(--space-sm);
+}
+
+.page--snake .modal__body {
+  font-family: var(--font-ui);
+  font-size: var(--text-sm);
+  color: var(--color-text-subtle);
+  line-height: 1.5;
+  margin-bottom: var(--space-lg);
+}
+
+.page--snake .modal__actions {
+  display: flex;
+  gap: var(--space-sm);
+  justify-content: flex-end;
+}
+
+.page--snake .modal__btn {
+  padding: var(--space-sm) var(--space-md);
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm-md);
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform var(--duration-instant);
+  min-height: var(--touch-target-xs);
+  border-bottom: 3px solid transparent;
+}
+
+.page--snake .modal__btn:active {
+  transform: translateY(var(--button-active-offset));
+  border-bottom-width: 1px;
+}
+
+.page--snake .modal__btn--cancel {
+  background: var(--bg-grid-line);
+  color: var(--color-text-subtle);
+  border-bottom-color: var(--color-cancel-border);
+}
+
+.page--snake .modal__btn--cancel:hover {
+  background: var(--color-surface-hover);
+}
+
+.page--snake .modal__btn--confirm {
+  background: var(--color-apple);
+  color: var(--color-danger-text);
+  border-bottom-color: var(--color-danger-shadow);
+}
+
+.page--snake .modal__btn--confirm:hover {
+  background: var(--color-danger-hover);
+}
+
+.page--snake .modal__btn--confirm:hover {
+  background: var(--color-danger-hover);
+}
+
+/* ---- Toast ---- */
+.page--snake .toast {
+  position: fixed;
+  bottom: var(--space-lg);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-elevated);
+  color: var(--color-text);
+  padding: var(--space-between) var(--space-lg);
+  border-radius: var(--radius-lg);
+  box-shadow: 4px 4px 0 0 var(--color-shadow);
+  z-index: 2000;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  border: var(--border-width-thin) solid var(--color-snap);
+  animation: snakeToastIn var(--duration-normal) ease;
+}
+
+.page--snake .toast[hidden] {
+  display: none;
+}
+
+@keyframes snakeToastIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(0.5rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* ---- Mobile overrides ---- */
+@media (max-width: 47.9375rem) {
+  .page--snake .app-header {
+    padding: 0 var(--space-sm);
+  }
+
+  .page--snake .app-header__title {
+    font-size: 1rem;
+  }
+
+  .page--snake .header-btn {
+    padding: 0.375rem 0.75rem;
+    font-size: var(--text-xs);
+  }
+
+  .page--snake .level-bar {
+    padding: var(--space-xs) var(--space-sm);
+  }
+}
+
+/* ---- Rules Modal ---- */
+.page--snake .modal--rules {
+  position: relative;
+}
+
+.page--snake .modal__close-btn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  border: none;
+  background: var(--bg-grid-line);
+  color: var(--color-text);
+  font-size: 0.875rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  line-height: 1;
+}
+
+.page--snake .modal__close-btn:hover {
+  background: var(--color-apple);
+  color: var(--color-danger-text);
+}
+
+.page--snake .rules-content p {
+  margin-bottom: 0.75rem;
+}
+
+.page--snake .rules-content p:last-child {
+  margin-bottom: 0;
+}

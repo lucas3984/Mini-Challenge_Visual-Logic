@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <circle cx="32" cy="36" r="22" fill="var(--color-apple, #ffb4ab)"/>
+  <ellipse cx="24" cy="28" rx="6" ry="4" fill="rgba(255,255,255,0.3)"/>
+  <path d="M32 14 L32 8" stroke="#4a2828" stroke-width="3" stroke-linecap="round"/>
+  <path d="M32 10 Q40 4 44 12 Q38 14 32 10Z" fill="var(--color-snake-body, #00d5c5)"/>
+</svg>
