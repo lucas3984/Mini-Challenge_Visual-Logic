@@ -1,9 +1,19 @@
 import { Component } from './base.js';
 
+/*
+ * Fixed top bar with app branding and dark-mode toggle.
+ * The <header> semantic tag identifies the page banner region for
+ * accessibility tools. Dark mode is toggled via a CSS class on <html>
+ * so all CSS variable overrides cascade reactively across the page.
+ */
 export class TopAppBar extends Component {
   render() {
     const header = document.createElement('header');
     header.className = 'top-app-bar';
+    /*
+     * aria-label on the icon-only toggle button is mandatory — screen
+     * readers have no other way to identify its purpose.
+     */
     header.innerHTML = `
       <div class="top-app-bar__brand">
         <div class="top-app-bar__logo">
@@ -21,6 +31,11 @@ export class TopAppBar extends Component {
       </div>
     `;
 
+    /*
+     * Dark mode logic is a private method — internal concern, no external
+     * code should call it directly. Toggling the class on the root element
+     * triggers CSS variable re-evaluation across the entire page.
+     */
     this.addListener(header.querySelector('#darkModeToggle'), 'click', this.#handleDarkModeToggle);
 
     return header;

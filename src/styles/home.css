@@ -1,4 +1,8 @@
-/* Base element styles — typography, layout, and component resets. */
+/*
+ * Base element styles — typography, layout, and component resets.
+ * box-sizing: border-box everywhere prevents padding from inflating
+ * element dimensions, which simplifies the responsive layout math.
+ */
 html {
   box-sizing: border-box;
 }
@@ -7,6 +11,11 @@ html {
   box-sizing: inherit;
 }
 
+/*
+ * Body sets the global typography baseline and dot-pattern background.
+ * overflow-x: hidden prevents horizontal scroll from fixed-position
+ * elements or wide content on small viewports.
+ */
 body {
   margin: 0;
   padding: 0;
@@ -21,6 +30,11 @@ body {
   overflow-x: hidden;
 }
 
+/*
+ * Heading resets — zero margin so layout spacing is controlled by
+ * the parent container's gap/flex properties, not by unpredictable
+ * browser defaults. Headlines use Space Grotesk for the game-brand feel.
+ */
 h1 {
   font-family: var(--font-headline);
   font-size: var(--text-4xl);
@@ -50,6 +64,11 @@ p {
   margin: 0;
 }
 
+/*
+ * Button reset removes all native button styling (border, background,
+ * font) so the component-level CSS classes own the appearance entirely.
+ * Headline font + uppercase tracking reinforces the game UI aesthetic.
+ */
 button {
   font-family: var(--font-headline);
   font-size: var(--text-sm);
@@ -66,6 +85,12 @@ a {
   color: inherit;
 }
 
+/*
+ * Material Symbols icon class — forces the font rendering properties
+ * that Google's icon font requires. Without these resets, icons may
+ * render with incorrect spacing, alignment, or missing glyphs.
+ * -webkit-font-smoothing: antialiased improves icon crispness on macOS.
+ */
 .material-symbols-outlined {
   font-family: 'Material Symbols Outlined';
   font-style: normal;
@@ -80,6 +105,10 @@ a {
   -webkit-font-smoothing: antialiased;
 }
 
+/*
+ * Custom scrollbar styling — uses surface hierarchy tokens so it blends
+ * with the current theme (light or dark) automatically via CSS vars.
+ */
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -97,12 +126,22 @@ a {
   background: color-mix(in srgb, var(--color-surface-highest) 70%, var(--color-text) 30%);
 }
 
-/* Home page body override — full viewport dark background, no pattern. */
+/*
+ * Home page body override — the home screen needs a solid dark background
+ * (no dot pattern). !important is necessary here because the body rule
+ * above already sets background-image; this second body rule overrides
+ * it specifically for the home route.
+ */
 body {
   background-color: var(--color-bg-home) !important;
   background-image: var(--gradient-bg-game-home) !important;
 }
 
+/*
+ * Home page container — vertical padding accounts for the fixed top
+ * app bar (100px) and bottom nav (120px) so content is not hidden
+ * behind them. Flex column + center alignment stacks sections vertically.
+ */
 .home-page {
   padding-top: 100px;
   padding-bottom: 120px;
@@ -116,6 +155,11 @@ body {
   gap: var(--space-xl);
 }
 
+/*
+ * Fixed top app bar. backdrop-filter: blur(12px) creates a frosted-glass
+ * effect (content scrolls under while the bar stays legible).
+ * The hard shadow (0 4px 0 0) mimics a raised game-UI block feel.
+ */
 .top-app-bar {
   position: fixed;
   top: 0;
@@ -156,6 +200,10 @@ body {
   color: var(--color-dark);
 }
 
+/*
+ * Brand title uses text-shadow instead of a separate pseudo-element
+ * for the hard-shadow effect — simpler maintenance, avoids layout shifts.
+ */
 .top-app-bar__title {
   font-family: var(--font-headline);
   font-size: var(--text-2xl);
@@ -170,6 +218,10 @@ body {
   gap: var(--space-md);
 }
 
+/*
+ * 48x48px ensures the button meets the 44x44px minimum touch target
+ * required by AGENTS.md for interactive elements.
+ */
 .top-app-bar__btn {
   width: 48px;
   height: 48px;
@@ -226,6 +278,10 @@ body {
   font-size: 20px;
 }
 
+/*
+ * cursor: default signals this is a read-only section, not interactive.
+ * inline-block content wrapper keeps the text centered without stretching.
+ */
 .hero-section {
   text-align: center;
   margin-bottom: var(--space-xl);
@@ -236,6 +292,11 @@ body {
   display: inline-block;
 }
 
+/*
+ * Subtle bounce animation makes the hero icon feel alive without being
+ * distracting. inline-block keeps the wrapper sized to its content so
+ * the glow (if enabled) and icon stay centered together.
+ */
 .hero-section__icon-wrapper {
   position: relative;
   display: inline-block;
@@ -251,6 +312,11 @@ body {
   }
 }
 
+/*
+ * Glow element hidden by default; reserved for a future hover effect
+ * on the hero icon wrapper. Kept in the DOM but display:none so it
+ * doesn't affect layout.
+ */
 .hero-section__glow {
   display: none;
 }
@@ -272,6 +338,10 @@ body {
   color: var(--color-primary);
 }
 
+/*
+ * max-width caps the subtitle line length for readability (~65 chars).
+ * auto margins center the block within the parent.
+ */
 .hero-section__subtitle {
   font-family: var(--font-body);
   font-size: var(--home-text-lg-body);
@@ -286,6 +356,11 @@ body {
   max-width: 1024px;
 }
 
+/*
+ * Mobile-first single column — switches to 2 columns at 768px (tablet+).
+ * This follows AGENTS.md mobile-first approach: base styles for mobile,
+ * min-width media queries for larger screens.
+ */
 .games-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -309,6 +384,12 @@ body {
   transform: scale(1.05);
 }
 
+/*
+ * Gradient border trick: the wrapper has a gradient background and 2px
+ * padding. The inner content has its own solid background with a slightly
+ * smaller border-radius. The visible "border" is actually the wrapper's
+ * background showing through the padding gap — pure CSS, no extra markup.
+ */
 .game-card__gradient-border {
   background: linear-gradient(135deg, var(--color-secondary), var(--color-primary-dark));
   padding: 2px;
@@ -350,6 +431,11 @@ body {
   color: var(--color-primary);
 }
 
+/*
+ * Difficulty badge consumes --badge-color and --badge-shadow from inline
+ * style on the parent — this allows each GameCard instance to set its
+ * own color scheme via CSS custom properties without additional classes.
+ */
 .game-card__difficulty {
   font-family: var(--font-headline);
   font-size: var(--text-sm);
@@ -407,6 +493,11 @@ body {
   box-shadow: var(--home-shadow-hard-sm);
 }
 
+/*
+ * Large background icon as decorative watermark. pointer-events: none
+ * ensures it never intercepts clicks meant for the card content.
+ * The last card rotates the icon the opposite direction for visual variety.
+ */
 .game-card__bg-icon {
   position: absolute;
   bottom: -32px;
@@ -421,6 +512,11 @@ body {
   transform: rotate(-12deg);
 }
 
+/*
+ * Progress stats panel — stacked vertically on mobile, side-by-side
+ * on tablet+. backdrop-filter: blur adds depth layering for the
+ * game-UI aesthetic. Mobile-first with min-width override at 768px.
+ */
 .progress-stats {
   margin-top: var(--space-xl);
   width: 100%;
@@ -510,6 +606,11 @@ body {
   overflow: hidden;
 }
 
+/*
+ * Gradient fill bar with width transition — the width is set inline by JS
+ * (dynamic data) while the appearance (colors, radius, transition) lives
+ * here in CSS (design concern).
+ */
 .progress-stats__bar-fill {
   height: 100%;
   background: linear-gradient(90deg, var(--color-secondary), var(--color-primary), var(--color-dark));
@@ -517,6 +618,12 @@ body {
   transition: width 0.3s ease;
 }
 
+/*
+ * Fixed bottom navigation — negative box-shadow (0 -4px) creates a
+ * "pulled up from below" raised effect consistent with the game UI
+ * style. Top-left + top-right border-radius rounds only the top
+ * corners so the bar blends with the viewport edges at the bottom.
+ */
 .bottom-nav {
   position: fixed;
   bottom: 0;
@@ -543,6 +650,11 @@ body {
   transition: transform 0.2s ease, color 0.2s ease;
 }
 
+/*
+ * Active nav item lifts up 8px with a hard shadow for a 3D button effect.
+ * Inactive items use muted color with a hover glow and press-down scale
+ * for tactile feedback.
+ */
 .bottom-nav__item--active {
   background-color: var(--color-secondary);
   color: var(--home-color-on-secondary);
@@ -569,6 +681,11 @@ body {
   margin-top: var(--space-xs);
 }
 
+/*
+ * Global keyboard focus style — uses :focus-visible so the outline only
+ * appears when navigating via keyboard (Tab), not on mouse clicks.
+ * Meets AGENTS.md accessibility requirements for focus indicators.
+ */
 button:focus-visible,
 a:focus-visible {
   outline: 2px solid var(--color-primary);

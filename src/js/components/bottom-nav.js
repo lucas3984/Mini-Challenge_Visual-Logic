@@ -1,5 +1,10 @@
 import { Component } from './base.js';
 
+/*
+ * Fixed bottom navigation bar for the home screen.
+ * Default items provide a sensible fallback when no config is passed;
+ * callers can override via constructor to customize navigation structure.
+ */
 export class BottomNav extends Component {
   #items = [];
   #activeIndex = 0;
@@ -18,8 +23,20 @@ export class BottomNav extends Component {
   render() {
     const nav = document.createElement('nav');
     nav.className = 'bottom-nav';
+    /*
+     * aria-label identifies the navigation landmark for screen readers.
+     * aria-current="page" on the active item tells assistive tech which
+     * section the user is currently viewing.
+     */
     nav.setAttribute('aria-label', 'Main navigation');
 
+    /*
+     * InnerHTML with map/join builds all nav items in a single DOM write
+     * to avoid layout thrashing from multiple appendChild calls.
+     * Material Symbols use the FILL axis to distinguish active (filled)
+     * from inactive (outlined) icons — a single-icon-font approach that
+     * avoids toggling between separate icon elements.
+     */
     nav.innerHTML = this.#items.map((item, index) => {
       const isActive = index === this.#activeIndex;
       const iconFilled = isActive ? "style='font-variation-settings: \"FILL\" 1'" : '';

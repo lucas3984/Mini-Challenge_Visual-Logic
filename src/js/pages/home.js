@@ -3,6 +3,11 @@ import { GameCard } from '../components/game-card.js';
 import { ProgressStats } from '../components/progress-stats.js';
 import { BottomNav } from '../components/bottom-nav.js';
 
+/*
+ * Static game catalog data lives outside render() so it is only
+ * allocated once — not recreated on every render call (future-proofing
+ * for SPA route re-renders).
+ */
 const games = [
   {
     id: 'labirinto',
@@ -28,6 +33,14 @@ const games = [
   }
 ];
 
+/*
+ * Home page render function — follows the SPA convention from AGENTS.md:
+ * pages export render(): HTMLElement. Components are instantiated here
+ * and their render() output is assembled into the page DOM tree.
+ * .render() is called instead of .mount() because the page manually
+ * manages layout assembly; .mount() is reserved for cases where a
+ * component owns its own container lifecycle.
+ */
 export function render() {
   const main = document.createElement('main');
   main.className = 'home-page';
@@ -38,6 +51,7 @@ export function render() {
 
   main.appendChild(topAppBar.render());
 
+  /* Hero section: game-style header with animated icon and tagline. */
   const heroSection = document.createElement('section');
   heroSection.className = 'hero-section';
   heroSection.innerHTML = `
@@ -51,6 +65,7 @@ export function render() {
     </div>
   `;
 
+  /* Games grid section — one GameCard per catalog entry. */
   const gamesSection = document.createElement('section');
   gamesSection.className = 'games-section';
 
@@ -69,12 +84,22 @@ export function render() {
   main.appendChild(gamesSection);
   main.appendChild(bottomNav.render());
 
+  /*
+   * Ripple effect adds tactile feedback on button clicks (gamified UI).
+   * Material Symbols setup ensures consistent icon rendering across browsers.
+   */
   initRippleEffect();
   initMaterialSymbols();
 
   return main;
 }
 
+/*
+ * Google's Material Symbols font needs explicit CSS property resets on
+ * every .material-symbols-outlined element to render correctly across
+ * different browsers. The font-face import gets the font family right,
+ * but line-height, letter-spacing, etc. often inherit unintended values.
+ */
 function initMaterialSymbols() {
   const symbols = document.querySelectorAll('.material-symbols-outlined');
   symbols.forEach(symbol => {
@@ -91,6 +116,13 @@ function initMaterialSymbols() {
   });
 }
 
+/*
+ * Implements a Material-style ripple effect on all buttons.
+ * The @keyframes animation is injected once via a guarded <style> element
+ * (id="ripple-style") so repeated calls don't duplicate the keyframes.
+ * Ripple elements are created at click position, animated, then removed
+ * after the animation duration to prevent DOM bloat.
+ */
 function initRippleEffect() {
   document.querySelectorAll('button').forEach(button => {
     button.addEventListener('click', function(e) {
@@ -112,6 +144,8 @@ function initRippleEffect() {
         pointer-events: none;
       `;
 
+      /* Button needs position: relative and overflow: hidden so the
+         ripple stays clipped inside the button boundaries. */
       this.style.position = 'relative';
       this.style.overflow = 'hidden';
       this.appendChild(ripple);
@@ -120,6 +154,11 @@ function initRippleEffect() {
     });
   });
 
+  /*
+   * Guard: inject the @keyframes only once. Checking for an existing
+   * <style id="ripple-style"> prevents duplicate keyframe definitions
+   * if this init function is called multiple times (e.g. SPA navigation).
+   */
   if (!document.querySelector('#ripple-style')) {
     const style = document.createElement('style');
     style.id = 'ripple-style';
