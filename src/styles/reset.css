@@ -1,0 +1,29 @@
+/**
+ * CSS Reset & Base Styles
+ * Must be loaded after design-system.css (uses CSS variables defined there)
+ * Provides consistent baseline across browsers
+ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--color-bg, #111d4a);
+  color: var(--color-text, #f0f2ff);
+  font-family: var(--font-body);
+  font-size: var(--text-md, 1rem);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
