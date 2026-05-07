@@ -39,6 +39,7 @@
   --breakpoint-sm: 768px;
   --breakpoint-md: 1024px;
   --breakpoint-lg: 1440px;
+  --max-width-container: 1280px;
   /* Game-style colorful shadows visual style. */
   --shadow-sm: 0 1px 3px rgba(135, 137, 192, 0.1);
   --shadow-md: 0 4px 6px rgba(135, 137, 192, 0.15);
@@ -62,6 +63,7 @@
   --text-xl: 1.5rem;
   --text-2xl: 2rem;
   --text-3xl: 2.5rem;
+  --text-4xl: 3rem;
   --leading-tight: 1.2;
   --leading-normal: 1.5;
   --leading-loose: 1.75;
@@ -140,4 +142,15 @@
   --phase-path-color-dashed: rgba(240, 242, 255, 0.2);
   --slot-color-empty: rgba(194, 202, 232, 0.2);
   --gradient-bg-game: radial-gradient(circle at 20% 50%, rgba(194, 202, 232, 0.05) 0%, transparent 50%);
+  /* Additional dark mode tokens for level-selector page */
+  --color-surface-container: #201f23;
+  --color-surface-container-lowest: #0e0e11;
+  --color-surface-container-highest: #353438;
+  --color-surface-dim: #131316;
+  --color-outline: #918f9a;
+  --color-outline-variant: #46464f;
+  --color-primary-container: #8a8cc3;
+  --color-on-primary-container: #222455;
+  --color-on-secondary: #003732;
+  --color-primary-emphasis: #c0c2fc;
 }
