@@ -1,3 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
+
 /*
  * Single source of truth for all design tokens.
  * Per AGENTS.md: zero hardcoded colors/spacing/values outside this file.
@@ -17,12 +20,21 @@
   --color-text: #111d4a;
   --color-text-muted: rgba(17, 29, 74, 0.6);
   --color-border: rgba(135, 137, 192, 0.3);
+  /* Home page surface hierarchy and on-colors. */
+  --color-on-secondary: #111d4a;
+  --color-tertiary: #8890ac;
+  --color-error: #ff6b6b;
+  --color-surface-low: #f0f0f0;
+  --color-surface-high: #e5e5e5;
+  --color-surface-highest: #d9d9d9;
+  --color-secondary-fixed: #53fae9;
   /* Fonts (Space Grotesk/Inter) + font weights */
   --font-headline: 'Space Grotesk', sans-serif;
   --font-body: 'Inter', sans-serif;
   --font-weight-headline: 700;
   --font-weight-body: 400;
   --font-weight-body-bold: 600;
+  --font-weight-medium: 500;
   /* Rem-based spacing scale. */
   --space-xs: 0.25rem;
   --space-sm: 0.5rem;
@@ -33,6 +45,7 @@
   /* Default radius for game-style rounded elements. */
   --radius-default: 0.75rem;
   --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
   --radius-lg: 1rem;
   --radius-full: 9999px;
   /* AGENTS.md required vars for mobile-first min-width media queries. */
@@ -45,6 +58,8 @@
   --shadow-lg: 0 10px 15px rgba(135, 137, 192, 0.2);
   --shadow-glow: 0 0 15px rgba(69, 240, 223, 0.3);
   --shadow-block: 0 4px 12px rgba(135, 137, 192, 0.25);
+  --shadow-hard: 4px 4px 0 0 var(--color-dark);
+  --shadow-hard-sm: 2px 2px 0 0 var(--color-dark);
   /* Page transition speed (200ms) + touch target min (44px eq). */
   --transition-default: 200ms ease;
   --transition-slow: 300ms ease;
@@ -58,13 +73,19 @@
   --text-xs: 0.75rem;
   --text-sm: 0.875rem;
   --text-md: 1rem;
+  --text-lg-body: 1.125rem;
   --text-lg: 1.25rem;
   --text-xl: 1.5rem;
   --text-2xl: 2rem;
   --text-3xl: 2.5rem;
+  --text-4xl: 3rem;
   --leading-tight: 1.2;
   --leading-normal: 1.5;
   --leading-loose: 1.75;
+  --leading-none: 1;
+  --leading-compact: 1.1;
+  --tracking-tight: -0.02em;
+  --tracking-wide: 0.05em;
   /* Game easing for bouncy interactions + pulse duration for phase nodes. */
   --easing-default: ease;
   --easing-game: cubic-bezier(0.68, -0.55, 0.27, 1.55);
@@ -106,6 +127,7 @@
   --gradient-primary: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
   --gradient-card-hover: linear-gradient(135deg, var(--color-primary), var(--color-secondary-alt));
   --gradient-bg-game: radial-gradient(circle at 20% 50%, rgba(194, 202, 232, 0.1) 0%, transparent 50%);
+  --home-gradient-bg-game: radial-gradient(circle at 2px 2px, color-mix(in srgb, var(--color-primary) 5%, transparent) 1px, transparent 0);
   /* icons especifications*/
   --icon-sm: 1rem;
   --icon-md: 1.5rem;
@@ -118,6 +140,19 @@
   --z-drawer: 15;
   --z-connection-line: 5;
   --z-tooltip: 25;
+
+  /* Home page prefixed aliases — tokens consumed exclusively by home page components. */
+  --home-color-on-secondary: var(--color-on-secondary);
+  --home-color-tertiary: var(--color-tertiary);
+  --home-color-error: var(--color-error);
+  --home-color-surface-low: var(--color-surface-low);
+  --home-color-surface-high: var(--color-surface-high);
+  --home-color-surface-highest: var(--color-surface-highest);
+  --home-color-secondary-fixed: var(--color-secondary-fixed);
+  --home-font-weight-medium: var(--font-weight-medium);
+  --home-shadow-hard: var(--shadow-hard);
+  --home-shadow-hard-sm: var(--shadow-hard-sm);
+  --home-text-lg-body: var(--text-lg-body);
 }
 
 /*
@@ -127,6 +162,7 @@
 [data-theme="dark"] {
   --color-bg: #111d4a;
   --color-bg-alt: #1a2450;
+  --color-bg-home: #131316;
   --color-surface: #1a2450;
   --color-surface-alt: #111d4a;
   --color-text: #f0f2ff;
@@ -140,4 +176,15 @@
   --phase-path-color-dashed: rgba(240, 242, 255, 0.2);
   --slot-color-empty: rgba(194, 202, 232, 0.2);
   --gradient-bg-game: radial-gradient(circle at 20% 50%, rgba(194, 202, 232, 0.05) 0%, transparent 50%);
+  --gradient-bg-game-home: none;
+  /* Home page diff tokens — dark mode overrides. */
+  --color-on-secondary: #003732;
+  --color-tertiary: #bec6e3;
+  --color-error: #ffb4ab;
+  --color-surface-low: #1b1b1f;
+  --color-surface-high: #2a292d;
+  --color-surface-highest: #353438;
+  --shadow-hard: 4px 4px 0 0 #000000;
+  --shadow-hard-sm: 2px 2px 0 0 #000000;
+  --home-gradient-bg-game: none;
 }
