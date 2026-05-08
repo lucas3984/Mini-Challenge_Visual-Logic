@@ -700,7 +700,7 @@ function init(root, initialLevelIndex) {
   // left off across sessions.
   const saved = getItem('snake-progress');
   if (saved !== null) {
-    highestCompletedLevel = parseInt(saved, 10);
+    highestCompletedLevel = parseInt(saved, 10) - 1;  // storage stores COUNT, convert to INDEX
   }
 
   updateLevelSelect();

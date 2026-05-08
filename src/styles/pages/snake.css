@@ -3,14 +3,6 @@
    Dark theme provided by design-system via [data-theme="dark"].
    ============================================================= */
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
 /* ---- Tokens derived from design-system ---- */
 .page--snake {
   --bg-app: var(--color-bg);

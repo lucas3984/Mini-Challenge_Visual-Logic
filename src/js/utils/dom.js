@@ -18,21 +18,6 @@ export function getCellElement(gridEl, row, col) {
 }
 
 /**
- * Sanitizes a string against XSS by encoding it as a text node.
- *
- * Uses createTextNode internally so the browser handles escaping —
- * avoids using innerHTML directly on untrusted input.
- *
- * @param {string} str
- * @returns {string}
- */
-export function escapeHtml(str) {
-  const div = document.createElement('div');
-  div.appendChild(document.createTextNode(str));
-  return div.innerHTML;
-}
-
-/**
  * Promise that resolves after ms milliseconds.
  *
  * Wraps setTimeout so it can be awaited in async execution flows
