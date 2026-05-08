@@ -2,6 +2,8 @@ import { TopAppBar } from '../components/top-app-bar.js';
 import { GameCard } from '../components/game-card.js';
 import { ProgressStats } from '../components/progress-stats.js';
 import { BottomNav } from '../components/bottom-nav.js';
+import { hasAnyProfile, setActiveProfile } from '../core/profile.js';
+import { ProfileModal } from '../components/profile-modal.js';
 
 /*
  * Static game catalog data lives outside render() so it is only
@@ -93,6 +95,21 @@ export function render() {
    */
   initRippleEffect();
   initMaterialSymbols();
+
+  /*
+   * First-time access: if no profiles exist, overlay the profile creation
+   * modal on document.body so it sits above all page content. The home page
+   * renders underneath but remains inaccessible until the modal is resolved.
+   */
+  if (!hasAnyProfile()) {
+    const profileModal = new ProfileModal({
+      onSubmit: (name) => {
+        setActiveProfile(name);
+        profileModal.close();
+      }
+    });
+    profileModal.mount(document.body);
+  }
 
   return main;
 }
