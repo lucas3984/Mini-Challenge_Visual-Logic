@@ -143,6 +143,20 @@ export function countLoopsInIf(ifBlock) {
 }
 
 /**
+ * Counts how many if blocks (.c-block--event) exist inside a LOOP block's dropzone.
+ *
+ * Used to enforce the limit of 1 if per loop.
+ *
+ * @param {HTMLElement} loopBlock — .c-block--loop element
+ * @returns {number}
+ */
+export function countIfsInLoop(loopBlock) {
+  const dropzone = loopBlock.querySelector('.c-block__dropzone');
+  if (!dropzone) return 0;
+  return dropzone.querySelectorAll('.c-block--event').length;
+}
+
+/**
  * Clones a sidebar block for placement in the workspace.
  *
  * Strips sidebar-specific identifiers and classes so the clone behaves

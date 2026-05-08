@@ -13,7 +13,7 @@ import { Stage } from '../components/stage.js';
 import { Snake } from '../actors/snake.js';
 import { Runner } from '../engine/runner.js';
 import { parseWorkspace } from '../engine/parser.js';
-import { countAllBlocks, countLoopBlocks, countIfBlocks, countIfChildren, countLoopChildren, countLoopsInIf } from '../utils/dom.js';
+import { countAllBlocks, countLoopBlocks, countIfBlocks, countIfChildren, countLoopChildren, countLoopsInIf, countIfsInLoop } from '../utils/dom.js';
 import { AudioFX } from '../core/audio.js';
 import { getItem, setItem, removeItem, getJSON, setJSON } from '../core/storage.js';
 import { levels } from '../engine/levels.js';
@@ -312,7 +312,17 @@ function init(root, initialLevelIndex) {
    * @returns {boolean}
    */
   function canAddToLoop(loopBlock) {
-    return countLoopChildren(loopBlock) < 1;
+    return countLoopChildren(loopBlock) < 3;
+  }
+
+  /**
+   * Checks whether an if block can be placed inside a given loop block.
+   * Hard-capped at 1 — only one if per loop.
+   * @param {HTMLElement} loopBlock - The loop container element.
+   * @returns {boolean}
+   */
+  function canAddIfToLoop(loopBlock) {
+    return countIfsInLoop(loopBlock) < 1;
   }
 
   /**
@@ -399,6 +409,7 @@ function init(root, initialLevelIndex) {
     canAddToIf,
     canAddToLoop,
     canAddLoopToIf,
+    canAddIfToLoop,
     onBlockChanged: updateBlockCounterLive,
     audio,
   });
