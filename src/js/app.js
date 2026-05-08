@@ -16,8 +16,12 @@ if (!mountEl) {
 const router = new Router(mountEl);
 
 router.addRoute('/', renderHome);
-router.addRoute('/levels', renderLevelSelector);
-router.addRoute('/snake', renderSnake);
-router.addRoute('/snake/:level', (params) => renderSnake(params));
+// SPA route definitions for game selection and level browsing
+router.addRoute('/levels', () => renderLevelSelector({ gameId: 'snake' }));
+router.addRoute('/levels/:gameId', (params) => renderLevelSelector(params));
+// Snake game uses explicit route under /levels namespace for consistent URL hierarchy
+router.addRoute('/levels/snake/:levelId', (params) => renderSnake({
+  levelId: params.levelId
+}));
 
 router.start();

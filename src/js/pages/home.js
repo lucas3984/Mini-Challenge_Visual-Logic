@@ -29,7 +29,7 @@ const games = [
     difficultyColor: 'var(--color-error)',
     difficultyShadow: '#93000a',
     backgroundIcon: 'line_curve',
-    onStart: () => { location.hash = '#/levels'; }
+    onStart: () => { location.hash = '#/levels/snake'; }
   }
 ];
 

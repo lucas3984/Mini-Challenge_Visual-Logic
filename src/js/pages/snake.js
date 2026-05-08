@@ -36,7 +36,13 @@ const GRID_HTML = [0, 1, 2, 3, 4, 5, 6, 7].map((r) => {
  *
  * @returns {HTMLElement} The fully assembled page element.
  */
-export function render() {
+export function render(params = {}) {
+  // Extract level ID from URL to load correct level on direct navigation
+  const currentLevelId = params.levelId;
+  const currentLevelIndex = currentLevelId
+    ? parseInt(currentLevelId, 10) - 1
+    : 0;
+
   const root = document.createElement('div');
   root.className = 'page--snake';
   root.setAttribute('data-theme', 'dark');
@@ -46,7 +52,7 @@ export function render() {
         <h1 class="app-header__title">Snake Tactical</h1>
       </div>
       <div class="app-header__right">
-        <a href="#/" class="header-btn header-btn--hub">
+        <a href="#/levels/snake" class="header-btn header-btn--hub">
           <img src="src/assets/images/icons/snake-icons/icon-hub.svg" alt="" aria-hidden="true" class="btn-icon" width="24" height="24"> Voltar
         </a>
         <button id="btn-run" class="header-btn header-btn--run" aria-label="Executar código">
@@ -232,7 +238,7 @@ export function render() {
     <div id="toast" class="toast" hidden></div>
   `;
 
-  init(root);
+  init(root, currentLevelIndex);
   return root;
 }
 
@@ -246,8 +252,9 @@ export function render() {
  * module or global namespace.
  *
  * @param {HTMLElement} root - The root page element returned by render().
+ * @param {number} initialLevelIndex - The initial level index from route params.
  */
-function init(root) {
+function init(root, initialLevelIndex) {
   const stackEl = root.querySelector('.workspace__stack');
   const appContainer = root.querySelector('.app-container');
   const gridEl = root.querySelector('.grid');
@@ -257,7 +264,7 @@ function init(root) {
     throw new Error('Critical DOM elements missing');
   }
 
-  let currentLevelIndex = 0;
+  let currentLevelIndex = initialLevelIndex || 0;
 
   const audio = new AudioFX();
   const snake = new Snake(8, 8, audio);
@@ -697,6 +704,10 @@ function init(root) {
   }
 
   updateLevelSelect();
-  // Load the first uncompleted level (or level 1 on fresh start).
-  loadLevel(highestCompletedLevel + 1);
+  // Load the level from URL params if provided, otherwise load the next uncompleted level
+  if (initialLevelIndex !== undefined && initialLevelIndex >= 0) {
+    loadLevel(initialLevelIndex);
+  } else {
+    loadLevel(highestCompletedLevel + 1);
+  }
 }
