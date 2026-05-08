@@ -56,7 +56,6 @@
   --breakpoint-lg: 1440px;
   --max-width-container: 1280px;
   --breakpoint-max-sm: 47.9375rem; /* max-width counterpart of --breakpoint-sm (767px) */
-  --max-width-container: 1280px;
   /* Game-style colorful shadows visual style. */
   --shadow-sm: 0 1px 3px rgba(135, 137, 192, 0.1);
   --shadow-md: 0 4px 6px rgba(135, 137, 192, 0.15);
@@ -280,4 +279,5 @@
   /* Grid dot pattern in dark mode */
   --color-grid-dot: rgba(192, 194, 252, 0.05);
   --gradient-bg-game-home: none;
+
 }
