@@ -6,7 +6,7 @@
 import { Router } from './core/router.js';
 import { render as renderHome } from './pages/home.js';
 import { render as renderSnake } from './pages/snake.js';
-// TODO: import { render as renderLevels } from './pages/levels.js'; — add when levels page is ready
+import { render as renderLevelSelector } from './pages/level-selector.js';
 
 const mountEl = document.getElementById('app');
 if (!mountEl) {
@@ -16,7 +16,7 @@ if (!mountEl) {
 const router = new Router(mountEl);
 
 router.addRoute('/', renderHome);
-// TODO: router.addRoute('/levels', renderLevels); — uncomment when levels page is added
+router.addRoute('/levels', renderLevelSelector);
 router.addRoute('/snake', renderSnake);
 router.addRoute('/snake/:level', (params) => renderSnake(params));
 

@@ -124,6 +124,8 @@
   color: var(--color-secondary);
 }
 
+/* TODO: currently unused - only 3 states are used (completed, active, locked)
+   Keeping these styles for future use if 'unlocked' state is needed again
 .node--unlocked .node__circle {
   background-color: var(--color-primary-container);
 }
@@ -131,6 +133,7 @@
 .node--unlocked .node__label {
   color: var(--color-text-muted);
 }
+*/
 
 .node--locked .node__circle {
   background-color: var(--color-surface-container-highest);
