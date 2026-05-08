@@ -47,7 +47,10 @@ export function render() {
 
   const topAppBar = new TopAppBar();
   const progressStats = new ProgressStats({ current: 42, title: 'Mago da Lógica' }, 85);
-  const bottomNav = new BottomNav();
+
+  const currentHash = location.hash;
+  const activeIndex = BottomNav.getActiveIndex(currentHash);
+  const bottomNav = new BottomNav(null, activeIndex);
 
   main.appendChild(topAppBar.render());
 
