@@ -7,6 +7,8 @@
 export class Component {
   /* The DOM node that owns this component's rendered output. */
   #container = null;
+  /* The rendered DOM element returned by render(). */
+  #element = null;
   /* Tracked event listeners for automatic teardown in unmount(). */
   #listeners = [];
   /*
@@ -18,13 +20,17 @@ export class Component {
   /*
    * Appends rendered element into the given container and triggers subclass hook.
    * Validates container type to fail fast on API misuse (e.g. passing a string).
+   * Stores a reference to the rendered element so unmount() can remove it by
+   * reference rather than assuming it is the container's firstChild (which
+   * breaks when the container is document.body).
    */
   mount(container) {
     if (!(container instanceof HTMLElement)) {
       throw new Error('Container must be an HTMLElement');
     }
     this.#container = container;
-    container.appendChild(this.render());
+    this.#element = this.render();
+    container.appendChild(this.#element);
     this.onMount();
   }
 
@@ -38,9 +44,10 @@ export class Component {
       this.#listenerTarget?.removeEventListener(event, handler);
     });
     this.#listeners = [];
-    if (this.#container && this.#container.firstChild) {
-      this.#container.removeChild(this.#container.firstChild);
+    if (this.#container && this.#element) {
+      this.#container.removeChild(this.#element);
     }
+    this.#element = null;
     this.onUnmount();
   }
 
