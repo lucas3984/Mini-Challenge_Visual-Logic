@@ -13,9 +13,9 @@ import { Stage } from '../components/stage.js';
 import { Snake } from '../actors/snake.js';
 import { Runner } from '../engine/runner.js';
 import { parseWorkspace } from '../engine/parser.js';
-import { countAllBlocks, countLoopBlocks, countIfBlocks, countIfChildren } from '../utils/dom.js';
+import { countAllBlocks, countLoopBlocks, countIfBlocks, countIfChildren, countLoopChildren, countLoopsInIf } from '../utils/dom.js';
 import { AudioFX } from '../core/audio.js';
-import { getItem, setItem, getJSON, setJSON } from '../core/storage.js';
+import { getItem, setItem, removeItem, getJSON, setJSON } from '../core/storage.js';
 import { levels } from '../engine/levels.js';
 
 // Pre-compute the 8x8 checkerboard grid HTML once at module load — it never
@@ -95,37 +95,37 @@ export function render(params = {}) {
             <h3 id="cat-action" class="sidebar__category-header">
               <span class="sidebar__category-dot sidebar__category-dot--action"></span> Ação
             </h3>
-            <ul class="sidebar__category-items" role="list">
-              <li class="block block--action"
+            <div class="sidebar__category-items" role="list">
+              <div class="block block--action"
                   draggable="true"
                   data-block-type="move-forward"
                   tabindex="0"
                   role="listitem"
                   title="Move a cobra 1 casa na direção atual"
-                  aria-grabbed="false">Mover Frente</li>
-              <li class="block block--action"
+                  aria-grabbed="false">Mover Frente</div>
+              <div class="block block--action"
                   draggable="true"
                   data-block-type="turn-left"
                   tabindex="0"
                   role="listitem"
                   title="Gira a cobra 90° para a esquerda"
-                  aria-grabbed="false">Girar Esquerda</li>
-              <li class="block block--action"
+                  aria-grabbed="false">Girar Esquerda</div>
+              <div class="block block--action"
                   draggable="true"
                   data-block-type="turn-right"
                   tabindex="0"
                   role="listitem"
                   title="Gira a cobra 90° para a direita"
-                  aria-grabbed="false">Girar Direita</li>
-            </ul>
+                  aria-grabbed="false">Girar Direita</div>
+            </div>
           </section>
 
           <section class="sidebar__category" aria-labelledby="cat-control">
             <h3 id="cat-control" class="sidebar__category-header">
               <span class="sidebar__category-dot sidebar__category-dot--control"></span> Controle
             </h3>
-            <ul class="sidebar__category-items" role="list">
-              <li class="c-block c-block--loop"
+            <div class="sidebar__category-items" role="list">
+              <div class="c-block c-block--loop"
                   draggable="true"
                   data-block-type="repeat"
                   tabindex="0"
@@ -142,16 +142,16 @@ export function render(params = {}) {
                   <div class="c-block__dropzone" aria-label="Zona de encaixe de blocos"></div>
                 </div>
                 <div class="c-block__footer">fim</div>
-              </li>
-            </ul>
+              </div>
+            </div>
           </section>
 
           <section class="sidebar__category" aria-labelledby="cat-event">
             <h3 id="cat-event" class="sidebar__category-header">
               <span class="sidebar__category-dot sidebar__category-dot--event"></span> Eventos
             </h3>
-            <ul class="sidebar__category-items" role="list">
-              <li class="c-block c-block--event"
+            <div class="sidebar__category-items" role="list">
+              <div class="c-block c-block--event"
                   draggable="true"
                   data-block-type="if-apple-ahead"
                   tabindex="0"
@@ -163,7 +163,6 @@ export function render(params = {}) {
                   <select class="c-block__select" aria-label="Condição">
                     <option>Maçã à frente</option>
                     <option>Parede à frente</option>
-                    <option>Cobra à frente</option>
                   </select>
                 </div>
                 <div class="c-block__body">
@@ -171,8 +170,8 @@ export function render(params = {}) {
                   <div class="c-block__dropzone" aria-label="Zona de encaixe de blocos"></div>
                 </div>
                 <div class="c-block__footer">fim</div>
-              </li>
-            </ul>
+              </div>
+            </div>
           </section>
         </div>
 
@@ -307,6 +306,26 @@ function init(root, initialLevelIndex) {
   }
 
   /**
+   * Checks whether another child block can be placed inside a given loop block.
+   * Hard-capped at 1 — only one action block per loop.
+   * @param {HTMLElement} loopBlock - The loop container element.
+   * @returns {boolean}
+   */
+  function canAddToLoop(loopBlock) {
+    return countLoopChildren(loopBlock) < 1;
+  }
+
+  /**
+   * Checks whether a loop block can be placed inside a given if block.
+   * Hard-capped at 1 — only one loop per if.
+   * @param {HTMLElement} ifBlock - The if container element.
+   * @returns {boolean}
+   */
+  function canAddLoopToIf(ifBlock) {
+    return countLoopsInIf(ifBlock) < 1;
+  }
+
+  /**
    * Refreshes block counters and star display after any workspace mutation.
    * Called as a callback by DragDrop on every block add/remove.
    */
@@ -335,6 +354,9 @@ function init(root, initialLevelIndex) {
       ifCounterEl.classList.toggle('block-counter--limit', ifCount >= maxIfs);
     }
     updateStageStars();
+
+    // Persist workspace so the user's blocks survive page reloads
+    saveWorkspace(currentLevelIndex);
   }
 
   /**
@@ -375,6 +397,8 @@ function init(root, initialLevelIndex) {
     canAddLoop,
     canAddIf,
     canAddToIf,
+    canAddToLoop,
+    canAddLoopToIf,
     onBlockChanged: updateBlockCounterLive,
     audio,
   });
@@ -485,6 +509,22 @@ function init(root, initialLevelIndex) {
   }
 
   /**
+   * Saves the current workspace blocks to localStorage for the given level.
+   * @param {number} levelIndex
+   */
+  function saveWorkspace(levelIndex) {
+    setItem(`snake-workspace-${levelIndex}`, stackEl.innerHTML);
+  }
+
+  /**
+   * Removes the saved workspace from localStorage for the given level.
+   * @param {number} levelIndex
+   */
+  function clearWorkspace(levelIndex) {
+    removeItem(`snake-workspace-${levelIndex}`);
+  }
+
+  /**
    * Loads a level into the snake actor, resets the workspace, and updates all
    * UI elements to reflect the new level's constraints.
    *
@@ -504,36 +544,33 @@ function init(root, initialLevelIndex) {
     // Abort any running execution so the snake state resets cleanly.
     runner.abort();
     index = Math.max(0, Math.min(index, levels.length - 1));
+
+    // Only save the current workspace when switching to a different level
+    if (index !== currentLevelIndex) {
+      saveWorkspace(currentLevelIndex);
+    }
+
     currentLevelIndex = index;
+
+    // Persist so the user returns to this level after page reload
+    setItem('snake-current-level', String(index));
+
+    // Keep URL in sync so F5 restores the correct level
+    history.replaceState(null, '', `#/levels/snake/${index + 1}`);
 
     const level = levels[index];
     snake.loadLevel(level);
     stage.render();
 
-    // Reset the workspace DOM — a full clear is intentional so blocks from a
-    // previous level don't carry over.
-    stackEl.innerHTML = '';
+    // Restore saved workspace for this level, or start empty
+    const saved = getItem(`snake-workspace-${index}`);
+    stackEl.innerHTML = saved !== null ? saved : '';
 
     if (levelSelect) levelSelect.value = String(index);
     if (levelNameEl) levelNameEl.textContent = level.name;
     if (stageLevelEl) stageLevelEl.textContent = `Nível ${level.id}: ${level.name}`;
-    const blockCounterEl = root.querySelector('#block-counter');
-    const loopCounterEl = root.querySelector('#loop-counter');
-    const ifCounterEl = root.querySelector('#if-counter');
-    if (blockCounterEl) {
-      blockCounterEl.textContent = `Blocos: 0 / ${level.maxBlocks}`;
-      blockCounterEl.classList.remove('block-counter--limit');
-    }
-    if (loopCounterEl) {
-      loopCounterEl.textContent = `Loops: 0 / ${level.maxLoops}`;
-      loopCounterEl.classList.remove('block-counter--limit');
-    }
-    if (ifCounterEl) {
-      ifCounterEl.textContent = `Se: 0 / ${level.maxIfs}`;
-      ifCounterEl.classList.remove('block-counter--limit');
-    }
+    updateBlockCounterLive();
     if (statusEl) statusEl.textContent = 'Pronto';
-    updateStageStars();
 
     if (btnRun) btnRun.disabled = false;
     if (btnPause) {
@@ -643,6 +680,7 @@ function init(root, initialLevelIndex) {
   // --- Clear button (reloads current level from scratch) ---
   if (btnClear) {
     btnClear.addEventListener('click', () => {
+      clearWorkspace(currentLevelIndex);
       loadLevel(currentLevelIndex);
     });
   }
@@ -650,6 +688,7 @@ function init(root, initialLevelIndex) {
   // --- Workspace clear button (same behavior: reload level) ---
   if (btnClearWs) {
     btnClearWs.addEventListener('click', () => {
+      clearWorkspace(currentLevelIndex);
       loadLevel(currentLevelIndex);
     });
   }
@@ -657,6 +696,7 @@ function init(root, initialLevelIndex) {
   // --- Reset workspace button (same behavior: reload level) ---
   if (btnResetWs) {
     btnResetWs.addEventListener('click', () => {
+      clearWorkspace(currentLevelIndex);
       loadLevel(currentLevelIndex);
     });
   }
@@ -696,6 +736,11 @@ function init(root, initialLevelIndex) {
     });
   }
 
+  // Show a toast when the snake tries to turn 180° into its own neck
+  window.addEventListener('snake-neck-turn-blocked', () => {
+    showToast('Não gire o pescoço da cobrinha em 180°, ela pode se machucar');
+  });
+
   // Restore progress from localStorage so the player can continue where they
   // left off across sessions.
   const saved = getItem('snake-progress');
@@ -704,10 +749,13 @@ function init(root, initialLevelIndex) {
   }
 
   updateLevelSelect();
-  // Load the level from URL params if provided, otherwise load the next uncompleted level
+  // Load the level from URL params if provided, otherwise restore the last
+  // visited level from localStorage, falling back to the next uncompleted level.
   if (initialLevelIndex !== undefined && initialLevelIndex >= 0) {
     loadLevel(initialLevelIndex);
   } else {
-    loadLevel(highestCompletedLevel + 1);
+    const savedLevel = getItem('snake-current-level');
+    const restoredIndex = savedLevel !== null ? parseInt(savedLevel, 10) : highestCompleted + 1;
+    loadLevel(restoredIndex);
   }
 }
