@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <rect x="8" y="8" width="48" height="48" rx="4" fill="var(--color-obstacle, #918f9a)"/>
+  <polygon points="32,2 26,10 38,10" fill="var(--color-spike, #b0adb8)"/>
+  <polygon points="62,32 54,26 54,38" fill="var(--color-spike, #b0adb8)"/>
+  <polygon points="32,62 26,54 38,54" fill="var(--color-spike, #b0adb8)"/>
+  <polygon points="2,32 10,26 10,38" fill="var(--color-spike, #b0adb8)"/>
+  <rect x="8" y="8" width="48" height="48" rx="4" fill="rgba(0,0,0,0.3)" style="mix-blend-mode: multiply"/>
+</svg>

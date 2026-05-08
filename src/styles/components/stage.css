@@ -1,0 +1,344 @@
+/* =============================================================
+   Snake Tactical MVP — Stage (Palco da Cobrinha)
+   Logic Bloom — Turquoise snake, soft-red apple
+   ============================================================= */
+
+.stage {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-app);
+  border-left: 2px solid var(--border-dark);
+  overflow: hidden;
+  flex-shrink: 0;
+  z-index: 20;
+}
+
+.stage__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-md);
+  border-bottom: 2px solid var(--border-dark);
+  background: var(--bg-elevated);
+  flex-shrink: 0;
+}
+
+.stage__title {
+  font-family: var(--font-mono);
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-text-bright);}
+
+.stage__level {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  color: var(--color-text-dim);  background: var(--color-badge-bg);
+  padding: 0.125rem 0.5rem;
+  border-radius: var(--radius-sm);
+}
+
+.stage__stars {
+  display: flex;
+  gap: 0.125rem;
+  align-items: center;
+}
+
+.stage__stars .star {
+  font-size: 1rem;
+  line-height: 1;
+  transition: color 0.2s ease, text-shadow 0.2s ease;
+}
+
+.stage__stars .star--lit {
+  color: var(--color-executing);
+  text-shadow: 0 0 0.5rem var(--color-executing-glow);
+}
+
+.stage__stars .star--empty {
+  color: var(--color-text-ghost);
+}
+
+.stage__body {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-lg);
+  background: var(--bg-app);
+  position: relative;
+  overflow: hidden;
+}
+
+/* ===== Grid 8x8 ===== */
+.grid {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: var(--grid-max-width);
+  aspect-ratio: 1;
+  border: var(--border-width-game) solid var(--border-dark);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-elevated);
+}
+
+.grid__row {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  flex: 1;
+}
+
+/* ===== Grid Cell ===== */
+.grid__cell {
+  position: relative;
+  border: 0.5px solid var(--bg-grid-line);
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.grid__cell--light { background: var(--bg-grid-light); }
+.grid__cell--dark  { background: var(--bg-grid-dark); }
+
+/* ===== Snake Head ===== */
+.grid__cell--snake-head {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  z-index: 10;
+}
+
+.snake-head-inner {
+  width: 100%;
+  height: 100%;
+  background: var(--color-snake-head);
+  border-radius: var(--radius-md);
+  box-shadow: 0 0 0.9375rem var(--color-snake-glow);
+  position: relative;
+  overflow: hidden;
+}
+
+.snake-head-inner::before,
+.snake-head-inner::after {
+  content: '';
+  position: absolute;
+  width: 0.375rem;
+  height: 0.375rem;
+  background: var(--color-snake-eye);
+  border-radius: 50%;
+}
+
+.snake-head-inner::before { top: 25%; }
+.snake-head-inner::after  { bottom: 25%; }
+.snake-head-inner::before,
+.snake-head-inner::after { right: 0.375rem; }
+
+.snake-head-inner--up    { transform: rotate(270deg); }
+.snake-head-inner--right { transform: rotate(0deg); }
+.snake-head-inner--down  { transform: rotate(90deg); }
+.snake-head-inner--left  { transform: rotate(180deg); }
+
+.snake-tongue {
+  position: absolute;
+  width: 0.5rem;
+  height: 2px;
+  background: var(--color-apple);
+  border-radius: 1px;
+  top: 50%;
+  right: -2px;
+  transform: translateY(-50%);
+}
+
+.grid__cell--snake-body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px;
+}
+
+.snake-body-inner {
+  width: 100%;
+  height: 100%;
+  background: var(--color-snake-body);
+  border-radius: var(--radius-sm);
+}
+
+.snake-body-inner--far {   opacity: var(--snake-body-opacity-far); }
+.snake-body-inner--mid { opacity: var(--snake-body-opacity-mid); }
+
+/* ===== Apple ===== */
+.grid__cell--apple {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  animation: pulsarMaca 2s ease-in-out infinite;
+}
+
+.apple-inner {
+  width: 75%;
+  height: 75%;
+  background: var(--color-apple);
+  border-radius: 50%;
+  box-shadow: 0 0 1.25rem var(--color-apple-glow);
+  position: relative;
+}
+
+.apple-inner::before {
+  content: '';
+  position: absolute;
+  top: 10%;
+  left: 15%;
+  width: 30%;
+  height: 25%;
+  background: var(--color-apple-highlight);
+  border-radius: 50%;
+}
+
+.apple-inner::after {
+  content: '';
+  position: absolute;
+  top: -15%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 30%;
+  height: 40%;
+  background: var(--color-apple-stem);
+  border-radius: var(--radius-sm);
+}
+
+.apple-leaf {
+  position: absolute;
+  top: -18%;
+  left: 55%;
+  width: 35%;
+  height: 30%;
+  background: var(--color-snake-body);
+  border-radius: 100% 0 100% 0;
+}
+
+@keyframes pulsarMaca {
+  0%, 100% { filter: brightness(1); }
+  50%      { filter: brightness(1.25); }
+}
+
+/* ===== Wall / Obstacle ===== */
+.grid__cell--wall {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+}
+
+.wall-inner {
+  width: 75%;
+  height: 75%;
+  background: var(--color-obstacle);
+  border-radius: var(--radius-sm);
+  box-shadow: inset 0 -0.125rem 0.25rem var(--color-wall-shadow);
+  position: relative;
+}
+
+.wall-spike {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+.wall-spike--top {
+  top: -0.375rem;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 0.25rem solid transparent;
+  border-right: 0.25rem solid transparent;
+  border-bottom: 0.5rem solid var(--color-spike);
+}
+
+.wall-spike--right {
+  top: 50%;
+  right: -0.375rem;
+  transform: translateY(-50%);
+  border-top: 0.25rem solid transparent;
+  border-bottom: 0.25rem solid transparent;
+  border-left: 0.5rem solid var(--color-spike);
+}
+
+.wall-spike--bottom {
+  bottom: -0.375rem;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 0.25rem solid transparent;
+  border-right: 0.25rem solid transparent;
+  border-top: 0.5rem solid var(--color-spike);
+}
+
+.wall-spike--left {
+  top: 50%;
+  left: -0.375rem;
+  transform: translateY(-50%);
+  border-top: 0.25rem solid transparent;
+  border-bottom: 0.25rem solid transparent;
+  border-right: 0.5rem solid var(--color-spike);
+}
+
+/* ===== Stage Footer ===== */
+.stage__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem var(--space-md);
+  background: var(--bg-elevated);
+  border-top: 2px solid var(--border-dark);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  color: var(--color-text-dim);  flex-shrink: 0;
+}
+
+.stage__status {
+  color: var(--color-executing);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.stage__apple-counter {
+  color: var(--color-apple);
+  font-weight: 700;
+}
+
+/* ===== SVG Sprites ===== */
+.sprite {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.sprite--snake-head {
+  color: var(--color-snake-head);
+  filter: drop-shadow(0 0 0.5rem var(--color-snake-glow));
+}
+
+.sprite--snake-body {
+  color: var(--color-snake-body);
+}
+
+.sprite--snake-body--far {   opacity: var(--snake-body-opacity-far); }
+.sprite--snake-body--mid { opacity: var(--snake-body-opacity-mid); }
+
+.sprite--apple {
+  filter: drop-shadow(0 0 0.5rem var(--color-apple-glow));
+}
+
+.sprite--wall {
+  filter: drop-shadow(inset 0 -0.125rem 0.25rem var(--color-wall-shadow));
+}
+
+/* ===== Mobile ===== */
+@media (max-width: 47.9375rem) {
+  .stage {
+    border-left: none;
+    border-bottom: 2px solid var(--border-dark);
+  }
+  .stage__body { padding: var(--space-sm); }
+  .grid { max-width: var(--grid-max-width-mobile); }
+}
