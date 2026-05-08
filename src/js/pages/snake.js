@@ -71,13 +71,18 @@ export function render(params = {}) {
     </header>
 
     <div class="level-bar">
-      <select id="level-select" class="level-selector" aria-label="Selecionar nível">
-        <option value="0">Nível 1 — The Staircase</option>
-        <option value="1" disabled>Nível 2 — Detour</option>
-        <option value="2" disabled>Nível 3 — Shortcut</option>
-        <option value="3" disabled>Nível 4 — Wall Ahead</option>
-        <option value="4" disabled>Nível 5 — Double Collect</option>
-      </select>
+        <select id="level-select" class="level-selector" aria-label="Selecionar nível">
+          <option value="0">Nível 1 — A Escada</option>
+          <option value="1" disabled>Nível 2 — Desvio</option>
+          <option value="2" disabled>Nível 3 — Festa de Maçãs</option>
+          <option value="3" disabled>Nível 4 — Desvie da Parede</option>
+          <option value="4" disabled>Nível 5 — O Corredor</option>
+          <option value="5" disabled>Nível 6 — Repetição e Giro</option>
+          <option value="6" disabled>Nível 7 — Desvie e Colet</option>
+          <option value="7" disabled>Nível 8 — O Labirinto</option>
+          <option value="8" disabled>Nível 9 — Perímetro</option>
+          <option value="9" disabled>Nível 10 — Desafio Final</option>
+        </select>
       <span class="level-name" id="level-name"></span>
       <button id="btn-rules" class="progress-reset-btn" aria-label="Ver regras">Regras</button>
       <span class="block-counter" id="block-counter">Blocos: 0 / 10</span>
@@ -163,7 +168,7 @@ export function render(params = {}) {
                 <div class="c-block__header">
                   <span class="c-block__label">Se</span>
                   <select class="c-block__select" aria-label="Condição">
-                    <option>Maçã à frente</option>
+                    <option>Comeu maçã</option>
                     <option>Parede à frente</option>
                   </select>
                 </div>
@@ -228,7 +233,7 @@ export function render(params = {}) {
           <p><strong>🎯 Objetivo</strong><br>Programe a cobra usando blocos para coletar todas as maçãs no tabuleiro.</p>
           <p><strong>🧩 Blocos de Ação</strong><br><em>Mover Frente</em> — Move 1 casa na direção atual<br><em>Girar Esquerda</em> — Gira 90° para a esquerda<br><em>Girar Direita</em> — Gira 90° para a direita</p>
           <p><strong>🔄 Bloco de Controle</strong><br><em>Repetir N vezes</em> — Executa os blocos dentro dele N vezes</p>
-          <p><strong>🔍 Bloco Se</strong><br>Executa os blocos dentro apenas se a condição for verdadeira:<br>• Maçã à frente<br>• Parede à frente (ou borda)<br>• Cobra à frente</p>
+          <p><strong>🔍 Bloco Se</strong><br>Executa os blocos dentro apenas se a condição for verdadeira:<br>• Comeu maçã<br>• Parede à frente (ou borda)<br>• Cobra à frente</p>
           <p><strong>⚠️ Fim de Jogo</strong><br>• Bater na parede<br>• Bater no próprio corpo<br>• Sair do tabuleiro</p>
           <p><strong>⭐ Estrelas</strong><br>⭐ Completou o nível<br>⭐⭐ Usou poucos blocos<br>⭐⭐⭐ Usou o mínimo de blocos<br>Menos blocos = mais estrelas!</p>
           <p><strong>💡 Dicas</strong><br>• Use <em>Repetir</em> para economizar blocos<br>• Use <em>Se</em> para desviar de obstáculos<br>• Clique <em>Executar</em> para ver a cobra se mover</p>
@@ -264,6 +269,23 @@ function init(root, initialLevelIndex) {
   if (!appContainer || !gridEl || !stackEl) {
     throw new Error('Critical DOM elements missing');
   }
+
+  // Detects changes in inputs and selects inside workspace blocks to auto-save.
+  // Without this, the workspace is only saved when blocks are added/removed,
+  // not when the user edits values inside existing blocks.
+  stackEl.addEventListener('input', (e) => {
+    const target = e.target;
+    if (target.matches('.c-block__input, .c-block__select') && target.closest('.workspace__stack')) {
+      saveWorkspace(currentLevelIndex);
+    }
+  });
+
+  stackEl.addEventListener('change', (e) => {
+    const target = e.target;
+    if (target.matches('.c-block__input, .c-block__select') && target.closest('.workspace__stack')) {
+      saveWorkspace(currentLevelIndex);
+    }
+  });
 
   let currentLevelIndex = initialLevelIndex || 0;
 
@@ -492,6 +514,27 @@ function init(root, initialLevelIndex) {
    * @param {number} levelIndex
    */
   function saveWorkspace(levelIndex) {
+    // Sync live input values to value attributes so innerHTML captures them.
+    // Browsers don't serialize the .value property to HTML attributes automatically.
+    const inputs = stackEl.querySelectorAll('input');
+    inputs.forEach((input) => {
+      input.setAttribute('value', input.value);
+    });
+
+    // Sync select selected index to selected attributes on options.
+    // The .selected property on options is not reflected in innerHTML.
+    const selects = stackEl.querySelectorAll('select');
+    selects.forEach((select) => {
+      const options = select.options;
+      for (let i = 0; i < options.length; i++) {
+        if (i === select.selectedIndex) {
+          options[i].setAttribute('selected', 'selected');
+        } else {
+          options[i].removeAttribute('selected');
+        }
+      }
+    });
+
     setItem(`snake-workspace-${levelIndex}`, stackEl.innerHTML);
   }
 

@@ -112,21 +112,21 @@ function parseNode(el) {
 
 /**
  * Translates user-facing Portuguese condition labels into internal
- * snake method names. Defaults to 'checkAppleAhead' so the program
+ * snake method names. Defaults to 'checkAteApple' so the program
  * does not break if a new/unmapped label is introduced.
  *
- * @param {string} label - The selected option label (e.g. "Maçã à frente").
+ * @param {string} label - The selected option label (e.g. "Comeu maçã").
  * @returns {string} Internal method name on the Snake instance.
  */
 function mapCondition(label) {
   switch (label) {
-    case 'Maçã à frente':
-      return 'checkAppleAhead';
+    case 'Comeu maçã':
+      return 'checkAteApple';
     case 'Parede à frente':
       return 'checkWallAhead';
     case 'Cobra à frente':
       return 'checkSnakeAhead';
     default:
-      return 'checkAppleAhead';
+      return 'checkAteApple';
   }
 }
