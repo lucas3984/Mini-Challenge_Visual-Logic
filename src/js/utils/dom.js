@@ -115,6 +115,34 @@ export function countIfChildren(ifBlock) {
 }
 
 /**
+ * Counts how many direct children exist in a LOOP block's dropzone.
+ *
+ * Used to enforce the limit of 1 action block per loop.
+ *
+ * @param {HTMLElement} loopBlock — .c-block--loop element
+ * @returns {number}
+ */
+export function countLoopChildren(loopBlock) {
+  const dropzone = loopBlock.querySelector('.c-block__dropzone');
+  if (!dropzone) return 0;
+  return dropzone.children.length;
+}
+
+/**
+ * Counts how many loop blocks (.c-block--loop) exist inside an IF block's dropzone.
+ *
+ * Used to enforce the limit of 1 loop per if.
+ *
+ * @param {HTMLElement} ifBlock — .c-block--event element
+ * @returns {number}
+ */
+export function countLoopsInIf(ifBlock) {
+  const dropzone = ifBlock.querySelector('.c-block__dropzone');
+  if (!dropzone) return 0;
+  return dropzone.querySelectorAll('.c-block--loop').length;
+}
+
+/**
  * Clones a sidebar block for placement in the workspace.
  *
  * Strips sidebar-specific identifiers and classes so the clone behaves

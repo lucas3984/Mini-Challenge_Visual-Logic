@@ -12,8 +12,8 @@
 export const levels = [
   {
     id: 1,
-    name: 'The Staircase',
-    description: 'Use Repeat to save blocks in a pattern',
+    name: 'A Escada',
+    description: 'Use Repetir para economizar blocos em um padrão',
     snake: [
       { row: 5, col: 0 },
       { row: 6, col: 0 },
@@ -46,8 +46,8 @@ export const levels = [
   },
   {
     id: 2,
-    name: 'Detour',
-    description: 'A wall blocks the path — go around it',
+    name: 'Desvio',
+    description: 'Uma parede bloqueia o caminho — contorne-a',
     snake: [
       { row: 4, col: 2 },
       { row: 4, col: 1 },
@@ -73,69 +73,93 @@ export const levels = [
   },
   {
     id: 3,
-    name: 'Shortcut',
-    description: 'The path is too long — use Repeat',
+    name: 'Festa de Maçãs',
+    description: 'O caminho é muito longo — use Repetir',
     snake: [
       { row: 0, col: 2 },
       { row: 0, col: 1 },
       { row: 0, col: 0 },
     ],
     direction: 'right',
-    walls: [],
+    walls: [
+      { row: 0, col: 7 },
+      { row: 1, col: 0 }, { row: 1, col: 1 }, { row: 1, col: 2 }, { row: 1, col: 3 }, { row: 1, col: 4 }, { row: 1, col: 5 }, { row: 1, col: 7 },
+      { row: 2, col: 0 }, { row: 2, col: 5 }, { row: 2, col: 7 },
+      { row: 3, col: 0 }, { row: 3, col: 2 }, { row: 3, col: 3 }, { row: 3, col: 5 }, { row: 3, col: 7 },
+      { row: 4, col: 0 }, { row: 4, col: 2 }, { row: 4, col: 5 }, { row: 4, col: 7 },
+      { row: 5, col: 0 }, { row: 5, col: 2 }, { row: 5, col: 3 }, { row: 5, col: 4 }, { row: 5, col: 5 }, { row: 5, col: 7 },
+      { row: 6, col: 0 }, { row: 6, col: 7 },
+      { row: 7, col: 0 }, { row: 7, col: 1 }, { row: 7, col: 2 }, { row: 7, col: 3 }, { row: 7, col: 4 }, { row: 7, col: 5 }, { row: 7, col: 6 }, { row: 7, col: 7 },
+    ],
     // Apple placed far diagonally — manual moves would exceed block limit, forcing repeat usage
-    apples: [{ row: 7, col: 7 }],
+    apples: [
+      { row: 0, col: 3 }, { row: 0, col: 4 }, { row: 0, col: 5 }, { row: 0, col: 6 },
+      { row: 1, col: 6 },
+      { row: 2, col: 1 }, { row: 2, col: 2 }, { row: 2, col: 3 }, { row: 2, col: 4 }, { row: 2, col: 6 },
+      { row: 3, col: 1 }, { row: 3, col: 4 }, { row: 3, col: 6 },
+      { row: 4, col: 1 }, { row: 4, col: 3 }, { row: 4, col: 4 }, { row: 4, col: 6 },
+      { row: 5, col: 1 }, { row: 5, col: 6 },
+      { row: 6, col: 1 }, { row: 6, col: 2 }, { row: 6, col: 3 }, { row: 6, col: 4 }, { row: 6, col: 5 }, { row: 6, col: 6 },
+    ],
     // No ifs available — player must solve with loops only
-    maxBlocks: 3,
-    maxLoops: 1,
-    maxIfs: 0,
-    starThree: 2,
-    starTwo: 3,
+    maxBlocks: 20,
+    maxLoops: 6,
+    maxIfs: 3,
+    starThree: 7,
+    starTwo: 15,
     gridSize: 8,
   },
   {
     id: 4,
-    name: 'Wall Ahead',
-    description: 'Use If [Wall ahead] to dodge at the right moment',
+    name: 'Desvie da Parede',
+    description: 'Use Se [Parede à frente] para desviar na hora certa',
     snake: [
-      { row: 3, col: 2 },
-      { row: 3, col: 1 },
       { row: 3, col: 0 },
+      { row: 3, col: 1 },
+      { row: 3, col: 2 },
     ],
-    direction: 'right',
-    // Single wall forces a conditional dodge — introduces if-block mechanics
+    direction: 'left',
+    // Single wall blocks the snake's path — forces the first If dodge
     walls: [
-      { row: 3, col: 6 },
+      { row: 3, col: 5 },
     ],
-    apples: [{ row: 4, col: 7 }],
-    maxBlocks: 6,
-    // No loops — the puzzle is about conditional logic, not repetition
-    maxLoops: 0,
-    maxIfs: 1,
+    // Two apples in-line on the right edge, one above the wall and one below
+    apples: [
+      { row: 0, col: 7 },
+      { row: 6, col: 7 },
+    ],
+    maxBlocks: 8,
+    maxLoops: 4,
+    maxIfs: 2,
     starThree: 4,
-    starTwo: 5,
+    starTwo: 6,
     gridSize: 8,
   },
   {
     id: 5,
-    name: 'Double Collect',
-    description: 'Two apples in opposite corners — use Repeat for long distances',
+    name: 'O Corredor',
+    description: 'Duas paredes — use dois blocos Se para desviar de ambas',
     snake: [
       { row: 3, col: 2 },
       { row: 3, col: 1 },
       { row: 3, col: 0 },
     ],
     direction: 'right',
-    walls: [],
-    // Two apples spread far apart — combines repeat for distance with if for routing
-    apples: [
-      { row: 0, col: 1 },
-      { row: 0, col: 7 },
+    // Two walls at different points force two separate If dodges
+    walls: [
+      { row: 3, col: 4 },
+      { row: 6, col: 1 },
     ],
-    maxBlocks: 7,
-    maxLoops: 2,
-    maxIfs: 1,
-    starThree: 4,
-    starTwo: 5,
+    // Apples at opposite corners — long path requires both dodges
+    apples: [
+      { row: 0, col: 0 },
+      { row: 6, col: 7 },
+    ],
+    maxBlocks: 14,
+    maxLoops: 5,
+    maxIfs: 2,
+    starThree: 7,
+    starTwo: 11,
     gridSize: 8,
   },
 ];

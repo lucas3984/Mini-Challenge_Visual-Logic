@@ -167,7 +167,7 @@ export class Snake {
       // Apple eaten: don't pop the tail so the snake grows by one.
       this.#apples = this.#apples.filter((a) => !(a.row === newHead.row && a.col === newHead.col));
       this.#collectedApples++;
-      if (animate) await delay(300);
+      if (animate) await delay(200);
       this.#audio?.play('eat');
       return 'apple';
     }
@@ -186,9 +186,18 @@ export class Snake {
    */
   async turnLeft(animate = true) {
     const idx = DIRECTION_ORDER.indexOf(this.#direction);
-    // (idx + 3) % 4 walks counter-clockwise through the direction order.
-    this.#direction = DIRECTION_ORDER[(idx + 3) % 4];
-    if (animate) await delay(150);
+    const newDir = DIRECTION_ORDER[(idx + 3) % 4];
+    // Prevent 180° turn into the neck
+    const neck = this.#body[1];
+    if (neck) {
+      const d = DIRECTION_MAP[newDir];
+      if (this.#body[0].row + d.dr === neck.row && this.#body[0].col + d.dc === neck.col) {
+        window.dispatchEvent(new CustomEvent('snake-neck-turn-blocked'));
+        return;
+      }
+    }
+    this.#direction = newDir;
+    if (animate) await delay(100);
     this.#audio?.play('turn');
   }
 
@@ -199,9 +208,18 @@ export class Snake {
    */
   async turnRight(animate = true) {
     const idx = DIRECTION_ORDER.indexOf(this.#direction);
-    // (idx + 1) % 4 walks clockwise through the direction order.
-    this.#direction = DIRECTION_ORDER[(idx + 1) % 4];
-    if (animate) await delay(150);
+    const newDir = DIRECTION_ORDER[(idx + 1) % 4];
+    // Prevent 180° turn into the neck
+    const neck = this.#body[1];
+    if (neck) {
+      const d = DIRECTION_MAP[newDir];
+      if (this.#body[0].row + d.dr === neck.row && this.#body[0].col + d.dc === neck.col) {
+        window.dispatchEvent(new CustomEvent('snake-neck-turn-blocked'));
+        return;
+      }
+    }
+    this.#direction = newDir;
+    if (animate) await delay(100);
     this.#audio?.play('turn');
   }
 

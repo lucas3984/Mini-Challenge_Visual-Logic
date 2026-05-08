@@ -27,6 +27,8 @@ export class DragDrop extends Component {
   #canAddLoop;
   #canAddIf;
   #canAddToIf;
+  #canAddToLoop;
+  #canAddLoopToIf;
   #onBlockChanged;
   #audio;
 
@@ -38,10 +40,12 @@ export class DragDrop extends Component {
    * @param {Function} [options.canAddLoop] - Returns true if another loop block may be added.
    * @param {Function} [options.canAddIf] - Returns true if another if block may be added.
    * @param {Function} [options.canAddToIf] - Returns true for a given if block if a child may be added.
+   * @param {Function} [options.canAddToLoop] - Returns true for a given loop block if a child may be added.
+   * @param {Function} [options.canAddLoopToIf] - Returns true for a given if block if a loop may be added inside.
    * @param {Function} [options.onBlockChanged] - Called after any block add/remove.
    * @param {Object} [options.audio] - AudioFX instance for snap/error sounds.
    */
-  constructor(container, { canAddBlock, canAddLoop, canAddIf, canAddToIf, onBlockChanged, audio } = {}) {
+  constructor(container, { canAddBlock, canAddLoop, canAddIf, canAddToIf, canAddToLoop, canAddLoopToIf, onBlockChanged, audio } = {}) {
     super();
     this.#dragContainer = container;
     this.#draggedBlock = null;
@@ -53,6 +57,8 @@ export class DragDrop extends Component {
     this.#canAddLoop = canAddLoop || (() => true);
     this.#canAddIf = canAddIf || (() => true);
     this.#canAddToIf = canAddToIf || (() => true);
+    this.#canAddToLoop = canAddToLoop || (() => true);
+    this.#canAddLoopToIf = canAddLoopToIf || (() => true);
     this.#onBlockChanged = onBlockChanged || (() => {});
     this.#audio = audio || null;
     this.#bindEvents();
@@ -318,8 +324,46 @@ export class DragDrop extends Component {
     }
 
     if (targetDropzone.classList.contains('c-block__dropzone')) {
-      const parentBlock = targetDropzone.closest('.c-block--event');
-      if (parentBlock && !this.#canAddToIf(parentBlock)) {
+      const parentIf = targetDropzone.closest('.c-block--event');
+      const parentLoop = targetDropzone.closest('.c-block--loop');
+
+      // Prevent nesting an if-block inside another if-block.
+      if (parentIf && blockToInsert.classList.contains('c-block--event')) {
+        this.#showLimitWarning('ifnested');
+        if (isSidebarSource) {
+          this.#draggedBlock.classList.remove('block--dragging');
+          this.#draggedBlock.style.opacity = '';
+          this.#draggedBlock = null;
+          this.#sourceContainer = null;
+        }
+        return;
+      }
+
+      // Loop dropzones only accept action blocks — no if, no loop inside.
+      if (parentLoop) {
+        if (blockToInsert.classList.contains('c-block--event')) {
+          this.#showLimitWarning('ifinloop');
+          if (isSidebarSource) {
+            this.#draggedBlock.classList.remove('block--dragging');
+            this.#draggedBlock.style.opacity = '';
+            this.#draggedBlock = null;
+            this.#sourceContainer = null;
+          }
+          return;
+        }
+        if (blockToInsert.classList.contains('c-block--loop')) {
+          this.#showLimitWarning('loopnested');
+          if (isSidebarSource) {
+            this.#draggedBlock.classList.remove('block--dragging');
+            this.#draggedBlock.style.opacity = '';
+            this.#draggedBlock = null;
+            this.#sourceContainer = null;
+          }
+          return;
+        }
+      }
+
+      if (parentIf && !this.#canAddToIf(parentIf)) {
         this.#showLimitWarning('ifchildren');
         if (isSidebarSource) {
           this.#draggedBlock.classList.remove('block--dragging');
@@ -329,6 +373,29 @@ export class DragDrop extends Component {
         }
         return;
       }
+
+      if (parentIf && blockToInsert.classList.contains('c-block--loop') && !this.#canAddLoopToIf(parentIf)) {
+        this.#showLimitWarning('iflooplimit');
+        if (isSidebarSource) {
+          this.#draggedBlock.classList.remove('block--dragging');
+          this.#draggedBlock.style.opacity = '';
+          this.#draggedBlock = null;
+          this.#sourceContainer = null;
+        }
+        return;
+      }
+
+      if (parentLoop && !this.#canAddToLoop(parentLoop)) {
+        this.#showLimitWarning('loopchildren');
+        if (isSidebarSource) {
+          this.#draggedBlock.classList.remove('block--dragging');
+          this.#draggedBlock.style.opacity = '';
+          this.#draggedBlock = null;
+          this.#sourceContainer = null;
+        }
+        return;
+      }
+
       targetDropzone.appendChild(blockToInsert);
     } else {
       // Dropping onto the workspace area or stack — insert at the nearest
@@ -510,12 +577,46 @@ export class DragDrop extends Component {
     }
 
     if (targetDropzone.classList.contains('c-block__dropzone')) {
-      const parentBlock = targetDropzone.closest('.c-block--event');
-      if (parentBlock && !this.#canAddToIf(parentBlock)) {
+      const parentIf = targetDropzone.closest('.c-block--event');
+      const parentLoop = targetDropzone.closest('.c-block--loop');
+
+      if (parentIf && blockToInsert.classList.contains('c-block--event')) {
+        this.#showLimitWarning('ifnested');
+        this.#cleanupDrag();
+        return;
+      }
+
+      if (parentLoop) {
+        if (blockToInsert.classList.contains('c-block--event')) {
+          this.#showLimitWarning('ifinloop');
+          this.#cleanupDrag();
+          return;
+        }
+        if (blockToInsert.classList.contains('c-block--loop')) {
+          this.#showLimitWarning('loopnested');
+          this.#cleanupDrag();
+          return;
+        }
+      }
+
+      if (parentIf && !this.#canAddToIf(parentIf)) {
         this.#showLimitWarning('ifchildren');
         this.#cleanupDrag();
         return;
       }
+
+      if (parentIf && blockToInsert.classList.contains('c-block--loop') && !this.#canAddLoopToIf(parentIf)) {
+        this.#showLimitWarning('iflooplimit');
+        this.#cleanupDrag();
+        return;
+      }
+
+      if (parentLoop && !this.#canAddToLoop(parentLoop)) {
+        this.#showLimitWarning('loopchildren');
+        this.#cleanupDrag();
+        return;
+      }
+
       targetDropzone.appendChild(blockToInsert);
     } else {
       const stack = targetDropzone.classList.contains('workspace__area')
@@ -557,6 +658,11 @@ export class DragDrop extends Component {
       loop: 'Limite de loops atingido!',
       if: 'Limite de Se atingido!',
       ifchildren: 'Maximo 3 comandos dentro do Se!',
+      loopchildren: 'Maximo 1 comando dentro do Loop!',
+      ifnested: 'Não é permitido colocar um Se dentro de outro Se!',
+      ifinloop: 'Loop aceita apenas bloco de ação!',
+      loopnested: 'Loop aceita apenas bloco de ação!',
+      iflooplimit: 'Maximo 1 loop dentro do Se!',
     };
     // Walk up to the page root to find the counter element.
     const root = this.#dragContainer.closest('.page--snake');

@@ -163,7 +163,7 @@ export class Runner {
     // When the condition is false, add a brief delay so the user sees
     // the block light up briefly before it's skipped — otherwise it
     // would flash too fast to notice.
-    if (!conditionMet) await delay(200);
+    if (!conditionMet) await delay(130);
   }
 
   /**
