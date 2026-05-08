@@ -15,7 +15,9 @@ import { Runner } from '../engine/runner.js';
 import { parseWorkspace } from '../engine/parser.js';
 import { countAllBlocks, countLoopBlocks, countIfBlocks, countIfChildren, countLoopChildren, countLoopsInIf, countIfsInLoop } from '../utils/dom.js';
 import { AudioFX } from '../core/audio.js';
-import { getItem, setItem, removeItem, getJSON, setJSON } from '../core/storage.js';
+import { getItem, setItem, removeItem } from '../core/storage.js';
+import { saveLevelScore, getProfileLevelScore } from '../core/level-score-storage.js';
+import { calculateStars } from '../utils/stars.js';
 import { levels } from '../engine/levels.js';
 
 // Pre-compute the 8x8 checkerboard grid HTML once at module load — it never
@@ -451,51 +453,17 @@ function init(root, initialLevelIndex) {
   }
 
   /**
-   * Reads the persisted scores object from localStorage.
-   * @returns {Object} Scores keyed by level index.
-   */
-  function getScores() {
-    return getJSON('snake-scores') || {};
-  }
-
-  /**
-   * Persists the star rating for a completed level. Only saves if the new
-   * score is strictly better (more stars, or same stars with fewer blocks) to
-   * prevent regressions from overwriting a player's best result.
-   *
-   * @param {number} levelIndex - The completed level index.
-   * @param {number} usedBlocks - How many blocks were used.
-   * @returns {number} The number of stars awarded (1-3).
-   */
-  function saveScore(levelIndex, usedBlocks) {
-    const level = levels[levelIndex];
-    if (!level) return 1;
-    let stars = 1;
-    const three = level.starThree ?? Math.ceil(level.maxBlocks * 0.5);
-    const two = level.starTwo ?? Math.ceil(level.maxBlocks * 0.7);
-    if (usedBlocks <= three) stars = 3;
-    else if (usedBlocks <= two) stars = 2;
-    const scores = getScores();
-    const prev = scores[levelIndex];
-    if (!prev || stars > prev.stars || (stars === prev.stars && usedBlocks < prev.blocks)) {
-      scores[levelIndex] = { stars, blocks: usedBlocks };
-      setJSON('snake-scores', scores);
-    }
-    return stars;
-  }
-
-  /**
    * Builds a visual star string (filled/empty) for a given level's saved score.
-   * @param {number} levelIndex
+   * Reads from the ranking storage via the hardcoded 'Testador' profile.
+   * @param {number} levelIndex - 0-based level index
    * @returns {string} Star symbols representing the saved rating.
    */
   function starString(levelIndex) {
-    const scores = getScores();
-    const entry = scores[levelIndex];
-    if (!entry) return '';
+    const score = getProfileLevelScore('snake', 'Testador', levelIndex + 1);
+    if (!score) return '';
     let s = '';
     for (let i = 0; i < 3; i++) {
-      s += i < entry.stars ? '\u2B50' : '\u2606';
+      s += i < score.stars ? '\u2B50' : '\u2606';
     }
     return ' ' + s;
   }
@@ -648,7 +616,11 @@ function init(root, initialLevelIndex) {
           // selector unlocks remain persistent across page visits.
           highestCompletedLevel = Math.max(highestCompletedLevel, currentLevelIndex);
           setItem('snake-progress', String(highestCompletedLevel + 1));
-          const stars = saveScore(currentLevelIndex, countAllBlocks(stackEl));
+          const usedBlocks = countAllBlocks(stackEl);
+          const level = levels[currentLevelIndex];
+          const stars = calculateStars(usedBlocks, level.starThree, level.starTwo);
+          // Temporary: 'Testador' hardcoded until the profile system is built
+          saveLevelScore('snake', 'Testador', currentLevelIndex + 1, stars);
           updateLevelSelect();
           audio.play('win');
           showToast(`\u2B50`.repeat(stars) + ` Nível ${currentLevelIndex + 1} completo!`);

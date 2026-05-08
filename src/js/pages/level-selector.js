@@ -6,6 +6,8 @@
 import { LevelMap } from '../components/level-map.js';
 import { RankingTable } from '../components/ranking-table.js';
 import { getItem } from '../core/storage.js';
+import { getGameScores } from '../core/level-score-storage.js';
+import { buildOverallRankings, sortOverallRankings } from '../utils/ranking.js';
 import { GAME_CONFIG } from '../config/games.js';
 
 /**
@@ -113,8 +115,17 @@ export function render({ gameId = 'snake' } = {}) {
   const levelMap = new LevelMap({ levels: levelsData, onLevelSelect });
   main.appendChild(levelMap.render());
 
-  // Ranking table: shows top players (mock data for now)
-  const rankingTable = new RankingTable({});
+  // Build overall ranking from stored scores, then map to the format RankingTable expects
+  const gameScores = getGameScores(gameId);
+  const rankings = sortOverallRankings(buildOverallRankings(gameScores));
+  const tableData = rankings.map((entry, index) => ({
+    position: index + 1,
+    name: entry.profileName,
+    score: entry.totalStars,
+    date: new Date(entry.latestTimestamp).toLocaleDateString('pt-BR'),
+    isFirst: index === 0,
+  }));
+  const rankingTable = new RankingTable({ ranking: tableData });
   main.appendChild(rankingTable.render());
 
   return main;
