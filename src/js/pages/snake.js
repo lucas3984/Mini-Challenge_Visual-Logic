@@ -592,7 +592,7 @@ function init(root) {
           // Track the highest level the player has *ever* reached so the level
           // selector unlocks remain persistent across page visits.
           highestCompletedLevel = Math.max(highestCompletedLevel, currentLevelIndex);
-          setItem('snake-progress', String(highestCompletedLevel));
+          setItem('snake-progress', String(highestCompletedLevel + 1));
           const stars = saveScore(currentLevelIndex, countAllBlocks(stackEl));
           updateLevelSelect();
           audio.play('win');
