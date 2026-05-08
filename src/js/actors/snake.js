@@ -36,6 +36,8 @@ export class Snake {
   #collectedApples;
   #gameOver;
   #audio;
+  #justAteApple;
+  #lastActionResult;
 
   /**
    * @param {number} [rows=8] - Grid row count.
@@ -52,6 +54,8 @@ export class Snake {
     this.#apples = [];
     this.#walls = [];
     this.#direction = 'right';
+    this.#justAteApple = false;
+    this.#lastActionResult = null;
   }
 
   /**
@@ -132,6 +136,10 @@ export class Snake {
    * @returns {Promise<'gameover'|'apple'|'ok'>} The outcome of the move.
    */
   async moveForward(animate = true) {
+    // Reset the flag at the beginning of each move so the condition
+    // 'Comeu maçã' only triggers for the exact move that ate the apple.
+    this.#justAteApple = false;
+
     // If the game is already over, every subsequent move is a no-op.
     if (this.#gameOver) return 'gameover';
 
@@ -167,6 +175,8 @@ export class Snake {
       // Apple eaten: don't pop the tail so the snake grows by one.
       this.#apples = this.#apples.filter((a) => !(a.row === newHead.row && a.col === newHead.col));
       this.#collectedApples++;
+      this.#justAteApple = true;
+      this.#lastActionResult = 'apple';
       if (animate) await delay(200);
       this.#audio?.play('eat');
       return 'apple';
@@ -185,6 +195,10 @@ export class Snake {
    * @param {boolean} [animate=true] - Whether to insert a short delay.
    */
   async turnLeft(animate = true) {
+    // Reset flag at the beginning of each action
+    this.#justAteApple = false;
+    this.#lastActionResult = null;
+
     const idx = DIRECTION_ORDER.indexOf(this.#direction);
     const newDir = DIRECTION_ORDER[(idx + 3) % 4];
     // Prevent 180° turn into the neck
@@ -207,6 +221,10 @@ export class Snake {
    * @param {boolean} [animate=true] - Whether to insert a short delay.
    */
   async turnRight(animate = true) {
+    // Reset flag at the beginning of each action
+    this.#justAteApple = false;
+    this.#lastActionResult = null;
+
     const idx = DIRECTION_ORDER.indexOf(this.#direction);
     const newDir = DIRECTION_ORDER[(idx + 1) % 4];
     // Prevent 180° turn into the neck
@@ -249,6 +267,23 @@ export class Snake {
    */
   checkSnakeAhead() {
     return this.#checkAhead('snake');
+  }
+
+  /**
+   * Returns true if the snake just ate an apple, then resets the flag.
+   * Used by the "Comeu maçã" (ate an apple) if-block condition.
+   * The flag is consumed (read + reset) so it only triggers once per apple eaten.
+   *
+   * @returns {boolean}
+   */
+  checkAteApple() {
+    // Returns true only if the LAST action resulted in eating an apple.
+    // The flag is reset at the beginning of every action (move/turn),
+    // so this only returns true for the exact action that ate the apple.
+    const ate = this.#justAteApple && this.#lastActionResult === 'apple';
+    this.#justAteApple = false;
+    this.#lastActionResult = null;
+    return ate;
   }
 
   /**
