@@ -20,14 +20,14 @@ export class LevelMap extends Component {
     const map = document.createElement('section');
     map.className = 'map';
 
-    // SVG layer: path lines connecting nodes (dashed style)
-    // Using createElementNS for proper SVG namespace
+    // SVG requires explicit namespace for proper DOM manipulation
+    // Lines render behind nodes to create visual depth
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.setAttribute('class', 'map__svg');
     svg.setAttribute('preserveAspectRatio', 'none');
 
-  // Generate connecting lines dynamically from level positions
-  for (let i = 0; i < this.#levels.length - 1; i++) {
+    // Connect consecutive level nodes with SVG lines to show progression path
+    for (let i = 0; i < this.#levels.length - 1; i++) {
     const current = this.#levels[i];
     const next = this.#levels[i + 1];
 
@@ -42,7 +42,7 @@ export class LevelMap extends Component {
 
     map.appendChild(svg);
 
-    // Nodes container: absolute-positioned nodes on top of SVG
+    // Layer nodes above SVG to allow click interaction (SVG doesn't support click events reliably)
     const nodesContainer = document.createElement('div');
     nodesContainer.className = 'map__nodes';
 
