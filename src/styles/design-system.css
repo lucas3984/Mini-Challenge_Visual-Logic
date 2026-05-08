@@ -42,6 +42,8 @@
   --space-lg: 1.5rem;
   --space-xl: 2rem;
   --space-2xl: 3rem;
+  --space-2xs: 0.125rem;          /* extra-fine spacing */
+  --space-between: 0.75rem;       /* gap between siblings (0.75rem = 12px) */
   /* Default radius for game-style rounded elements. */
   --radius-default: 0.75rem;
   --radius-sm: 0.25rem;
@@ -53,6 +55,7 @@
   --breakpoint-md: 1024px;
   --breakpoint-lg: 1440px;
   --max-width-container: 1280px;
+  --breakpoint-max-sm: 47.9375rem; /* max-width counterpart of --breakpoint-sm (767px) */
   /* Game-style colorful shadows visual style. */
   --shadow-sm: 0 1px 3px rgba(135, 137, 192, 0.1);
   --shadow-md: 0 4px 6px rgba(135, 137, 192, 0.15);
@@ -65,6 +68,8 @@
   --transition-default: 200ms ease;
   --transition-slow: 300ms ease;
   --touch-target-min: 2.75rem;
+  --touch-target-xs: 2.25rem;     /* smaller interactive elements (modal buttons) */
+  --touch-target-sm: 2.5rem;      /* medium controls (header buttons, sidebar) */
   --z-base: 1;
   --z-dropdown: 10;
   --z-modal-backdrop: 20;
@@ -79,6 +84,11 @@
   --text-xl: 1.5rem;
   --text-2xl: 2rem;
   --text-3xl: 2.5rem;
+  --text-4xs: 0.5625rem;          /* delete button icon */
+  --text-3xs: 0.625rem;           /* c-block footer */
+  --text-2xs: 0.6875rem;          /* select, badge, footer */
+  --text-sm-md: 0.8125rem;        /* block labels, header buttons */
+  --text-md-lg: 1.125rem;         /* section titles, sidebar headings */
   --text-4xl: 3rem;
   --leading-tight: 1.2;
   --leading-normal: 1.5;
@@ -95,6 +105,8 @@
   --duration-normal: 300ms;
   --duration-slow: 500ms;
   --duration-pulse: 2s;
+  --duration-quick: 0.15s;        /* between instant and fast (block hover) */
+  --duration-glow: 1.2s;          /* executing block pulse animation */
   /* Standardized accessibility states for all interactive elements per AGENTS.md. */
   --focus-outline-width: 2px;
   --focus-outline-color: var(--color-secondary);
@@ -128,14 +140,65 @@
   --gradient-primary: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
   --gradient-card-hover: linear-gradient(135deg, var(--color-primary), var(--color-secondary-alt));
   --gradient-bg-game: radial-gradient(circle at 20% 50%, rgba(194, 202, 232, 0.1) 0%, transparent 50%);
+  /* Icons specifications */
   --home-gradient-bg-game: radial-gradient(circle at 2px 2px, color-mix(in srgb, var(--color-primary) 5%, transparent) 1px, transparent 0);
   /* icons especifications*/
   --icon-sm: 1rem;
   --icon-md: 1.5rem;
   --icon-lg: 2rem;
   --icon-xl: 3rem;
+  --icon-between: 1.25rem;
   --icon-color-default: var(--color-dark);
   --icon-color-active: var(--color-secondary);
+  /* Text color variants for dark surfaces */
+  --color-text-bright: #e5e1e6;
+  --color-text-dim: rgba(229, 225, 230, 0.4);
+  --color-text-subtle: rgba(229, 225, 230, 0.6);
+  --color-text-faint: rgba(229, 225, 230, 0.35);
+  --color-text-ghost: rgba(229, 225, 230, 0.12);
+  /* Danger/destructive action colors (modals, delete buttons) */
+  --color-danger-text: #3a0000;
+  --color-danger-hover: #ffcdc7;
+  --color-danger-shadow: #690005;
+  /* C-block input fields (number input inside Repeat/If blocks) */
+  --color-input-bg: #ffffff;
+  --color-input-text: #131316;
+  --color-input-border: rgba(0, 0, 0, 0.15);
+  /* C-block dropzone (dashed area inside Repeat/If blocks) */
+  --color-dropzone-border: rgba(255, 255, 255, 0.15);
+  /* Surface hover state (scrollbar thumb, cancel button hover) */
+  --color-surface-hover: #6b6b75;
+  /* Modal/overlay backdrop */
+  --color-overlay: rgba(0, 0, 0, 0.6);
+  /* Cancel button border-bottom */
+  --color-cancel-border: #353535;
+  /* Stage footer: level badge background */
+  --color-badge-bg: rgba(0, 0, 0, 0.3);
+  /* Workspace controls: clear button subtle background */
+  --color-clear-bg: rgba(255, 180, 171, 0.1);
+  /* Drag-and-drop snap preview: glow background */
+  --color-snap-bg: rgba(192, 194, 252, 0.08);
+  /* Page background: radial dot pattern color */
+  --color-grid-dot: rgba(192, 194, 252, 0.05);
+  /* Layout tokens shared across games */
+  --sidebar-width: 15rem;
+  --grid-max-width: 25rem;
+  --grid-max-width-mobile: 18rem;
+  --modal-max-width: 24rem;
+  --sidebar-height-mobile: 7rem;
+  /* Border widths */
+  --border-width-game: 4px;
+  --border-width-thin: 2px;
+  /* Glow/box-shadow spread distances */
+  --glow-spread-2xs: 0.5rem;
+  --glow-spread-xs: 0.625rem;
+  --glow-spread-sm: 0.9375rem;
+  --glow-spread-md: 1.25rem;
+  --glow-spread-lg: 2rem;
+  /* Button active/press vertical offset */
+  --button-active-offset: 2px;
+  /* Modal overlay background blur intensity */
+  --backdrop-blur-amount: 4px;
   /* Layered stacking order for vanilla CSS, no z-index in component files. */
   --z-block-dragging: 15;
   --z-drawer: 15;
@@ -188,7 +251,6 @@
   --color-on-primary-container: #222455;
   --color-on-secondary: #003732;
   --color-primary-emphasis: #c0c2fc;
-  --gradient-bg-game-home: none;
   /* Additional dark mode tokens for Home page */
   --color-on-secondary: #003732;
   --color-tertiary: #bec6e3;
@@ -199,4 +261,23 @@
   --shadow-hard: 4px 4px 0 0 #000000;
   --shadow-hard-sm: 2px 2px 0 0 #000000;
   --home-gradient-bg-game: none;
+  /*Additional dark mode tokens for Snake Game page*/
+  /* Text color variants — dark mode: light text on dark surfaces */
+  --color-text-bright: #e5e1e6;
+  --color-text-dim: rgba(229, 225, 230, 0.4);
+  --color-text-subtle: rgba(229, 225, 230, 0.6);
+  --color-text-faint: rgba(229, 225, 230, 0.35);
+  --color-text-ghost: rgba(229, 225, 230, 0.12);
+  /* Input fields — dark mode: dark surface with light text */
+  --color-input-bg: #1a2450;
+  --color-input-text: #f0f2ff;
+  --color-input-border: rgba(194, 202, 232, 0.3);
+  /* Dropzone border inside c-blocks */
+  --color-dropzone-border: rgba(194, 202, 232, 0.15);
+  /* Badge background in dark mode */
+  --color-badge-bg: rgba(0, 0, 0, 0.5);
+  /* Grid dot pattern in dark mode */
+  --color-grid-dot: rgba(192, 194, 252, 0.05);
+  --gradient-bg-game-home: none;
+
 }
