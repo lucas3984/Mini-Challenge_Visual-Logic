@@ -336,3 +336,11 @@
 .icon-md { font-size: 1.5rem; }
 .icon-lg { font-size: 2rem; }
 .icon-xl { font-size: 3rem; }
+
+/* === Empty State === */
+.table__cell--empty {
+  text-align: center;
+  padding: var(--space-xl);
+  color: var(--color-text-muted);
+  font-style: italic;
+}
