@@ -1,21 +1,14 @@
 /**
  * RankingTable component - displays top players with scores
- * Mock data used for now; will integrate with real API later
  * Extends Component base class for lifecycle consistency
  */
 import { Component } from './base.js';
-
-// Mock ranking data: will be replaced with real data source
-const MOCK_RANKING = [
-  { position: 1, name: 'Alex_Forge', score: 20, date: '12 Out 2023', isFirst: true },
-  { position: 2, name: 'Luna_Logic', score: 18, date: '11 Out 2023', isFirst: false },
-  { position: 3, name: 'ZionMaster', score: 15, date: '10 Out 2023', isFirst: false },
-];
+import { escapeHtml } from '../utils/sanitize.js';
 
 export class RankingTable extends Component {
   #ranking;
 
-  constructor({ ranking = MOCK_RANKING }) {
+  constructor({ ranking = [] }) {
     super();
     this.#ranking = ranking;
   }
@@ -78,10 +71,21 @@ export class RankingTable extends Component {
   }
 
   // Creates table body with ranking entries
-  // Uses innerHTML for complex cell layouts (badges, icons)
   #createBody() {
     const tbody = document.createElement('tbody');
     tbody.className = 'table__body';
+
+    // Empty state: no scores yet while neither the profile system nor level completion saving is active
+    if (this.#ranking.length === 0) {
+      const tr = document.createElement('tr');
+      const td = document.createElement('td');
+      td.setAttribute('colspan', '4');
+      td.textContent = 'Ninguém ainda? Seja o primeiro!';
+      td.className = 'table__cell table__cell--empty';
+      tr.appendChild(td);
+      tbody.appendChild(tr);
+      return tbody;
+    }
 
     this.#ranking.forEach((entry) => {
       const tr = document.createElement('tr');
@@ -101,7 +105,7 @@ export class RankingTable extends Component {
       nameCell.className = 'table__cell';
       nameCell.innerHTML = `
         <div class="table__user">
-          <span class="table__user-name">${entry.name}</span>
+          <span class="table__user-name">${escapeHtml(entry.name)}</span>
         </div>
       `;
 
