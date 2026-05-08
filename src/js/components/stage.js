@@ -68,7 +68,7 @@ export class Stage extends Component {
       const cell = getCellElement(this.#gridEl, row, col);
       if (!cell) continue;
       cell.classList.add('grid__cell--wall');
-      cell.innerHTML = `<img src="src/assets/images/sprites/wall.svg" alt="parede" class="sprite sprite--wall">`;
+      cell.innerHTML = `<img src="src/assets/images/sprites/snake-sprites/wall.svg" alt="parede" class="sprite sprite--wall">`;
     }
 
     // Phase 3: draw apples — rendered before the snake so they sit underneath.
@@ -76,7 +76,7 @@ export class Stage extends Component {
       const cell = getCellElement(this.#gridEl, row, col);
       if (!cell) continue;
       cell.classList.add('grid__cell--apple');
-      cell.innerHTML = `<img src="src/assets/images/sprites/apple.svg" alt="maçã" class="sprite sprite--apple">`;
+      cell.innerHTML = `<img src="src/assets/images/sprites/snake-sprites/apple.svg" alt="maçã" class="sprite sprite--apple">`;
     }
 
     // Phase 4: draw the snake body from tail to head so that later segments
@@ -91,14 +91,14 @@ export class Stage extends Component {
       if (i === 0) {
         cell.classList.add('grid__cell--snake-head');
         const headClass = DIRECTION_CLASS[this.#snake.direction];
-        cell.innerHTML = `<img src="src/assets/images/sprites/snake-head.svg" alt="cabeça da cobra" class="sprite sprite--snake-head ${headClass}">`;
+        cell.innerHTML = `<img src="src/assets/images/sprites/snake-sprites/snake-head.svg" alt="cabeça da cobra" class="sprite sprite--snake-head ${headClass}">`;
       } else {
         cell.classList.add('grid__cell--snake-body');
         // Distance from the head determines the body segment opacity class —
         // farther segments are more transparent, giving a trailing fade effect.
         const pos = totalBody - 1 - i;
         const opacityClass = pos >= 3 ? 'sprite--snake-body--far' : pos === 2 ? 'sprite--snake-body--mid' : '';
-        cell.innerHTML = `<img src="src/assets/images/sprites/snake-body.svg" alt="" class="sprite sprite--snake-body ${opacityClass}">`;
+        cell.innerHTML = `<img src="src/assets/images/sprites/snake-sprites/snake-body.svg" alt="" class="sprite sprite--snake-body ${opacityClass}">`;
       }
     }
 

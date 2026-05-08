@@ -15,7 +15,7 @@ import { cloneBlockForWorkspace } from '../utils/dom.js';
 import { Component } from './base.js';
 
 export class DragDrop extends Component {
-  #container;
+  #dragContainer;
   #draggedBlock;
   #sourceContainer;
   #longPressTimer;
@@ -43,7 +43,7 @@ export class DragDrop extends Component {
    */
   constructor(container, { canAddBlock, canAddLoop, canAddIf, canAddToIf, onBlockChanged, audio } = {}) {
     super();
-    this.#container = container;
+    this.#dragContainer = container;
     this.#draggedBlock = null;
     this.#sourceContainer = null;
     this.#longPressActive = false;
@@ -76,24 +76,24 @@ export class DragDrop extends Component {
     this._onKeyDownBound = (e) => this.#onKeyDown(e);
     this._onClickBound = (e) => this.#onClickDelete(e);
 
-    this.#container.addEventListener('dragstart', this._onDragStartBound);
-    this.#container.addEventListener('dragover', this._onDragOverBound);
-    this.#container.addEventListener('dragenter', this._onDragEnterBound);
-    this.#container.addEventListener('dragleave', this._onDragLeaveBound);
-    this.#container.addEventListener('drop', this._onDropBound);
-    this.#container.addEventListener('dragend', this._onDragEndBound);
+    this.#dragContainer.addEventListener('dragstart', this._onDragStartBound);
+    this.#dragContainer.addEventListener('dragover', this._onDragOverBound);
+    this.#dragContainer.addEventListener('dragenter', this._onDragEnterBound);
+    this.#dragContainer.addEventListener('dragleave', this._onDragLeaveBound);
+    this.#dragContainer.addEventListener('drop', this._onDropBound);
+    this.#dragContainer.addEventListener('dragend', this._onDragEndBound);
 
     // Touch events use passive:false because the handlers call
     // preventDefault() to stop the page from scrolling during a drag.
-    this.#container.addEventListener('touchstart', this._onTouchStartBound, { passive: false });
-    this.#container.addEventListener('touchmove', this._onTouchMoveBound, { passive: false });
-    this.#container.addEventListener('touchend', this._onTouchEndBound);
+    this.#dragContainer.addEventListener('touchstart', this._onTouchStartBound, { passive: false });
+    this.#dragContainer.addEventListener('touchmove', this._onTouchMoveBound, { passive: false });
+    this.#dragContainer.addEventListener('touchend', this._onTouchEndBound);
 
     // Keyboard listener is registered on document (not the container) so that
     // Delete/Escape work even when focus is inside the sidebar or workspace.
     document.addEventListener('keydown', this._onKeyDownBound);
 
-    this.#container.addEventListener('click', this._onClickBound);
+    this.#dragContainer.addEventListener('click', this._onClickBound);
   }
 
   /**
@@ -102,17 +102,17 @@ export class DragDrop extends Component {
    * element references.
    */
   unmount() {
-    this.#container.removeEventListener('dragstart', this._onDragStartBound);
-    this.#container.removeEventListener('dragover', this._onDragOverBound);
-    this.#container.removeEventListener('dragenter', this._onDragEnterBound);
-    this.#container.removeEventListener('dragleave', this._onDragLeaveBound);
-    this.#container.removeEventListener('drop', this._onDropBound);
-    this.#container.removeEventListener('dragend', this._onDragEndBound);
-    this.#container.removeEventListener('touchstart', this._onTouchStartBound);
-    this.#container.removeEventListener('touchmove', this._onTouchMoveBound);
-    this.#container.removeEventListener('touchend', this._onTouchEndBound);
+    this.#dragContainer.removeEventListener('dragstart', this._onDragStartBound);
+    this.#dragContainer.removeEventListener('dragover', this._onDragOverBound);
+    this.#dragContainer.removeEventListener('dragenter', this._onDragEnterBound);
+    this.#dragContainer.removeEventListener('dragleave', this._onDragLeaveBound);
+    this.#dragContainer.removeEventListener('drop', this._onDropBound);
+    this.#dragContainer.removeEventListener('dragend', this._onDragEndBound);
+    this.#dragContainer.removeEventListener('touchstart', this._onTouchStartBound);
+    this.#dragContainer.removeEventListener('touchmove', this._onTouchMoveBound);
+    this.#dragContainer.removeEventListener('touchend', this._onTouchEndBound);
     document.removeEventListener('keydown', this._onKeyDownBound);
-    this.#container.removeEventListener('click', this._onClickBound);
+    this.#dragContainer.removeEventListener('click', this._onClickBound);
     super.unmount();
   }
 
@@ -144,7 +144,7 @@ export class DragDrop extends Component {
    * @returns {HTMLElement|null} The draggable block or null.
    */
   #isDraggable(el) {
-    while (el && el !== this.#container && el !== document.body) {
+    while (el && el !== this.#dragContainer && el !== document.body) {
       // A block may not have draggable=true explicitly set (e.g. c-block
       // children), so we also check class names as a fallback.
       if (el.draggable === true || el.classList.contains('block') || el.classList.contains('c-block')) {
@@ -164,7 +164,7 @@ export class DragDrop extends Component {
    * @returns {HTMLElement|null}
    */
   #isDropzone(el) {
-    while (el && el !== this.#container && el !== document.body) {
+    while (el && el !== this.#dragContainer && el !== document.body) {
       if (
         el.classList.contains('c-block__dropzone') ||
         el.classList.contains('workspace__stack') ||
@@ -559,7 +559,7 @@ export class DragDrop extends Component {
       ifchildren: 'Maximo 3 comandos dentro do Se!',
     };
     // Walk up to the page root to find the counter element.
-    const root = this.#container.closest('.page--snake');
+    const root = this.#dragContainer.closest('.page--snake');
     const el = root ? root.querySelector('#block-counter') : null;
     if (!el) return;
     el.classList.add('block-counter--limit');
@@ -594,7 +594,7 @@ export class DragDrop extends Component {
    */
   #onKeyDown(e) {
     const active = document.activeElement;
-    if (!active || !this.#container.contains(active)) return;
+    if (!active || !this.#dragContainer.contains(active)) return;
 
     if (e.key === 'Escape') {
       if (this.#draggedBlock) this.#cleanupDrag();
@@ -666,7 +666,7 @@ export class DragDrop extends Component {
    * dropzone is highlighted at a time.
    */
   #clearSnapPreviews() {
-    this.#container
+    this.#dragContainer
       .querySelectorAll('.dropzone--snap-preview')
       .forEach((el) => el.classList.remove('dropzone--snap-preview'));
   }

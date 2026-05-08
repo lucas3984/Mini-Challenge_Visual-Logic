@@ -47,17 +47,17 @@ export function render() {
       </div>
       <div class="app-header__right">
         <a href="#/" class="header-btn header-btn--hub">
-          <img src="src/assets/images/icons/icon-hub.svg" alt="" aria-hidden="true" class="btn-icon" width="24" height="24"> Voltar
+          <img src="src/assets/images/icons/snake-icons/icon-hub.svg" alt="" aria-hidden="true" class="btn-icon" width="24" height="24"> Voltar
         </a>
         <button id="btn-run" class="header-btn header-btn--run" aria-label="Executar código">
-          <img src="src/assets/images/icons/icon-run.svg" alt="" aria-hidden="true" class="btn-icon" width="24" height="24"> Executar
+          <img src="src/assets/images/icons/snake-icons/icon-run.svg" alt="" aria-hidden="true" class="btn-icon" width="24" height="24"> Executar
         </button>
         <button id="btn-pause" class="header-btn header-btn--pause" aria-label="Pausar execução" disabled>
-          <img src="src/assets/images/icons/icon-pause.svg" alt="" aria-hidden="true" class="btn-icon" width="24" height="24"> Pausar
+          <img src="src/assets/images/icons/snake-icons/icon-pause.svg" alt="" aria-hidden="true" class="btn-icon" width="24" height="24"> Pausar
         </button>
         <div class="header-divider"></div>
         <button id="btn-clear" class="header-btn header-btn--clear" aria-label="Limpar área">
-          <img src="src/assets/images/icons/icon-clear.svg" alt="" aria-hidden="true" class="btn-icon" width="24" height="24"> Limpar
+          <img src="src/assets/images/icons/snake-icons/icon-clear.svg" alt="" aria-hidden="true" class="btn-icon" width="24" height="24"> Limpar
         </button>
       </div>
     </header>
@@ -172,7 +172,7 @@ export function render() {
 
         <div class="sidebar__footer">
           <button id="btn-reset-workspace" class="sidebar__reset-btn">
-            <img src="src/assets/images/icons/icon-reset.svg" alt="" aria-hidden="true" class="btn-icon" width="24" height="24"> Resetar Área
+            <img src="src/assets/images/icons/snake-icons/icon-reset.svg" alt="" aria-hidden="true" class="btn-icon" width="24" height="24"> Resetar Área
           </button>
         </div>
       </aside>
@@ -183,7 +183,7 @@ export function render() {
         </div>
         <div class="controls-bar">
           <button id="btn-clear-workspace" class="controls-bar__btn controls-bar__btn--clear" title="Limpar" aria-label="Limpar área">
-            <img src="src/assets/images/icons/icon-clear.svg" alt="Limpar área de trabalho" class="btn-icon" width="24" height="24">
+            <img src="src/assets/images/icons/snake-icons/icon-clear.svg" alt="Limpar área de trabalho" class="btn-icon" width="24" height="24">
           </button>
         </div>
       </section>
