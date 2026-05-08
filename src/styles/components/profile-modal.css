@@ -1,0 +1,224 @@
+/*
+ * Profile creation modal — full-screen overlay for first-time access.
+ * Uses design tokens from design-system.css (z-index, spacing, colors, etc.)
+ * so it integrates seamlessly with both light and dark themes.
+ */
+
+/*
+ * Overlay backdrop — covers the entire viewport, sits above all page content
+ * (z-modal-backdrop). backdrop-filter blur creates the frosted-glass effect
+ * over the home page underneath.
+ */
+.profile-modal {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-md);
+  background-color: var(--color-overlay);
+  backdrop-filter: blur(var(--backdrop-blur-amount));
+  -webkit-backdrop-filter: blur(var(--backdrop-blur-amount));
+}
+
+/*
+ * Dialog card — centered container with game-brand aesthetic.
+ * Hard shadow (4px 4px 0) follows the project's visual language.
+ */
+.profile-modal__card {
+  position: relative;
+  width: 100%;
+  max-width: var(--modal-max-width);
+  background-color: var(--color-bg-home);
+  border: 2px solid var(--color-primary);
+  border-radius: calc(var(--radius-default) * 2);
+  padding: var(--space-2xl) var(--space-xl);
+  box-shadow: var(--shadow-hard);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-lg);
+  animation: profile-modal-enter var(--duration-normal) var(--easing-game);
+}
+
+/*
+ * Exit class — applied by close() before unmounting.
+ * animation-fill-mode: forwards keeps the final opacity/scale so the element
+ * doesn't flash back to its original state before removal.
+ */
+.profile-modal--closing {
+  animation: profile-modal-exit var(--duration-normal) var(--easing-game) forwards;
+}
+
+@keyframes profile-modal-exit {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.9) translateY(20px);
+  }
+}
+
+@keyframes profile-modal-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes bounce-subtle {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+/*
+ * Animated icon wrapper — subtle bounce animation makes the icon feel alive.
+ * Keyframes defined locally so this component has no external CSS dependency.
+ */
+.profile-modal__icon-wrapper {
+  position: relative;
+  display: inline-block;
+  animation: bounce-subtle 2s ease-in-out infinite;
+}
+
+.profile-modal__glow {
+  display: none;
+}
+
+.profile-modal__icon {
+  font-size: 80px;
+  color: var(--color-primary);
+  text-shadow: 6px 6px 0 var(--color-dark);
+}
+
+.profile-modal__title {
+  font-family: var(--font-headline);
+  font-size: var(--text-2xl);
+  font-weight: var(--font-weight-headline);
+  color: var(--color-primary);
+  text-align: center;
+  text-shadow: 2px 2px 0 var(--color-dark);
+  margin: 0;
+}
+
+.profile-modal__subtitle {
+  font-family: var(--font-body);
+  font-size: var(--text-md);
+  font-weight: var(--font-weight-body);
+  color: var(--color-text-muted);
+  text-align: center;
+  line-height: var(--leading-normal);
+  margin: 0;
+  max-width: 320px;
+}
+
+.profile-modal__form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.profile-modal__label {
+  font-family: var(--font-headline);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-headline);
+  color: var(--color-text);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+}
+
+/*
+ * Text input — styled to match the game UI, with focus ring using the
+ * secondary color to match the project's active state convention.
+ */
+.profile-modal__input {
+  font-family: var(--font-headline);
+  font-size: var(--text-lg);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text);
+  background-color: var(--color-surface-high);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-default);
+  padding: var(--space-md) var(--space-lg);
+  outline: none;
+  transition: border-color var(--duration-fast) ease,
+              box-shadow var(--duration-fast) ease;
+}
+
+.profile-modal__input:focus {
+  border-color: var(--color-secondary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-secondary) 30%, transparent);
+}
+
+.profile-modal__input::placeholder {
+  color: var(--color-text-muted);
+  opacity: 0.6;
+}
+
+/* Error state for the input */
+.profile-modal__input[aria-invalid="true"] {
+  border-color: var(--color-error);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-error) 25%, transparent);
+}
+
+/*
+ * Error message area — hidden by default (empty), shown when validation
+ * fails. Uses the error color from the design system.
+ */
+.profile-modal__error {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: var(--color-error);
+  min-height: 1.25em;
+  margin: 0;
+}
+
+/*
+ * Submit button — matches the game-card button style for consistency.
+ * Hard shadow + uppercase tracking = game UI aesthetic.
+ */
+.profile-modal__submit {
+  width: 100%;
+  font-family: var(--font-headline);
+  font-size: var(--text-md);
+  font-weight: var(--font-weight-headline);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--color-on-secondary);
+  background-color: var(--color-secondary);
+  padding: var(--space-md) var(--space-lg);
+  border: none;
+  border-radius: var(--radius-default);
+  box-shadow: var(--shadow-hard);
+  cursor: pointer;
+  transition: transform var(--duration-quick) ease,
+              box-shadow var(--duration-quick) ease;
+  /* Minimum touch target for accessibility */
+  min-height: var(--touch-target-min);
+}
+
+.profile-modal__submit:hover {
+  box-shadow: 0 0 20px color-mix(in srgb, var(--color-secondary) 40%, transparent);
+}
+
+.profile-modal__submit:active {
+  transform: translateY(2px);
+  box-shadow: var(--shadow-hard-sm);
+}
+
+.profile-modal__submit:focus-visible {
+  outline: var(--focus-outline-width) solid var(--focus-outline-color);
+  outline-offset: var(--focus-outline-offset);
+}
