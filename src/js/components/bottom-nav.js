@@ -6,6 +6,7 @@ export class BottomNav extends Component {
   #el = null;
   #indicatorEl = null;
   #initialized = false;
+  #resizeRaf = null;
 
   constructor(items, activeIndex) {
     super();
@@ -71,6 +72,9 @@ export class BottomNav extends Component {
     }).join(''));
 
     this.#el = nav;
+
+    this.addListener(window, 'resize', () => this.#handleResize());
+
     return nav;
   }
 
@@ -130,7 +134,19 @@ export class BottomNav extends Component {
     }
   }
 
+  #handleResize() {
+    if (this.#resizeRaf) return;
+    this.#resizeRaf = requestAnimationFrame(() => {
+      this.#resizeRaf = null;
+      this.#positionIndicator();
+    });
+  }
+
   onUnmount() {
+    if (this.#resizeRaf) {
+      cancelAnimationFrame(this.#resizeRaf);
+      this.#resizeRaf = null;
+    }
     this.#el = null;
     this.#indicatorEl = null;
   }
