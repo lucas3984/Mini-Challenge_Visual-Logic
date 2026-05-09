@@ -15,12 +15,17 @@ import { Runner } from '../engine/runner.js';
 import { parseWorkspace } from '../engine/parser.js';
 import { countAllBlocks, countLoopBlocks, countIfBlocks, countIfChildren, countLoopChildren, countLoopsInIf, countIfsInLoop } from '../utils/dom.js';
 import { AudioFX } from '../core/audio.js';
-import { getItem, setItem, removeItem } from '../core/storage.js';
 import { saveLevelScore, getProfileLevelScore } from '../core/level-score-storage.js';
 import { calculateStars } from '../utils/stars.js';
 import { levels } from '../engine/levels.js';
 import { TopAppBar } from '../components/top-app-bar.js';
 import { BottomNav } from '../components/bottom-nav.js';
+import { hasAnyProfile, getActiveProfile } from '../core/profile.js';
+import {
+  setGameProgress, getGameProgress,
+  setGameCurrentLevel, getGameCurrentLevel,
+  setGameWorkspace, getGameWorkspace, clearGameWorkspace
+} from '../core/profile-data.js';
 
 // Pre-compute the 8x8 checkerboard grid HTML once at module load — it never
 // changes across level transitions, so caching avoids repeated DOM string
@@ -41,10 +46,29 @@ const GRID_HTML = [0, 1, 2, 3, 4, 5, 6, 7].map((r) => {
  * @returns {HTMLElement} The fully assembled page element.
  */
 export function render(params = {}) {
+  // Redirect to home if no profile is set (first-time access guard)
+  if (!hasAnyProfile()) {
+    location.hash = '#/';
+    return document.createElement('div');
+  }
+
+  // Extract level ID from URL to load correct level on direct navigation
   const currentLevelId = params.levelId;
   const currentLevelIndex = currentLevelId
     ? parseInt(currentLevelId, 10) - 1
     : 0;
+
+  // Guard: if the URL specifies a level beyond the current profile's progress,
+  // show the access denied page instead of the game.
+  if (params.levelId) {
+    const profile = getActiveProfile();
+    const progress = getGameProgress(profile, 'snake');
+    const levelIndex = parseInt(params.levelId, 10) - 1;
+
+    if (levelIndex > progress) {
+      return renderAccessDenied();
+    }
+  }
 
   const wrapper = document.createElement('div');
   wrapper.className = 'page--snake';
@@ -489,12 +513,12 @@ function init(root, initialLevelIndex) {
 
   /**
    * Builds a visual star string (filled/empty) for a given level's saved score.
-   * Reads from the ranking storage via the hardcoded 'Testador' profile.
+   * Reads from the ranking storage scoped to the active profile.
    * @param {number} levelIndex - 0-based level index
    * @returns {string} Star symbols representing the saved rating.
    */
   function starString(levelIndex) {
-    const score = getProfileLevelScore('snake', 'Testador', levelIndex + 1);
+    const score = getProfileLevelScore('snake', getActiveProfile(), levelIndex + 1);
     if (!score) return '';
     let s = '';
     for (let i = 0; i < 3; i++) {
@@ -548,7 +572,7 @@ function init(root, initialLevelIndex) {
       }
     });
 
-    setItem(`snake-workspace-${levelIndex}`, stackEl.innerHTML);
+    setGameWorkspace(getActiveProfile(), 'snake', levelIndex, stackEl.innerHTML);
   }
 
   /**
@@ -556,7 +580,7 @@ function init(root, initialLevelIndex) {
    * @param {number} levelIndex
    */
   function clearWorkspace(levelIndex) {
-    removeItem(`snake-workspace-${levelIndex}`);
+    clearGameWorkspace(getActiveProfile(), 'snake', levelIndex);
   }
 
   /**
@@ -588,7 +612,7 @@ function init(root, initialLevelIndex) {
     currentLevelIndex = index;
 
     // Persist so the user returns to this level after page reload
-    setItem('snake-current-level', String(index));
+    setGameCurrentLevel(getActiveProfile(), 'snake', index);
 
     // Keep URL in sync so F5 restores the correct level
     history.replaceState(null, '', `#/levels/snake/${index + 1}`);
@@ -598,7 +622,7 @@ function init(root, initialLevelIndex) {
     stage.render();
 
     // Restore saved workspace for this level, or start empty
-    const saved = getItem(`snake-workspace-${index}`);
+    const saved = getGameWorkspace(getActiveProfile(), 'snake', index);
     stackEl.innerHTML = saved !== null ? saved : '';
 
     if (levelSelect) levelSelect.value = String(index);
@@ -671,12 +695,11 @@ function init(root, initialLevelIndex) {
           // Track the highest level the player has *ever* reached so the level
           // selector unlocks remain persistent across page visits.
           highestCompletedLevel = Math.max(highestCompletedLevel, currentLevelIndex);
-          setItem('snake-progress', String(highestCompletedLevel + 1));
+          setGameProgress(getActiveProfile(), 'snake', highestCompletedLevel + 1);
           const usedBlocks = countAllBlocks(stackEl);
           const level = levels[currentLevelIndex];
           const stars = calculateStars(usedBlocks, level.starThree, level.starTwo);
-          // Temporary: 'Testador' hardcoded until the profile system is built
-          saveLevelScore('snake', 'Testador', currentLevelIndex + 1, stars);
+          saveLevelScore('snake', getActiveProfile(), currentLevelIndex + 1, stars);
           updateLevelSelect();
           audio.play('win');
           showToast(`\u2B50`.repeat(stars) + ` Nível ${currentLevelIndex + 1} completo!`);
@@ -782,9 +805,9 @@ function init(root, initialLevelIndex) {
 
   // Restore progress from localStorage so the player can continue where they
   // left off across sessions.
-  const saved = getItem('snake-progress');
-  if (saved !== null) {
-    highestCompletedLevel = parseInt(saved, 10) - 1;  // storage stores COUNT, convert to INDEX
+  const saved = getGameProgress(getActiveProfile(), 'snake');
+  if (saved > 0) {
+    highestCompletedLevel = saved - 1;  // storage stores COUNT, convert to INDEX
   }
 
   updateLevelSelect();
@@ -793,8 +816,50 @@ function init(root, initialLevelIndex) {
   if (initialLevelIndex !== undefined && initialLevelIndex >= 0) {
     loadLevel(initialLevelIndex);
   } else {
-    const savedLevel = getItem('snake-current-level');
-    const restoredIndex = savedLevel !== null ? parseInt(savedLevel, 10) : highestCompleted + 1;
+    const savedLevel = getGameCurrentLevel(getActiveProfile(), 'snake');
+    const restoredIndex = savedLevel !== null ? savedLevel : highestCompletedLevel + 1;
     loadLevel(restoredIndex);
   }
+}
+
+/**
+ * Renders a full-page access denied view when the current profile hasn't
+ * unlocked the level requested in the URL. Provides navigation back to the
+ * home page or level selector so the user is never stuck.
+ *
+ * @returns {HTMLElement} The assembled page element with TopAppBar, denied
+ *   card, and BottomNav.
+ */
+function renderAccessDenied() {
+  const wrapper = document.createElement('div');
+  wrapper.className = 'page--snake';
+  wrapper.setAttribute('data-theme', 'dark');
+
+  const topAppBar = new TopAppBar();
+  wrapper.appendChild(topAppBar.render());
+
+  const content = document.createElement('div');
+  content.className = 'access-denied';
+  content.innerHTML = `
+    <div class="access-denied__card">
+      <div class="access-denied__icon" aria-hidden="true">
+        <span class="material-symbols-outlined access-denied__icon-symbol">block</span>
+      </div>
+      <h2 class="access-denied__title">Epa, voc\u00ea ainda n\u00e3o<br>deveria estar aqui</h2>
+      <p class="access-denied__subtitle">Complete as fases anteriores para desbloquear este n\u00edvel.</p>
+      <div class="access-denied__actions">
+        <a href="#/" class="access-denied__btn access-denied__btn--primary">Home</a>
+        <a href="#/levels/snake" class="access-denied__btn access-denied__btn--secondary">Fases</a>
+      </div>
+    </div>
+  `;
+
+  wrapper.appendChild(content);
+
+  const currentHash = location.hash;
+  const activeIndex = BottomNav.getActiveIndex(currentHash);
+  const bottomNav = new BottomNav(null, activeIndex);
+  wrapper.appendChild(bottomNav.render());
+
+  return wrapper;
 }

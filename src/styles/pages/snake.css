@@ -515,3 +515,91 @@
   flex: 1;
   overflow: hidden;
 }
+
+/* ---- Access Denied ---- */
+.page--snake .access-denied {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: var(--space-lg);
+}
+
+.page--snake .access-denied__card {
+  background: var(--color-surface);
+  border: var(--border-width-thin) solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-2xl);
+  max-width: var(--modal-max-width);
+  width: 100%;
+  text-align: center;
+  box-shadow: var(--shadow-hard);
+}
+
+.page--snake .access-denied__icon {
+  margin-bottom: var(--space-md);
+}
+
+.page--snake .access-denied__icon-symbol {
+  font-size: var(--icon-xl);
+  color: var(--color-error);
+  font-variation-settings: 'FILL' 1;
+}
+
+.page--snake .access-denied__title {
+  font-family: var(--font-headline);
+  font-size: var(--text-lg);
+  font-weight: var(--font-weight-headline);
+  color: var(--color-text);
+  margin-bottom: var(--space-sm);
+  line-height: var(--leading-tight);
+}
+
+.page--snake .access-denied__subtitle {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: var(--color-text-subtle);
+  margin-bottom: var(--space-lg);
+  line-height: var(--leading-normal);
+}
+
+.page--snake .access-denied__actions {
+  display: flex;
+  gap: var(--space-md);
+  justify-content: center;
+}
+
+.page--snake .access-denied__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-sm) var(--space-lg);
+  border-radius: var(--radius-md);
+  font-family: var(--font-headline);
+  font-size: var(--text-sm-md);
+  font-weight: var(--font-weight-headline);
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform var(--duration-instant);
+  min-height: var(--touch-target-min);
+  border: var(--border-width-thin) solid transparent;
+  border-bottom: var(--border-width-game) solid transparent;
+}
+
+.page--snake .access-denied__btn:active {
+  transform: translateY(var(--button-active-offset));
+  border-bottom-width: var(--button-active-offset);
+}
+
+.page--snake .access-denied__btn--primary {
+  background: var(--color-secondary);
+  color: var(--color-on-secondary);
+  border-bottom-color: var(--color-dark);
+}
+
+.page--snake .access-denied__btn--secondary {
+  background: transparent;
+  color: var(--color-text);
+  border-color: var(--color-border);
+  border-bottom-color: var(--color-border);
+}

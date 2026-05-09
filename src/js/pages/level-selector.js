@@ -7,10 +7,11 @@ import { LevelMap } from '../components/level-map.js';
 import { RankingTable } from '../components/ranking-table.js';
 import { TopAppBar } from '../components/top-app-bar.js';
 import { BottomNav } from '../components/bottom-nav.js';
-import { getItem } from '../core/storage.js';
 import { getGameScores } from '../core/level-score-storage.js';
 import { buildOverallRankings, sortOverallRankings } from '../utils/ranking.js';
 import { GAME_CONFIG } from '../config/games.js';
+import { hasAnyProfile, getActiveProfile } from '../core/profile.js';
+import { getGameProgress } from '../core/profile-data.js';
 
 /**
  * Dynamically generates position coordinates for level nodes.
@@ -63,11 +64,12 @@ function generateLevelPositions(totalLevels) {
 /**
  * Transforms engine levels with status and positioning for the level map.
  * @param {Object} config - Game configuration from GAME_CONFIG
+ * @param {string} gameId - Game identifier (for reading per-profile progress)
  * @returns {Array<Object>} Levels with id, name, status, label, number, position
  */
-function buildLevelMapData(config) {
-  const { levels, progressKey } = config;
-  const highestCompleted = parseInt(getItem(progressKey) || '0', 10);
+function buildLevelMapData(config, gameId) {
+  const { levels } = config;
+  const highestCompleted = getGameProgress(getActiveProfile(), gameId);
   const totalLevels = levels.length;
   const generatedPositions = generateLevelPositions(totalLevels);
 
@@ -97,6 +99,12 @@ function buildLevelMapData(config) {
 }
 
 export function render({ gameId = 'snake' } = {}) {
+  // Redirect to home if no profile is set (first-time access guard)
+  if (!hasAnyProfile()) {
+    location.hash = '#/';
+    return document.createElement('div');
+  }
+
   const config = GAME_CONFIG[gameId];
   if (!config) {
     throw new Error(`Unknown game: ${gameId}`);
@@ -119,7 +127,7 @@ export function render({ gameId = 'snake' } = {}) {
     location.hash = `#/levels/${gameId}/${level.id}`;
   };
 
-  const levelsData = buildLevelMapData(config);
+  const levelsData = buildLevelMapData(config, gameId);
   const levelMap = new LevelMap({ levels: levelsData, onLevelSelect });
   main.appendChild(levelMap.render());
 

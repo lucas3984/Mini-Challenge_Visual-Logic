@@ -73,7 +73,7 @@
   --z-base: 1;
   --z-dropdown: 10;
   --z-modal-backdrop: 20;
-  --z-modal: 21;
+  --z-modal: 100;
   --z-toast: 30;
   /* Rem-based typography scale per AGENTS.md relative unit rule. */
   --text-xs: 0.75rem;
