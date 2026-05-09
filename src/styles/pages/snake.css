@@ -502,9 +502,10 @@
   margin-bottom: 0;
 }
 
-/* Account for fixed TopAppBar height */
+/* Account for fixed TopAppBar and BottomNav height */
 .page--snake {
   padding-top: 72px;
+  padding-bottom: 80px;
 }
 
 /* Inner content wrapper — flex column so app-container fills remaining space */
