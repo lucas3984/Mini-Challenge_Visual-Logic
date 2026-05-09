@@ -2,7 +2,9 @@ import { TopAppBar } from '../components/top-app-bar.js';
 import { GameCard } from '../components/game-card.js';
 import { ProgressStats } from '../components/progress-stats.js';
 import { BottomNav } from '../components/bottom-nav.js';
-import { hasAnyProfile, setActiveProfile } from '../core/profile.js';
+import { hasAnyProfile, setActiveProfile, getActiveProfile } from '../core/profile.js';
+import { getGameProgress } from '../core/profile-data.js';
+import { GAME_CONFIG } from '../config/games.js';
 import { ProfileModal } from '../components/profile-modal.js';
 
 /*
@@ -36,6 +38,56 @@ const games = [
 ];
 
 /*
+ * Aggregates per-game progress across all registered games
+ * to produce a unified level + XP display for the home page.
+ */
+function computeProfileProgress() {
+  const profile = getActiveProfile();
+  if (!profile) {
+    return { level: { current: 1, title: 'Visitante' }, progress: 0 };
+  }
+
+  let totalCompleted = 0;
+  let totalLevels = 0;
+
+  for (const [gameId, config] of Object.entries(GAME_CONFIG)) {
+    const completed = getGameProgress(profile, gameId);
+    totalCompleted += completed;
+    totalLevels += config.levels.length;
+  }
+
+  const percentage = totalLevels > 0
+    ? Math.round((totalCompleted / totalLevels) * 100)
+    : 0;
+
+  return {
+    level: { current: totalCompleted + 1, title: deriveTitle(totalCompleted) },
+    progress: percentage,
+  };
+}
+
+/*
+ * Remembers the last rendered progress percentage so the bar can animate
+ * from the previous value when the profile changes (module-scoped to
+ * survive page re-renders without leaking into the component).
+ */
+let lastProgress = 0;
+
+/*
+ * Maps the total number of completed levels to a player rank title.
+ * Thresholds are calibrated for the current game count (snake = 10 levels);
+ * higher thresholds (Lenda, etc.) remain aspirational as more games are added.
+ */
+function deriveTitle(completed) {
+  if (completed >= 40) return 'Lenda';
+  if (completed >= 25) return 'Mestre da Lógica';
+  if (completed >= 15) return 'Estrategista';
+  if (completed >= 7) return 'Programador';
+  if (completed >= 3) return 'Aprendiz';
+  return 'Iniciante';
+}
+
+/*
  * Home page render function — follows the SPA convention from AGENTS.md:
  * pages export render(): HTMLElement. Components are instantiated here
  * and their render() output is assembled into the page DOM tree.
@@ -48,7 +100,9 @@ export function render() {
   main.className = 'home-page';
 
   const topAppBar = new TopAppBar();
-  const progressStats = new ProgressStats({ current: 42, title: 'Mago da Lógica' }, 85);
+  const { level, progress } = computeProfileProgress();
+  const progressStats = new ProgressStats(level, progress, lastProgress);
+  lastProgress = progress;
 
   const currentHash = location.hash;
   const activeIndex = BottomNav.getActiveIndex(currentHash);
