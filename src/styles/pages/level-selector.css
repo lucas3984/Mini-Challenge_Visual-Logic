@@ -28,6 +28,8 @@
   max-width: var(--max-width-container, 1280px);
   margin: 0 auto;
   padding: var(--space-xl);
+  padding-top: 100px;
+  padding-bottom: 120px;
   display: flex;
   flex-direction: column;
   gap: var(--space-xl);

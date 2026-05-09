@@ -27,6 +27,7 @@ export class TopAppBar extends Component {
         </button>
         <div class="top-app-bar__user">
           <span class="material-symbols-outlined top-app-bar__user-icon">account_circle</span>
+          Testador
         </div>
       </div>
     `;
