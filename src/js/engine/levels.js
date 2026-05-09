@@ -47,27 +47,25 @@ export const levels = [
   {
     id: 2,
     name: 'Desvio',
-    description: 'Uma parede bloqueia o caminho — contorne-a usando Se',
+    description: 'Uma parede bloqueia o caminho — contorne-a',
     snake: [
-      { row: 2, col: 0 },
-      { row: 2, col: 1 },
-      { row: 2, col: 2 },
+      { row: 4, col: 2 },
+      { row: 4, col: 1 },
+      { row: 4, col: 0 },
     ],
     direction: 'right',
+    // Horizontal wall forces a detour — snake must go around rather than straight
     walls: [
-      { row: 0, col: 5 }, { row: 0, col: 6 }, { row: 0, col: 7 },
-      { row: 1, col: 5 }, { row: 1, col: 6 }, { row: 1, col: 7 },
-      { row: 2, col: 5 }, { row: 2, col: 6 }, { row: 2, col: 7 },
+      { row: 2, col: 0 }, { row: 2, col: 1 }, { row: 2, col: 2 },
+      { row: 3, col: 0 }, { row: 3, col: 1 }, { row: 3, col: 2 }, { row: 3, col: 6 }, { row: 3, col: 7 },
+      { row: 4, col: 5 }, { row: 4, col: 6 }, { row: 4, col: 7 },
       { row: 5, col: 0 }, { row: 5, col: 1 }, { row: 5, col: 2 }, { row: 5, col: 3 }, { row: 5, col: 4 }, { row: 5, col: 5 }, { row: 5, col: 6 }, { row: 5, col: 7 },
       { row: 6, col: 0 }, { row: 6, col: 1 }, { row: 6, col: 2 }, { row: 6, col: 3 }, { row: 6, col: 4 }, { row: 6, col: 5 }, { row: 6, col: 6 }, { row: 6, col: 7 },
       { row: 7, col: 0 }, { row: 7, col: 1 }, { row: 7, col: 2 }, { row: 7, col: 3 }, { row: 7, col: 4 }, { row: 7, col: 5 }, { row: 7, col: 6 }, { row: 7, col: 7 },
     ],
-    apples: [
-      { row: 2, col: 3 },
-      { row: 0, col: 7 },
-    ],
+    apples: [{ row: 2, col: 7 }],
     maxBlocks: 10,
-    maxLoops: 2,
+    maxLoops: 1,
     maxIfs: 1,
     starThree: 5,
     starTwo: 7,
@@ -76,31 +74,39 @@ export const levels = [
   {
     id: 3,
     name: 'Festa de Maçãs',
-    description: 'O caminho é longo — use Repetir para coletar todas as maçãs',
+    description: 'O caminho é muito longo — use Repetir',
     snake: [
-      { row: 0, col: 0 },
-      { row: 0, col: 1 },
       { row: 0, col: 2 },
+      { row: 0, col: 1 },
+      { row: 0, col: 0 },
     ],
     direction: 'right',
     walls: [
       { row: 0, col: 7 },
-      { row: 1, col: 0 }, { row: 1, col: 1 }, { row: 1, col: 2 }, { row: 1, col: 3 }, { row: 1, col: 4 }, { row: 1, col: 5 }, { row: 1, col: 6 }, { row: 1, col: 7 },
-      { row: 3, col: 0 }, { row: 3, col: 1 }, { row: 3, col: 2 }, { row: 3, col: 3 }, { row: 3, col: 4 }, { row: 3, col: 5 }, { row: 3, col: 6 }, { row: 3, col: 7 },
-      { row: 5, col: 0 }, { row: 5, col: 1 }, { row: 5, col: 2 }, { row: 5, col: 3 }, { row: 5, col: 4 }, { row: 5, col: 5 }, { row: 5, col: 6 }, { row: 5, col: 7 },
+      { row: 1, col: 0 }, { row: 1, col: 1 }, { row: 1, col: 2 }, { row: 1, col: 3 }, { row: 1, col: 4 }, { row: 1, col: 5 }, { row: 1, col: 7 },
+      { row: 2, col: 0 }, { row: 2, col: 5 }, { row: 2, col: 7 },
+      { row: 3, col: 0 }, { row: 3, col: 2 }, { row: 3, col: 3 }, { row: 3, col: 5 }, { row: 3, col: 7 },
+      { row: 4, col: 0 }, { row: 4, col: 2 }, { row: 4, col: 5 }, { row: 4, col: 7 },
+      { row: 5, col: 0 }, { row: 5, col: 2 }, { row: 5, col: 3 }, { row: 5, col: 4 }, { row: 5, col: 5 }, { row: 5, col: 7 },
+      { row: 6, col: 0 }, { row: 6, col: 7 },
       { row: 7, col: 0 }, { row: 7, col: 1 }, { row: 7, col: 2 }, { row: 7, col: 3 }, { row: 7, col: 4 }, { row: 7, col: 5 }, { row: 7, col: 6 }, { row: 7, col: 7 },
     ],
+    // Apple placed far diagonally — manual moves would exceed block limit, forcing repeat usage
     apples: [
       { row: 0, col: 3 }, { row: 0, col: 4 }, { row: 0, col: 5 }, { row: 0, col: 6 },
-      { row: 2, col: 0 }, { row: 2, col: 1 }, { row: 2, col: 2 }, { row: 2, col: 3 }, { row: 2, col: 4 }, { row: 2, col: 5 }, { row: 2, col: 6 },
-      { row: 4, col: 0 }, { row: 4, col: 1 }, { row: 4, col: 2 }, { row: 4, col: 3 }, { row: 4, col: 4 }, { row: 4, col: 5 }, { row: 4, col: 6 },
-      { row: 6, col: 0 }, { row: 6, col: 1 }, { row: 6, col: 2 }, { row: 6, col: 3 }, { row: 6, col: 4 }, { row: 6, col: 5 }, { row: 6, col: 6 },
+      { row: 1, col: 6 },
+      { row: 2, col: 1 }, { row: 2, col: 2 }, { row: 2, col: 3 }, { row: 2, col: 4 }, { row: 2, col: 6 },
+      { row: 3, col: 1 }, { row: 3, col: 4 }, { row: 3, col: 6 },
+      { row: 4, col: 1 }, { row: 4, col: 3 }, { row: 4, col: 4 }, { row: 4, col: 6 },
+      { row: 5, col: 1 }, { row: 5, col: 6 },
+      { row: 6, col: 1 }, { row: 6, col: 2 }, { row: 6, col: 3 }, { row: 6, col: 4 }, { row: 6, col: 5 }, { row: 6, col: 6 },
     ],
-    maxBlocks: 12,
+    // No ifs available — player must solve with loops only
+    maxBlocks: 20,
     maxLoops: 6,
     maxIfs: 3,
     starThree: 5,
-    starTwo: 9,
+    starTwo: 10,
     gridSize: 8,
   },
   {
@@ -112,12 +118,14 @@ export const levels = [
       { row: 3, col: 1 },
       { row: 3, col: 2 },
     ],
-    direction: 'right',
+    direction: 'left',
+    // Single wall blocks the snake's path — forces the first If dodge
     walls: [
       { row: 3, col: 5 },
     ],
+    // Two apples in-line on the right edge, one above the wall and one below
     apples: [
-      { row: 3, col: 7 },
+      { row: 0, col: 7 },
       { row: 6, col: 7 },
     ],
     maxBlocks: 8,
@@ -137,10 +145,12 @@ export const levels = [
       { row: 3, col: 0 },
     ],
     direction: 'right',
+    // Two walls at different points force two separate If dodges
     walls: [
       { row: 3, col: 4 },
       { row: 6, col: 1 },
     ],
+    // Apples at opposite corners — long path requires both dodges
     apples: [
       { row: 0, col: 0 },
       { row: 6, col: 7 },
