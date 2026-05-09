@@ -14,21 +14,26 @@ import { validateProfileName, createProfile } from '../core/profile.js';
 export class ProfileModal extends Component {
   /** @type {Function|null} */
   #onSubmit = null;
+  /** @type {boolean} */
+  #closable = false;
   /** @type {HTMLInputElement|null} */
   #inputEl = null;
   /** @type {HTMLElement|null} */
   #errorEl = null;
   /** @type {HTMLButtonElement|null} */
   #submitEl = null;
+  /** @type {HTMLButtonElement|null} */
+  #closeBtnEl = null;
   /** @type {HTMLElement|null} */
   #overlayEl = null;
 
   /**
-   * @param {{ onSubmit?: (name: string) => void }} [options]
+   * @param {{ onSubmit?: (name: string) => void, closable?: boolean }} [options]
    */
   constructor(options = {}) {
     super();
     this.#onSubmit = typeof options.onSubmit === 'function' ? options.onSubmit : null;
+    this.#closable = options.closable === true;
   }
 
   render() {
@@ -40,6 +45,7 @@ export class ProfileModal extends Component {
 
     overlay.innerHTML = `
       <div class="profile-modal__card">
+        ${this.#closable ? '<button class="profile-modal__close-btn" aria-label="Fechar"><span class="material-symbols-outlined">close</span></button>' : ''}
         <div class="profile-modal__icon-wrapper">
           <div class="profile-modal__glow"></div>
           <span class="material-symbols-outlined profile-modal__icon" style="font-variation-settings: 'FILL' 1;">assignment_ind</span>
@@ -87,6 +93,27 @@ export class ProfileModal extends Component {
 
     // Auto-focus input after DOM insertion
     requestAnimationFrame(() => this.#inputEl?.focus());
+
+    // Close button (only when closable)
+    if (this.#closable) {
+      this.#closeBtnEl = overlay.querySelector('.profile-modal__close-btn');
+      this.addListener(this.#closeBtnEl, 'click', () => this.close());
+
+      // Escape key closes the modal
+      this.addListener(document, 'keydown', (e) => {
+        if (e.key === 'Escape') {
+          e.preventDefault();
+          this.close();
+        }
+      });
+
+      // Click on the backdrop (outside the card) closes the modal
+      this.addListener(overlay, 'click', (e) => {
+        if (e.target === overlay) {
+          this.close();
+        }
+      });
+    }
 
     this.#overlayEl = overlay;
     return overlay;
@@ -168,6 +195,7 @@ export class ProfileModal extends Component {
     this.#inputEl = null;
     this.#errorEl = null;
     this.#submitEl = null;
+    this.#closeBtnEl = null;
     this.#overlayEl = null;
   }
 }

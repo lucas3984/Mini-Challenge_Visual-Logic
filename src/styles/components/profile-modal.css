@@ -222,3 +222,37 @@
   outline: var(--focus-outline-width) solid var(--focus-outline-color);
   outline-offset: var(--focus-outline-offset);
 }
+
+/*
+ * Close button — positioned absolutely inside the card, visible only when
+ * the modal is closable (i.e. when at least one profile already exists).
+ * Uses the close icon from Material Symbols for consistency.
+ */
+.profile-modal__close-btn {
+  position: absolute;
+  top: var(--space-md);
+  right: var(--space-md);
+  width: 44px;
+  height: 44px;
+  min-height: var(--touch-target-xs);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  background: none;
+  border: none;
+  z-index: 1;
+  transition: background-color var(--duration-quick) ease;
+}
+
+.profile-modal__close-btn:hover {
+  background-color: color-mix(in srgb, var(--color-primary) 12%, transparent);
+  color: var(--color-text);
+}
+
+.profile-modal__close-btn:focus-visible {
+  outline: var(--focus-outline-width) solid var(--focus-outline-color);
+  outline-offset: var(--focus-outline-offset);
+}
