@@ -19,7 +19,6 @@ import { saveLevelScore, getProfileLevelScore } from '../core/level-score-storag
 import { calculateStars } from '../utils/stars.js';
 import { levels } from '../engine/levels.js';
 import { TopAppBar } from '../components/top-app-bar.js';
-import { BottomNav } from '../components/bottom-nav.js';
 import { hasAnyProfile, getActiveProfile } from '../core/profile.js';
 import {
   setGameProgress, getGameProgress,
@@ -75,9 +74,6 @@ export function render(params = {}) {
   wrapper.setAttribute('data-theme', 'dark');
 
   const topAppBar = new TopAppBar();
-  const currentHash = location.hash;
-  const activeIndex = BottomNav.getActiveIndex(currentHash);
-  const bottomNav = new BottomNav(null, activeIndex);
 
   wrapper.appendChild(topAppBar.render());
 
@@ -279,7 +275,6 @@ export function render(params = {}) {
   `;
 
   wrapper.appendChild(root);
-  wrapper.appendChild(bottomNav.render());
 
   init(root, currentLevelIndex);
   return wrapper;
@@ -827,8 +822,8 @@ function init(root, initialLevelIndex) {
  * unlocked the level requested in the URL. Provides navigation back to the
  * home page or level selector so the user is never stuck.
  *
- * @returns {HTMLElement} The assembled page element with TopAppBar, denied
- *   card, and BottomNav.
+ * @returns {HTMLElement} The assembled page element with TopAppBar and denied
+ *   card.
  */
 function renderAccessDenied() {
   const wrapper = document.createElement('div');
@@ -855,11 +850,6 @@ function renderAccessDenied() {
   `;
 
   wrapper.appendChild(content);
-
-  const currentHash = location.hash;
-  const activeIndex = BottomNav.getActiveIndex(currentHash);
-  const bottomNav = new BottomNav(null, activeIndex);
-  wrapper.appendChild(bottomNav.render());
 
   return wrapper;
 }

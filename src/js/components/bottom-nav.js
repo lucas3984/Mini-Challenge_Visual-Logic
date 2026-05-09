@@ -1,14 +1,11 @@
 import { Component } from './base.js';
 
-/*
- * Fixed bottom navigation bar for the home screen.
- * Uses custom SVG icons from navbar-icons folder.
- * Active state is determined by current hash route via getActiveIndex().
- * Natural anchor clicks on hash hrefs trigger hashchange -> SPA routing.
- */
 export class BottomNav extends Component {
   #items = [];
   #activeIndex = 0;
+  #el = null;
+  #indicatorEl = null;
+  #initialized = false;
 
   constructor(items, activeIndex) {
     super();
@@ -41,11 +38,6 @@ export class BottomNav extends Component {
     this.#activeIndex = activeIndex ?? 0;
   }
 
-  /**
-   * Determines the active nav item index from the current URL hash.
-   * @param {string} hash - The current location.hash value.
-   * @returns {number} Index of the active item.
-   */
   static getActiveIndex(hash) {
     const path = hash.replace(/^#/, '') || '/';
     if (path === '/') return 0;
@@ -60,7 +52,12 @@ export class BottomNav extends Component {
     nav.className = 'bottom-nav';
     nav.setAttribute('aria-label', 'Main navigation');
 
-    nav.innerHTML = this.#items.map((item, index) => {
+    const indicator = document.createElement('div');
+    indicator.className = 'bottom-nav__indicator';
+    nav.appendChild(indicator);
+    this.#indicatorEl = indicator;
+
+    nav.insertAdjacentHTML('beforeend', this.#items.map((item, index) => {
       const isActive = index === this.#activeIndex;
       return `
         <a class="bottom-nav__item bottom-nav__item--${isActive ? 'active' : 'inactive'}"
@@ -71,8 +68,70 @@ export class BottomNav extends Component {
           <span class="bottom-nav__label">${item.label}</span>
         </a>
       `;
-    }).join('');
+    }).join(''));
 
+    this.#el = nav;
     return nav;
+  }
+
+  setActiveIndex(index) {
+    if (index === this.#activeIndex && this.#initialized) return;
+    if (index < 0 || index >= this.#items.length) return;
+
+    const items = this.#el?.querySelectorAll('.bottom-nav__item');
+    if (!items || items.length !== this.#items.length) return;
+
+    const prevItem = items[this.#activeIndex];
+    if (prevItem) {
+      prevItem.classList.replace('bottom-nav__item--active', 'bottom-nav__item--inactive');
+      prevItem.setAttribute('aria-current', 'false');
+    }
+
+    const nextItem = items[index];
+    if (nextItem) {
+      nextItem.classList.replace('bottom-nav__item--inactive', 'bottom-nav__item--active');
+      nextItem.setAttribute('aria-current', 'page');
+    }
+
+    this.#activeIndex = index;
+    this.#positionIndicator();
+  }
+
+  #positionIndicator() {
+    if (!this.#el || !this.#indicatorEl) return;
+
+    const activeItem = this.#el.querySelector('.bottom-nav__item--active');
+    if (!activeItem) return;
+
+    const wrapper = activeItem.querySelector('.bottom-nav__icon-wrapper');
+    if (!wrapper) return;
+
+    const navRect = this.#el.getBoundingClientRect();
+    const wrapperRect = wrapper.getBoundingClientRect();
+
+    const x = wrapperRect.left - navRect.left;
+    const y = wrapperRect.top - navRect.top;
+    const width = wrapperRect.width;
+    const height = wrapperRect.height;
+
+    if (!this.#initialized) {
+      this.#indicatorEl.classList.add('bottom-nav__indicator--no-transition');
+    }
+
+    this.#el.style.setProperty('--indicator-x', `${x}px`);
+    this.#el.style.setProperty('--indicator-y', `${y}px`);
+    this.#el.style.setProperty('--indicator-width', `${width}px`);
+    this.#el.style.setProperty('--indicator-height', `${height}px`);
+
+    if (!this.#initialized) {
+      void this.#indicatorEl.offsetHeight;
+      this.#indicatorEl.classList.remove('bottom-nav__indicator--no-transition');
+      this.#initialized = true;
+    }
+  }
+
+  onUnmount() {
+    this.#el = null;
+    this.#indicatorEl = null;
   }
 }

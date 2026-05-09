@@ -9,6 +9,12 @@ export class Router {
   #mountEl;
 
   /**
+   * Callback fired after every route change with the new hash value.
+   * @type {(hash: string) => void|null}
+   */
+  onRouteChange = null;
+
+  /**
    * @param {HTMLElement} mountEl - mounting point where pages are rendered
    */
   constructor(mountEl) {
@@ -69,6 +75,9 @@ export class Router {
         this.#mountEl.appendChild(element);
         this.#mountEl.setAttribute('tabindex', '-1');
         this.#mountEl.focus();
+        if (this.onRouteChange) {
+          this.onRouteChange(location.hash);
+        }
         return;
       }
     }
