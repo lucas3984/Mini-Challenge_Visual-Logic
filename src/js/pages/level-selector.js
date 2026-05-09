@@ -5,7 +5,7 @@
  */
 import { LevelMap } from '../components/level-map.js';
 import { RankingTable } from '../components/ranking-table.js';
-import { getItem } from '../core/storage.js';
+import { getItem, removeItem } from '../core/storage.js';
 import { getGameScores } from '../core/level-score-storage.js';
 import { buildOverallRankings, sortOverallRankings } from '../utils/ranking.js';
 import { GAME_CONFIG } from '../config/games.js';
@@ -146,6 +146,21 @@ function createSectionHeader(config) {
 
   header.appendChild(subtitle);
   header.appendChild(title);
+
+  if (config.resetLevels) {
+    const resetBtn = document.createElement('button');
+    resetBtn.className = 'section-header__reset-btn';
+    resetBtn.setAttribute('aria-label', 'Regenerar todas as fases');
+    resetBtn.textContent = 'Regenerar fases';
+    resetBtn.addEventListener('click', () => {
+      if (confirm('Isso vai apagar todas as fases e ranking atual. Continuar?')) {
+        config.resetLevels();
+        location.hash = `#/levels/${gameId}`;
+        location.reload();
+      }
+    });
+    header.appendChild(resetBtn);
+  }
 
   return header;
 }

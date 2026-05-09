@@ -18,7 +18,15 @@ import { AudioFX } from '../core/audio.js';
 import { getItem, setItem, removeItem } from '../core/storage.js';
 import { saveLevelScore, getProfileLevelScore } from '../core/level-score-storage.js';
 import { calculateStars } from '../utils/stars.js';
-import { levels } from '../engine/levels.js';
+import { GAME_CONFIG } from '../config/games.js';
+
+function buildLevelOptions() {
+  return GAME_CONFIG.snake.levels.map((l, i) =>
+    `<option value="${i}">Nível ${i + 1} \u2014 ${l.name}</option>`
+  ).join('');
+}
+
+const levels = GAME_CONFIG.snake.levels;
 
 // Pre-compute the 8x8 checkerboard grid HTML once at module load — it never
 // changes across level transitions, so caching avoids repeated DOM string
@@ -72,16 +80,7 @@ export function render(params = {}) {
 
     <div class="level-bar">
         <select id="level-select" class="level-selector" aria-label="Selecionar nível">
-          <option value="0">Nível 1 — A Escada</option>
-          <option value="1" disabled>Nível 2 — Desvio</option>
-          <option value="2" disabled>Nível 3 — Festa de Maçãs</option>
-          <option value="3" disabled>Nível 4 — Desvie da Parede</option>
-          <option value="4" disabled>Nível 5 — O Corredor</option>
-          <option value="5" disabled>Nível 6 — Repetição e Giro</option>
-          <option value="6" disabled>Nível 7 — Desvie e Colet</option>
-          <option value="7" disabled>Nível 8 — O Labirinto</option>
-          <option value="8" disabled>Nível 9 — Perímetro</option>
-          <option value="9" disabled>Nível 10 — Desafio Final</option>
+          ${buildLevelOptions()}
         </select>
       <span class="level-name" id="level-name"></span>
       <button id="btn-rules" class="progress-reset-btn" aria-label="Ver regras">Regras</button>
@@ -673,6 +672,17 @@ function init(root, initialLevelIndex) {
               autoAdvanceTimer = null;
               loadLevel(currentLevelIndex + 1);
             }, 1500);
+          } else {
+            // Last available level completed — generate the next one.
+            const updatedLevels = GAME_CONFIG.snake.appendLevel();
+            // Refresh the level select to include the new option.
+            const newSelect = root.querySelector('#level-select');
+            if (newSelect) {
+              newSelect.innerHTML = updatedLevels.map((l, i) =>
+                `<option value="${i}">Nível ${i + 1} — ${l.name}</option>`
+              ).join('');
+              newSelect.value = String(currentLevelIndex);
+            }
           }
           break;
         case 'gameover':

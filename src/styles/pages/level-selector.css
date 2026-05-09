@@ -1,8 +1,28 @@
 /* === Section Header === */
 .section-header {
   display: flex;
-  flex-direction: column;
-  gap: var(--space-xs);
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.section-header__reset-btn {
+  margin-left: auto;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-outline);
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 200ms ease, color 200ms ease;
+}
+
+.section-header__reset-btn:hover {
+  background-color: var(--color-surface-container-highest);
+  color: var(--color-text);
 }
 
 .section-header__subtitle {

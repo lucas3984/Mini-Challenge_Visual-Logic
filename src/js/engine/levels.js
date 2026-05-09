@@ -1,299 +1,121 @@
 ﻿/**
- * Level definitions for the Snake Tactical puzzle game.
- * Each level specifies grid layout, wall positions, apple positions,
- * snake starting state, and constraints on the player's block-based programming.
+ * ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ *  LEGACY LEVEL DEFINITIONS — DO NOT USE
+ * ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  *
- * starThree / starTwo: maximum block count to earn 3-star / 2-star rating.
- * Lower values demand more optimized solutions in fewer blocks.
+ * This file is kept as a commented reference only.
+ * All levels are now generated procedurally by level-generator.js.
+ * The format below documents the expected object shape.
  *
- * maxBlocks / maxLoops / maxIfs: absolute limits on the player's program.
- * Controls puzzle difficulty by restricting available constructs.
+ * To disable the generator and restore manual levels, replace
+ * `games.js` imports with:
+ *
+ *   import { levels } from './levels.js';
+ *
+ * And remove the level-generator.js module.
+ *
+ * ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ *
+ * export const levels = [
+ *   {
+ *     id: 1,
+ *     name: 'A Escada',
+ *     description: '...',
+ *
+ *     snake: [
+ *       { row: 5, col: 0 },
+ *       { row: 6, col: 0 },
+ *       { row: 7, col: 0 },
+ *     ],
+ *
+ *     direction: 'up',   // 'right' | 'down' | 'left' | 'up'
+ *
+ *     walls: [
+ *       { row: 1, col: 7 },
+ *       { row: 2, col: 7 },
+ *       // ... more wall cells
+ *     ],
+ *
+ *     apples: [
+ *       { row: 0, col: 7 },
+ *       { row: 2, col: 5 },
+ *       // ... more apple cells
+ *     ],
+ *
+ *     maxBlocks: 15,   // Total top-level blocks allowed in workspace
+ *     maxLoops: 3,     // Max Repeat blocks
+ *     maxIfs: 1,       // Max Se (conditional) blocks
+ *
+ *     starThree: 8,   // Max blocks to earn 3 stars
+ *     starTwo: 12,    // Max blocks to earn 2 stars
+ *
+ *     gridSize: 8,
+ *   },
+ *   // ... more levels (id increments sequentially, 1-based)
+ * ];
+ *
+ * ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ *  Level object field reference
+ * ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ *
+ * id           {number}  Sequential level ID, starts at 1
+ * name         {string}  Level name displayed in the UI
+ * description  {string}  Hint text shown to the player
+ *
+ * snake        {Array<{row:number, col:number}>}
+ *               Snake body segments. Head is index 0.
+ *               All segments must fit within gridSize.
+ *
+ * direction    {string}  Initial facing direction of the snake head.
+ *               One of: 'right' | 'down' | 'left' | 'up'
+ *
+ * walls        {Array<{row:number, col:number}>}
+ *               Wall cells. Snake dies on contact.
+ *               Should not overlap with snake or apple cells.
+ *
+ * apples       {Array<{row:number, col:number}>}
+ *               Apple cells. Snake grows and scores on contact.
+ *               Must be reachable from snake start via open cells.
+ *
+ * maxBlocks    {number}  Upper bound on top-level blocks the player
+ *               may place in the workspace (not counting nested blocks).
+ *
+ * maxLoops     {number}  Max Repeat (loop) blocks at any nesting level.
+ *
+ * maxIfs       {number}  Max Se (conditional) blocks at any nesting level.
+ *
+ * starThree    {number}  Block count threshold for 3-star rating.
+ *               player must complete level using <= this many blocks.
+ *
+ * starTwo      {number}  Block count threshold for 2-star rating.
+ *               player must complete level using <= this many blocks.
+ *               starOne is implicit: level completed at all = 1 star.
+ *
+ * gridSize     {number}  Grid dimension. Always 8 in this project.
+ *
+ * ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ *  Star rating formula
+ * ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ *
+ * blocks used <= starThree → 3 stars
+ * blocks used <= starTwo   → 2 stars
+ * level completed          → 1 star
+ *
+ * Stored score is the star count (1-3), not raw block count.
+ * See utils/stars.js → calculateStars(used, three, two)
+ *
+ * ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ *  Block budget design guideline
+ * ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ *
+ * A level should be solvable but not trivial.
+ * Design: find the shortest BFS path from snake start to all apples,
+ * count the moves (each move = 1 block, or 1 loop iteration).
+ *
+ * Example: path requires 12 moves
+ *   maxBlocks  = 12 + 2  (small margin for loops/ifs)
+ *   starThree   = 12 - 2  (tight — player must use loops)
+ *   starTwo     = 12 + 1  (loose — single actions still pass)
+ *
+ * ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  */
-export const levels = [
-  {
-    id: 1,
-    name: 'A Escada',
-    description: 'Use Repetir para economizar blocos em um padrão',
-    snake: [
-      { row: 5, col: 0 },
-      { row: 6, col: 0 },
-      { row: 7, col: 0 },
-    ],
-    direction: 'up',
-    // Wall layout forms a staircase pattern — the snake must navigate upward through gaps
-    walls: [
-      { row: 1, col: 7 },
-      { row: 2, col: 7 },
-      { row: 3, col: 5 }, { row: 3, col: 6 }, { row: 3, col: 7 },
-      { row: 4, col: 5 }, { row: 4, col: 6 }, { row: 4, col: 7 },
-      { row: 5, col: 3 }, { row: 5, col: 4 }, { row: 5, col: 5 }, { row: 5, col: 6 }, { row: 5, col: 7 },
-      { row: 6, col: 2 }, { row: 6, col: 3 }, { row: 6, col: 4 }, { row: 6, col: 5 }, { row: 6, col: 6 }, { row: 6, col: 7 },
-      { row: 7, col: 2 }, { row: 7, col: 3 }, { row: 7, col: 4 }, { row: 7, col: 5 }, { row: 7, col: 6 }, { row: 7, col: 7 },
-    ],
-    apples: [
-      { row: 0, col: 7 },
-      { row: 2, col: 5 },
-      { row: 4, col: 3 },
-    ],
-    // Liberal block limit — this is the tutorial level
-    maxBlocks: 15,
-    maxLoops: 3,
-    maxIfs: 1,
-    // Star thresholds: tighter 3-star encourages efficient repeat usage
-    starThree: 8,
-    starTwo: 12,
-    gridSize: 8,
-  },
-  {
-    id: 2,
-    name: 'Desvio',
-    description: 'Uma parede bloqueia o caminho — contorne-a usando Se',
-    snake: [
-      { row: 2, col: 0 },
-      { row: 2, col: 1 },
-      { row: 2, col: 2 },
-    ],
-    direction: 'right',
-    walls: [
-      { row: 0, col: 5 }, { row: 0, col: 6 }, { row: 0, col: 7 },
-      { row: 1, col: 5 }, { row: 1, col: 6 }, { row: 1, col: 7 },
-      { row: 2, col: 5 }, { row: 2, col: 6 }, { row: 2, col: 7 },
-      { row: 5, col: 0 }, { row: 5, col: 1 }, { row: 5, col: 2 }, { row: 5, col: 3 }, { row: 5, col: 4 }, { row: 5, col: 5 }, { row: 5, col: 6 }, { row: 5, col: 7 },
-      { row: 6, col: 0 }, { row: 6, col: 1 }, { row: 6, col: 2 }, { row: 6, col: 3 }, { row: 6, col: 4 }, { row: 6, col: 5 }, { row: 6, col: 6 }, { row: 6, col: 7 },
-      { row: 7, col: 0 }, { row: 7, col: 1 }, { row: 7, col: 2 }, { row: 7, col: 3 }, { row: 7, col: 4 }, { row: 7, col: 5 }, { row: 7, col: 6 }, { row: 7, col: 7 },
-    ],
-    apples: [
-      { row: 2, col: 3 },
-      { row: 0, col: 7 },
-    ],
-    maxBlocks: 10,
-    maxLoops: 2,
-    maxIfs: 1,
-    starThree: 5,
-    starTwo: 7,
-    gridSize: 8,
-  },
-  {
-    id: 3,
-    name: 'Festa de Maçãs',
-    description: 'O caminho é longo — use Repetir para coletar todas as maçãs',
-    snake: [
-      { row: 0, col: 0 },
-      { row: 0, col: 1 },
-      { row: 0, col: 2 },
-    ],
-    direction: 'right',
-    walls: [
-      { row: 0, col: 7 },
-      { row: 1, col: 0 }, { row: 1, col: 1 }, { row: 1, col: 2 }, { row: 1, col: 3 }, { row: 1, col: 4 }, { row: 1, col: 5 }, { row: 1, col: 6 }, { row: 1, col: 7 },
-      { row: 3, col: 0 }, { row: 3, col: 1 }, { row: 3, col: 2 }, { row: 3, col: 3 }, { row: 3, col: 4 }, { row: 3, col: 5 }, { row: 3, col: 6 }, { row: 3, col: 7 },
-      { row: 5, col: 0 }, { row: 5, col: 1 }, { row: 5, col: 2 }, { row: 5, col: 3 }, { row: 5, col: 4 }, { row: 5, col: 5 }, { row: 5, col: 6 }, { row: 5, col: 7 },
-      { row: 7, col: 0 }, { row: 7, col: 1 }, { row: 7, col: 2 }, { row: 7, col: 3 }, { row: 7, col: 4 }, { row: 7, col: 5 }, { row: 7, col: 6 }, { row: 7, col: 7 },
-    ],
-    apples: [
-      { row: 0, col: 3 }, { row: 0, col: 4 }, { row: 0, col: 5 }, { row: 0, col: 6 },
-      { row: 2, col: 0 }, { row: 2, col: 1 }, { row: 2, col: 2 }, { row: 2, col: 3 }, { row: 2, col: 4 }, { row: 2, col: 5 }, { row: 2, col: 6 },
-      { row: 4, col: 0 }, { row: 4, col: 1 }, { row: 4, col: 2 }, { row: 4, col: 3 }, { row: 4, col: 4 }, { row: 4, col: 5 }, { row: 4, col: 6 },
-      { row: 6, col: 0 }, { row: 6, col: 1 }, { row: 6, col: 2 }, { row: 6, col: 3 }, { row: 6, col: 4 }, { row: 6, col: 5 }, { row: 6, col: 6 },
-    ],
-    maxBlocks: 12,
-    maxLoops: 6,
-    maxIfs: 3,
-    starThree: 5,
-    starTwo: 9,
-    gridSize: 8,
-  },
-  {
-    id: 4,
-    name: 'Desvie da Parede',
-    description: 'Use Se [Parede à frente] para desviar na hora certa',
-    snake: [
-      { row: 3, col: 0 },
-      { row: 3, col: 1 },
-      { row: 3, col: 2 },
-    ],
-    direction: 'right',
-    walls: [
-      { row: 3, col: 5 },
-    ],
-    apples: [
-      { row: 3, col: 7 },
-      { row: 6, col: 7 },
-    ],
-    maxBlocks: 8,
-    maxLoops: 4,
-    maxIfs: 2,
-    starThree: 3,
-    starTwo: 5,
-    gridSize: 8,
-  },
-  {
-    id: 5,
-    name: 'O Corredor',
-    description: 'Duas paredes — use dois blocos Se para desviar de ambas',
-    snake: [
-      { row: 3, col: 2 },
-      { row: 3, col: 1 },
-      { row: 3, col: 0 },
-    ],
-    direction: 'right',
-    walls: [
-      { row: 3, col: 4 },
-      { row: 6, col: 1 },
-    ],
-    apples: [
-      { row: 0, col: 0 },
-      { row: 6, col: 7 },
-    ],
-    maxBlocks: 10,
-    maxLoops: 5,
-    maxIfs: 2,
-    starThree: 5,
-    starTwo: 8,
-    gridSize: 8,
-  },
-  {
-    id: 6,
-    name: 'Repetição e Giro',
-    description: 'Três maçãs em sequência — use Repetir para otimizar blocos',
-    snake: [
-      { row: 5, col: 7 },
-      { row: 6, col: 7 },
-      { row: 7, col: 7 },
-    ],
-    direction: 'up',
-    walls: [
-      { row: 0, col: 0 }, { row: 0, col: 1 }, { row: 0, col: 2 }, { row: 0, col: 3 }, { row: 0, col: 4 }, { row: 0, col: 5 },
-      { row: 3, col: 2 }, { row: 3, col: 3 }, { row: 3, col: 4 }, { row: 3, col: 5 }, { row: 3, col: 6 }, { row: 3, col: 7 },
-      { row: 6, col: 0 }, { row: 6, col: 1 }, { row: 6, col: 2 }, { row: 6, col: 3 }, { row: 6, col: 4 }, { row: 6, col: 5 },
-    ],
-    apples: [
-      { row: 7, col: 1 },
-      { row: 3, col: 1 },
-      { row: 1, col: 7 },
-    ],
-    maxBlocks: 12,
-    maxLoops: 4,
-    maxIfs: 2,
-    starThree: 9,
-    starTwo: 12,
-    gridSize: 8,
-  },
-  {
-    id: 7,
-    name: 'Desvie e Colet',
-    description: 'Zonas separadas por paredes — use Se para mudar de corredor',
-    snake: [
-      { row: 3, col: 3 },
-      { row: 3, col: 4 },
-      { row: 3, col: 5 },
-    ],
-    direction: 'left',
-    walls: [
-      { row: 0, col: 0 }, { row: 0, col: 1 }, { row: 0, col: 2 }, { row: 0, col: 3 }, { row: 0, col: 4 }, { row: 0, col: 5 }, { row: 0, col: 6 },
-      { row: 1, col: 3 }, { row: 1, col: 4 }, { row: 1, col: 5 }, { row: 1, col: 6 }, { row: 1, col: 7 },
-      { row: 2, col: 1 },
-      { row: 4, col: 1 },
-      { row: 5, col: 0 }, { row: 5, col: 1 }, { row: 5, col: 2 }, { row: 5, col: 3 }, { row: 5, col: 4 }, { row: 5, col: 5 }, { row: 5, col: 6 }, { row: 5, col: 7 },
-      { row: 6, col: 0 }, { row: 6, col: 1 }, { row: 6, col: 2 }, { row: 6, col: 3 }, { row: 6, col: 4 }, { row: 6, col: 5 }, { row: 6, col: 6 }, { row: 6, col: 7 },
-      { row: 7, col: 0 }, { row: 7, col: 1 }, { row: 7, col: 2 }, { row: 7, col: 3 }, { row: 7, col: 4 }, { row: 7, col: 5 }, { row: 7, col: 6 }, { row: 7, col: 7 },
-    ],
-    apples: [
-      { row: 4, col: 7 },
-      { row: 2, col: 0 },
-      { row: 2, col: 7 },
-      { row: 4, col: 0 },
-    ],
-    maxBlocks: 12,
-    maxLoops: 2,
-    maxIfs: 2,
-    starThree: 8,
-    starTwo: 10,
-    gridSize: 8,
-  },
-  {
-    id: 8,
-    name: 'O Labirinto',
-    description: 'Corredor em zigue-zague — Repita o padrão para coletar todas',
-    snake: [
-      { row: 0, col: 2 },
-      { row: 0, col: 1 },
-      { row: 0, col: 0 },
-    ],
-    direction: 'right',
-    walls: [
-      { row: 1, col: 0 }, { row: 1, col: 1 }, { row: 1, col: 2 }, { row: 1, col: 5 }, { row: 1, col: 6 }, { row: 1, col: 7 },
-      { row: 3, col: 1 }, { row: 3, col: 2 }, { row: 3, col: 3 }, { row: 3, col: 4 }, { row: 3, col: 5 }, { row: 3, col: 7 },
-      { row: 4, col: 1 },
-      { row: 5, col: 1 }, { row: 5, col: 2 }, { row: 5, col: 5 },
-      { row: 6, col: 5 },
-      { row: 7, col: 0 }, { row: 7, col: 1 }, { row: 7, col: 2 }, { row: 7, col: 3 }, { row: 7, col: 4 }, { row: 7, col: 5 }, { row: 7, col: 6 }, { row: 7, col: 7 },
-    ],
-    apples: [
-      { row: 0, col: 7 },
-      { row: 6, col: 0 },
-      { row: 4, col: 7 },
-      { row: 6, col: 7 },
-      { row: 2, col: 0 },
-    ],
-    maxBlocks: 25,
-    maxLoops: 6,
-    maxIfs: 3,
-    starThree: 17,
-    starTwo: 20,
-    gridSize: 8,
-  },
-  {
-    id: 9,
-    name: 'Perímetro',
-    description: 'Colete as maçãs no perímetro — otimize o caminho com Repetir',
-    snake: [
-      { row: 0, col: 0 },
-      { row: 0, col: 1 },
-      { row: 0, col: 2 },
-    ],
-    direction: 'left',
-    walls: [],
-    apples: [
-      { row: 7, col: 7 },
-      { row: 7, col: 3 },
-      { row: 0, col: 3 },
-      { row: 3, col: 7 },
-    ],
-    maxBlocks: 10,
-    maxLoops: 5,
-    maxIfs: 2,
-    starThree: 1,
-    starTwo: 5,
-    gridSize: 8,
-  },
-  {
-    id: 10,
-    name: 'Desafio Final',
-    description: 'Colete todas as maçãs no maze — combine tudo o que aprendeu',
-    snake: [
-      { row: 7, col: 5 },
-      { row: 7, col: 6 },
-      { row: 7, col: 7 },
-    ],
-    direction: 'left',
-    walls: [
-      { row: 1, col: 2 }, { row: 1, col: 3 }, { row: 1, col: 4 }, { row: 1, col: 5 }, { row: 1, col: 6 },
-      { row: 4, col: 1 }, { row: 4, col: 2 }, { row: 4, col: 3 }, { row: 4, col: 4 }, { row: 4, col: 5 }, { row: 4, col: 6 },
-      { row: 6, col: 2 }, { row: 6, col: 3 }, { row: 6, col: 4 }, { row: 6, col: 5 }, { row: 6, col: 6 },
-    ],
-    apples: [
-      { row: 7, col: 1 },
-      { row: 0, col: 7 },
-      { row: 0, col: 0 },
-      { row: 3, col: 7 },
-      { row: 3, col: 2 },
-    ],
-    maxBlocks: 14,
-    maxLoops: 6,
-    maxIfs: 3,
-    starThree: 8,
-    starTwo: 11,
-    gridSize: 8,
-  },
-];
