@@ -560,7 +560,7 @@ function init(root, initialLevelIndex) {
       }
     });
 
-    setItem(`snake-workspace-${levelIndex}`, stackEl.innerHTML);
+    setGameWorkspace(getActiveProfile(), 'snake', levelIndex, stackEl.innerHTML);
   }
 
   /**
