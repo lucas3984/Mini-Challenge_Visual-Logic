@@ -8,9 +8,9 @@
   display: flex;
   flex-direction: column;
   background: var(--bg-surface);
-  border-right: 2px solid var(--border-dark);
-  overflow-y: auto;
-  overflow-x: hidden;
+  border: 2px solid var(--border-dark);
+  border-radius: var(--radius-md);
+  overflow: hidden;
   flex-shrink: 0;
   z-index: 40;
 }
@@ -60,10 +60,7 @@
 }
 
 .sidebar__category-dot {
-  width: 0.75rem;
-  height: 0.75rem;
-  border-radius: var(--radius-sm);
-  flex-shrink: 0;
+  display: none;
 }
 
 .sidebar__category-dot--action { background: var(--color-action); }
@@ -96,7 +93,7 @@
   font-family: var(--font-mono);
   font-size: var(--text-sm-md);
   font-weight: 600;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   cursor: grab;
   user-select: none;
   transition: filter var(--duration-quick) ease, opacity var(--duration-quick) ease, box-shadow var(--duration-fast) ease;
@@ -145,7 +142,7 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   font-family: var(--font-mono);
   min-width: 10rem;
   cursor: grab;
@@ -176,7 +173,7 @@
   padding: var(--space-sm) var(--space-md);
   min-height: 2.25rem;
   font-size: var(--text-sm-md);  font-weight: 600;
-  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
 }
 
 .c-block__label { font-family: var(--font-mono); font-weight: 600; white-space: nowrap; }
@@ -227,6 +224,7 @@
 .c-block__body {
   display: flex;
   position: relative;
+  padding-bottom: var(--space-sm);
 }
 
 .c-block__spine {
@@ -246,28 +244,19 @@
   min-height: 3rem;
   border: var(--border-width-thin) dashed var(--color-dropzone-border);
   border-radius: var(--radius-sm);
-  transition: border-color 0.2s ease, background 0.2s ease;
+  transition: border-color 0.2s ease, background 0.2s ease, min-height 0.2s ease, padding 0.2s ease;
   background: var(--color-input-border);
+}
+
+.c-block__dropzone:empty {
+  min-height: 1.5rem;
+  padding: 0.125rem 0.25rem 0.125rem 0.25rem;
 }
 
 .c-block__dropzone:empty::after {
   content: '';
   display: block;
   min-height: 2rem;
-}
-
-.c-block__footer {
-  height: 2.5rem;
-  background: inherit;
-  border-radius: 0 0 var(--radius-md) var(--radius-md);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: var(--text-3xs);  font-weight: 600;
-  color: var(--color-text-faint);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  width: 80%;
 }
 
 /* ===== States ===== */
@@ -331,10 +320,11 @@
   display: flex;
   flex-direction: column;
   background: var(--bg-surface);
+  border: 2px solid var(--border-dark);
+  border-radius: var(--radius-md);
   overflow: hidden;
   min-height: 0;
   z-index: 30;
-  box-shadow: -4px 0 0 0 var(--color-shadow), 4px 0 0 0 var(--color-shadow);
 }
 
 .workspace__area {
@@ -345,6 +335,23 @@
   background-color: var(--bg-surface);
   overflow: auto;
   position: relative;
+}
+
+.workspace__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-md);
+  background: var(--bg-elevated);
+  border-bottom: 2px solid var(--border-dark);
+  flex-shrink: 0;
+}
+
+.workspace__title {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm-md);
+  font-weight: 700;
+  color: var(--color-text-bright);
 }
 
 .workspace__stack {

@@ -6,8 +6,9 @@
 .stage {
   display: flex;
   flex-direction: column;
-  background: var(--bg-app);
-  border-left: 2px solid var(--border-dark);
+  background: var(--bg-surface);
+  border: 2px solid var(--border-dark);
+  border-radius: var(--radius-md);
   overflow: hidden;
   flex-shrink: 0;
   z-index: 20;
@@ -303,6 +304,37 @@
 .stage__apple-counter {
   color: var(--color-apple);
   font-weight: 700;
+}
+
+/* ===== Stage Controls ===== */
+.stage-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-between);
+  padding: var(--space-sm) 0;
+}
+
+.stage-btn--stop {
+  background: var(--color-clear);
+  color: var(--color-danger-text);
+  box-shadow: var(--shadow-block);
+  border-bottom: var(--border-width-game) solid var(--color-danger-shadow);
+}
+
+.stage-btn--stop:hover:not(:disabled) {
+  background: var(--color-danger-hover);
+}
+
+.stage-info {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--bg-surface);
+  border-top: 1px solid var(--border-dark);
+  flex-wrap: wrap;
 }
 
 /* ===== SVG Sprites ===== */

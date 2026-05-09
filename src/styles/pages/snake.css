@@ -309,6 +309,8 @@
   flex-direction: column;
   flex: 1;
   overflow: hidden;
+  gap: var(--space-sm);
+  padding: var(--space-sm);
 }
 
 @media (min-width: 48rem) {
@@ -316,6 +318,8 @@
     display: grid;
     grid-template-columns: var(--sidebar-width) 1fr 40rem;
     grid-template-rows: 1fr;
+    gap: var(--space-sm);
+    padding: var(--space-sm);
   }
 }
 

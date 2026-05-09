@@ -59,47 +59,6 @@ export function render(params = {}) {
 
   const root = document.createElement('div');
   root.innerHTML = `
-    <header class="app-header">
-      <div class="app-header__left">
-        <h1 class="app-header__title">Snake Tactical</h1>
-      </div>
-      <div class="app-header__right">
-        <a href="#/levels/snake" class="header-btn header-btn--hub">
-          <img src="src/assets/images/icons/snake-icons/icon-hub.svg" alt="" aria-hidden="true" class="btn-icon" width="24" height="24"> Voltar
-        </a>
-        <button id="btn-run" class="header-btn header-btn--run" aria-label="Executar código">
-          <img src="src/assets/images/icons/snake-icons/icon-run.svg" alt="" aria-hidden="true" class="btn-icon" width="24" height="24"> Executar
-        </button>
-        <button id="btn-pause" class="header-btn header-btn--pause" aria-label="Pausar execução" disabled>
-          <img src="src/assets/images/icons/snake-icons/icon-pause.svg" alt="" aria-hidden="true" class="btn-icon" width="24" height="24"> Pausar
-        </button>
-        <div class="header-divider"></div>
-        <button id="btn-clear" class="header-btn header-btn--clear" aria-label="Limpar área">
-          <img src="src/assets/images/icons/snake-icons/icon-clear.svg" alt="" aria-hidden="true" class="btn-icon" width="24" height="24"> Limpar
-        </button>
-      </div>
-    </header>
-
-    <div class="level-bar">
-        <select id="level-select" class="level-selector" aria-label="Selecionar nível">
-          <option value="0">Nível 1 — A Escada</option>
-          <option value="1" disabled>Nível 2 — Desvio</option>
-          <option value="2" disabled>Nível 3 — Festa de Maçãs</option>
-          <option value="3" disabled>Nível 4 — Desvie da Parede</option>
-          <option value="4" disabled>Nível 5 — O Corredor</option>
-          <option value="5" disabled>Nível 6 — Repetição e Giro</option>
-          <option value="6" disabled>Nível 7 — Desvie e Colet</option>
-          <option value="7" disabled>Nível 8 — O Labirinto</option>
-          <option value="8" disabled>Nível 9 — Perímetro</option>
-          <option value="9" disabled>Nível 10 — Desafio Final</option>
-        </select>
-      <span class="level-name" id="level-name"></span>
-      <button id="btn-rules" class="progress-reset-btn" aria-label="Ver regras">Regras</button>
-      <span class="block-counter" id="block-counter">Blocos: 0 / 10</span>
-      <span class="block-counter loop-counter" id="loop-counter">Loops: 0 / 1</span>
-      <span class="block-counter loop-counter" id="if-counter">Se: 0 / 1</span>
-    </div>
-
     <div class="app-container">
       <aside class="sidebar" aria-label="Paleta de blocos">
         <div class="sidebar__header">
@@ -119,21 +78,27 @@ export function render(params = {}) {
                   tabindex="0"
                   role="listitem"
                   title="Move a cobra 1 casa na direção atual"
-                  aria-grabbed="false">Mover Frente</div>
+                  aria-grabbed="false">
+                  <img src="src/assets/images/icons/visual-programming-icons/Move-Forward-Icon.svg" class="block__icon" width="16" height="16" alt="" aria-hidden="true"> Mover Frente
+                </div>
               <div class="block block--action"
                   draggable="true"
                   data-block-type="turn-left"
                   tabindex="0"
                   role="listitem"
                   title="Gira a cobra 90° para a esquerda"
-                  aria-grabbed="false">Girar Esquerda</div>
+                  aria-grabbed="false">
+                  <img src="src/assets/images/icons/visual-programming-icons/Rotate-Left-Icon.svg" class="block__icon" width="16" height="16" alt="" aria-hidden="true"> Girar Esquerda
+                </div>
               <div class="block block--action"
                   draggable="true"
                   data-block-type="turn-right"
                   tabindex="0"
                   role="listitem"
                   title="Gira a cobra 90° para a direita"
-                  aria-grabbed="false">Girar Direita</div>
+                  aria-grabbed="false">
+                  <img src="src/assets/images/icons/visual-programming-icons/Rotate-Right-Icon.svg" class="block__icon" width="16" height="16" alt="" aria-hidden="true"> Girar Direita
+                </div>
             </div>
           </section>
 
@@ -150,6 +115,7 @@ export function render(params = {}) {
                   title="Repete os blocos dentro dele N vezes"
                   aria-grabbed="false">
                 <div class="c-block__header">
+                  <img src="src/assets/images/icons/visual-programming-icons/Loop-Icon.svg" class="block__icon" width="16" height="16" alt="" aria-hidden="true">
                   <span class="c-block__label">Repetir</span>
                   <input class="c-block__input" type="number" value="3" min="1" max="99" aria-label="Número de repetições">
                   <span class="c-block__label">vezes</span>
@@ -158,7 +124,6 @@ export function render(params = {}) {
                   <div class="c-block__spine"></div>
                   <div class="c-block__dropzone" aria-label="Zona de encaixe de blocos"></div>
                 </div>
-                <div class="c-block__footer">fim</div>
               </div>
             </div>
           </section>
@@ -176,6 +141,7 @@ export function render(params = {}) {
                   title="Executa os blocos dentro apenas se a condição for verdadeira"
                   aria-grabbed="false">
                 <div class="c-block__header">
+                  <img src="src/assets/images/icons/visual-programming-icons/IF-ELSE-Icon.svg" class="block__icon" width="16" height="16" alt="" aria-hidden="true">
                   <span class="c-block__label">Se</span>
                   <select class="c-block__select" aria-label="Condição">
                     <option>Comeu maçã</option>
@@ -186,27 +152,21 @@ export function render(params = {}) {
                   <div class="c-block__spine"></div>
                   <div class="c-block__dropzone" aria-label="Zona de encaixe de blocos"></div>
                 </div>
-                <div class="c-block__footer">fim</div>
               </div>
             </div>
           </section>
         </div>
-
-        <div class="sidebar__footer">
-          <button id="btn-reset-workspace" class="sidebar__reset-btn">
-            <img src="src/assets/images/icons/snake-icons/icon-reset.svg" alt="" aria-hidden="true" class="btn-icon" width="24" height="24"> Resetar Área
-          </button>
-        </div>
       </aside>
 
       <section class="workspace" aria-label="Área de montagem de código">
+        <div class="workspace__header">
+          <span class="workspace__title">Área de Trabalho - Fase 12</span>
+          <button id="btn-clear-workspace" class="header-btn header-btn--clear" title="Limpar" aria-label="Limpar área">
+            <img src="src/assets/images/icons/snake-icons/icon-clear.svg" alt="Limpar área de trabalho" class="btn-icon" width="20" height="20">
+          </button>
+        </div>
         <div class="workspace__area">
           <div class="workspace__stack"></div>
-        </div>
-        <div class="controls-bar">
-          <button id="btn-clear-workspace" class="controls-bar__btn controls-bar__btn--clear" title="Limpar" aria-label="Limpar área">
-            <img src="src/assets/images/icons/snake-icons/icon-clear.svg" alt="Limpar área de trabalho" class="btn-icon" width="24" height="24">
-          </button>
         </div>
       </section>
 
@@ -231,6 +191,25 @@ export function render(params = {}) {
           <span id="stage-position">Pos: (&mdash;, &mdash;) direção &mdash;</span>
           <span id="apple-counter" class="stage__apple-counter">&#127822; 0/0</span>
           <span id="stage-status" class="stage__status">Pronto</span>
+        </div>
+
+        <div class="stage-controls">
+          <button id="btn-run" class="header-btn header-btn--run" aria-label="Executar código">
+            <img src="src/assets/images/icons/snake-icons/icon-run.svg" alt="" aria-hidden="true" class="btn-icon" width="20" height="20"> Executar
+          </button>
+          <button id="btn-pause" class="header-btn header-btn--pause" aria-label="Pausar execução" disabled>
+            <img src="src/assets/images/icons/snake-icons/icon-pause.svg" alt="" aria-hidden="true" class="btn-icon" width="20" height="20"> Pausar
+          </button>
+          <button id="btn-stop" class="header-btn stage-btn--stop" aria-label="Parar execução" disabled>
+            <img src="src/assets/images/icons/visual-programming-icons/Stop-Icon.svg" alt="" aria-hidden="true" class="btn-icon" width="20" height="20"> Parar
+          </button>
+        </div>
+
+        <div class="stage-info">
+          <button id="btn-rules" class="progress-reset-btn" aria-label="Ver regras">Regras</button>
+          <span class="block-counter" id="block-counter">Blocos: 0 / 10</span>
+          <span class="block-counter loop-counter" id="loop-counter">Loops: 0 / 1</span>
+          <span class="block-counter loop-counter" id="if-counter">Se: 0 / 1</span>
         </div>
       </section>
     </div>
@@ -453,14 +432,10 @@ function init(root, initialLevelIndex) {
 
   const btnRun = root.querySelector('#btn-run');
   const btnPause = root.querySelector('#btn-pause');
-  const btnClear = root.querySelector('#btn-clear');
   const btnClearWs = root.querySelector('#btn-clear-workspace');
-  const btnResetWs = root.querySelector('#btn-reset-workspace');
   const btnRules = root.querySelector('#btn-rules');
   const modalRules = root.querySelector('#modal-rules');
   const btnRulesClose = root.querySelector('#btn-rules-close');
-  const levelSelect = root.querySelector('#level-select');
-  const levelNameEl = root.querySelector('#level-name');
   const stageLevelEl = root.querySelector('#stage-level');
   const statusEl = root.querySelector('#stage-status');
 
@@ -509,17 +484,7 @@ function init(root, initialLevelIndex) {
    * progress at a glance.
    */
   function updateLevelSelect() {
-    if (!levelSelect) return;
-    const options = levelSelect.options;
-    for (let i = 0; i < options.length; i++) {
-      // Levels beyond the next unlockable index remain disabled — this enforces
-      // the linear progression requirement.
-      options[i].disabled = i > highestCompletedLevel + 1;
-      const level = levels[i];
-      if (level) {
-        options[i].textContent = `Nível ${i + 1} \u2014 ${level.name}${starString(i)}`;
-      }
-    }
+    // Level selector removed - functionality handled by level-selector page
   }
 
   /**
@@ -601,8 +566,6 @@ function init(root, initialLevelIndex) {
     const saved = getItem(`snake-workspace-${index}`);
     stackEl.innerHTML = saved !== null ? saved : '';
 
-    if (levelSelect) levelSelect.value = String(index);
-    if (levelNameEl) levelNameEl.textContent = level.name;
     if (stageLevelEl) stageLevelEl.textContent = `Nível ${level.id}: ${level.name}`;
     updateBlockCounterLive();
     if (statusEl) statusEl.textContent = 'Pronto';
@@ -716,41 +679,11 @@ function init(root, initialLevelIndex) {
     });
   }
 
-  // --- Clear button (reloads current level from scratch) ---
-  if (btnClear) {
-    btnClear.addEventListener('click', () => {
-      clearWorkspace(currentLevelIndex);
-      loadLevel(currentLevelIndex);
-    });
-  }
-
   // --- Workspace clear button (same behavior: reload level) ---
   if (btnClearWs) {
     btnClearWs.addEventListener('click', () => {
       clearWorkspace(currentLevelIndex);
       loadLevel(currentLevelIndex);
-    });
-  }
-
-  // --- Reset workspace button (same behavior: reload level) ---
-  if (btnResetWs) {
-    btnResetWs.addEventListener('click', () => {
-      clearWorkspace(currentLevelIndex);
-      loadLevel(currentLevelIndex);
-    });
-  }
-
-  // --- Level selector ---
-  if (levelSelect) {
-    levelSelect.addEventListener('change', () => {
-      const index = parseInt(levelSelect.value, 10);
-      // Reject selection of locked levels (the guard is also in loadLevel, but
-      // this prevents the dropdown from visually changing briefly).
-      if (index > highestCompletedLevel + 1) {
-        levelSelect.value = String(currentLevelIndex);
-        return;
-      }
-      loadLevel(index);
     });
   }
 
