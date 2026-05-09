@@ -24,4 +24,10 @@ router.addRoute('/levels/snake/:levelId', (params) => renderSnake({
   levelId: params.levelId
 }));
 
+// Profile switching: re-render the current route so every page reads the new
+// active profile from localStorage. This avoids needing per-page listeners.
+window.addEventListener('profile-changed', () => {
+  router.refresh();
+});
+
 router.start();

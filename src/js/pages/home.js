@@ -106,6 +106,8 @@ export function render() {
       onSubmit: (name) => {
         setActiveProfile(name);
         profileModal.close();
+        // Re-render so the TopAppBar shows the new profile name
+        window.dispatchEvent(new CustomEvent('profile-changed'));
       }
     });
     profileModal.mount(document.body);

@@ -36,6 +36,14 @@ export class Router {
   }
 
   /**
+   * Re-renders the current route without changing the hash.
+   * Used when the active profile changes to refresh all page data.
+   */
+  refresh() {
+    this.#handleRoute();
+  }
+
+  /**
    * Starts the router: handles the initial hash or defaults to '/'.
    */
   start() {
