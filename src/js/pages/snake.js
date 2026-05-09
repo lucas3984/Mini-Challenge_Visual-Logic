@@ -58,6 +58,18 @@ export function render(params = {}) {
     ? parseInt(currentLevelId, 10) - 1
     : 0;
 
+  // Guard: if the URL specifies a level beyond the current profile's progress,
+  // show the access denied page instead of the game.
+  if (params.levelId) {
+    const profile = getActiveProfile();
+    const progress = getGameProgress(profile, 'snake');
+    const levelIndex = parseInt(params.levelId, 10) - 1;
+
+    if (levelIndex > progress) {
+      return renderAccessDenied();
+    }
+  }
+
   const wrapper = document.createElement('div');
   wrapper.className = 'page--snake';
   wrapper.setAttribute('data-theme', 'dark');
@@ -808,4 +820,46 @@ function init(root, initialLevelIndex) {
     const restoredIndex = savedLevel !== null ? savedLevel : highestCompletedLevel + 1;
     loadLevel(restoredIndex);
   }
+}
+
+/**
+ * Renders a full-page access denied view when the current profile hasn't
+ * unlocked the level requested in the URL. Provides navigation back to the
+ * home page or level selector so the user is never stuck.
+ *
+ * @returns {HTMLElement} The assembled page element with TopAppBar, denied
+ *   card, and BottomNav.
+ */
+function renderAccessDenied() {
+  const wrapper = document.createElement('div');
+  wrapper.className = 'page--snake';
+  wrapper.setAttribute('data-theme', 'dark');
+
+  const topAppBar = new TopAppBar();
+  wrapper.appendChild(topAppBar.render());
+
+  const content = document.createElement('div');
+  content.className = 'access-denied';
+  content.innerHTML = `
+    <div class="access-denied__card">
+      <div class="access-denied__icon" aria-hidden="true">
+        <span class="material-symbols-outlined access-denied__icon-symbol">block</span>
+      </div>
+      <h2 class="access-denied__title">Epa, voc\u00ea ainda n\u00e3o<br>deveria estar aqui</h2>
+      <p class="access-denied__subtitle">Complete as fases anteriores para desbloquear este n\u00edvel.</p>
+      <div class="access-denied__actions">
+        <a href="#/" class="access-denied__btn access-denied__btn--primary">Home</a>
+        <a href="#/levels/snake" class="access-denied__btn access-denied__btn--secondary">Fases</a>
+      </div>
+    </div>
+  `;
+
+  wrapper.appendChild(content);
+
+  const currentHash = location.hash;
+  const activeIndex = BottomNav.getActiveIndex(currentHash);
+  const bottomNav = new BottomNav(null, activeIndex);
+  wrapper.appendChild(bottomNav.render());
+
+  return wrapper;
 }
