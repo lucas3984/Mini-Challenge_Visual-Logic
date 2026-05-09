@@ -47,15 +47,23 @@ const GRID_HTML = [0, 1, 2, 3, 4, 5, 6, 7].map((r) => {
  * @returns {HTMLElement} The fully assembled page element.
  */
 export function render(params = {}) {
-  // Extract level ID from URL to load correct level on direct navigation
   const currentLevelId = params.levelId;
   const currentLevelIndex = currentLevelId
     ? parseInt(currentLevelId, 10) - 1
     : 0;
 
+  const wrapper = document.createElement('div');
+  wrapper.className = 'page--snake';
+  wrapper.setAttribute('data-theme', 'dark');
+
+  const topAppBar = new TopAppBar();
+  const currentHash = location.hash;
+  const activeIndex = BottomNav.getActiveIndex(currentHash);
+  const bottomNav = new BottomNav(null, activeIndex);
+
+  wrapper.appendChild(topAppBar.render());
+
   const root = document.createElement('div');
-  root.className = 'page--snake';
-  root.setAttribute('data-theme', 'dark');
   root.innerHTML = `
     <header class="app-header">
       <div class="app-header__left">
@@ -243,8 +251,11 @@ export function render(params = {}) {
     <div id="toast" class="toast" hidden></div>
   `;
 
+  wrapper.appendChild(root);
+  wrapper.appendChild(bottomNav.render());
+
   init(root, currentLevelIndex);
-  return root;
+  return wrapper;
 }
 
 /**

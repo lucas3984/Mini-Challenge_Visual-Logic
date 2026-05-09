@@ -103,7 +103,13 @@ export function render({ gameId = 'snake' } = {}) {
   const main = document.createElement('main');
   main.className = 'main';
 
-  // Page header provides context so users know which game's levels they're viewing
+  const topAppBar = new TopAppBar();
+  const currentHash = location.hash;
+  const activeIndex = BottomNav.getActiveIndex(currentHash);
+  const bottomNav = new BottomNav(null, activeIndex);
+
+  main.appendChild(topAppBar.render());
+
   const sectionHeader = createSectionHeader(config);
   main.appendChild(sectionHeader);
 
@@ -115,7 +121,6 @@ export function render({ gameId = 'snake' } = {}) {
   const levelMap = new LevelMap({ levels: levelsData, onLevelSelect });
   main.appendChild(levelMap.render());
 
-  // Build overall ranking from stored scores, then map to the format RankingTable expects
   const gameScores = getGameScores(gameId);
   const rankings = sortOverallRankings(buildOverallRankings(gameScores));
   const tableData = rankings.map((entry, index) => ({
@@ -127,6 +132,8 @@ export function render({ gameId = 'snake' } = {}) {
   }));
   const rankingTable = new RankingTable({ ranking: tableData });
   main.appendChild(rankingTable.render());
+
+  main.appendChild(bottomNav.render());
 
   return main;
 }
