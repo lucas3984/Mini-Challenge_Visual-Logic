@@ -2,16 +2,23 @@ import { Component } from './base.js';
 import { getActiveProfile } from '../core/profile.js';
 import { getGameCurrentLevel } from '../core/profile-data.js';
 
-/*
- * Fixed bottom navigation bar for the home screen.
- * Uses custom SVG icons from navbar-icons folder.
- * Active state is determined by current hash route via getActiveIndex().
- * Natural anchor clicks on hash hrefs trigger hashchange -> SPA routing.
- */
 export class BottomNav extends Component {
   #items = [];
   #activeIndex = 0;
+  #el = null;
+  #indicatorEl = null;
+  #initialized = false;
+  #resizeRaf = null;
 
+  /*
+   * @param {Array<{id:string, label:string, hash:string, icon:string}>} [items]
+   *   Navigation items. Falls back to the default four (HOME, FASES, GAME, RANKING)
+   *   when omitted or empty.
+   * @param {number} [activeIndex=0] — Zero-based index of the initially active item.
+   *
+   * Default items provide our four primary destinations. The constructor stores
+   * them so the nav can be re-rendered without re-declaring the config.
+   */
   constructor(items, activeIndex) {
     super();
     this.#items = items && items.length > 0 ? items : [
@@ -43,10 +50,13 @@ export class BottomNav extends Component {
     this.#activeIndex = activeIndex ?? 0;
   }
 
-  /**
-   * Determines the active nav item index from the current URL hash.
-   * @param {string} hash - The current location.hash value.
-   * @returns {number} Index of the active item.
+  /*
+   * Map a hash fragment to the index it represents.
+   * Used by the onRouteChange callback in app.js to sync the indicator.
+   * Falls back to 0 (home) for unrecognised or empty paths.
+   *
+   * @param {string} hash — e.g. '#/levels/snake/3'
+   * @returns {number} — index in the #items array
    */
   static getActiveIndex(hash) {
     const path = hash.replace(/^#/, '') || '/';
@@ -57,6 +67,13 @@ export class BottomNav extends Component {
     return 0;
   }
 
+  /*
+   * Build the nav DOM: indicator element followed by anchor items.
+   * Uses insertAdjacentHTML so existing child references (the indicator) are
+   * preserved — innerHTML += would destroy and recreate them.
+   *
+   * @returns {HTMLElement} — the nav element
+   */
   render() {
     const profile = getActiveProfile();
     const currentLevel = profile ? getGameCurrentLevel(profile, 'snake') : 0;
@@ -66,7 +83,12 @@ export class BottomNav extends Component {
     nav.className = 'bottom-nav';
     nav.setAttribute('aria-label', 'Main navigation');
 
-    nav.innerHTML = this.#items.map((item, index) => {
+    const indicator = document.createElement('div');
+    indicator.className = 'bottom-nav__indicator';
+    nav.appendChild(indicator);
+    this.#indicatorEl = indicator;
+
+    nav.insertAdjacentHTML('beforeend', this.#items.map((item, index) => {
       const isActive = index === this.#activeIndex;
       const hash = index === 2 ? gameHash : item.hash;
       return `
@@ -78,8 +100,111 @@ export class BottomNav extends Component {
           <span class="bottom-nav__label">${item.label}</span>
         </a>
       `;
-    }).join('');
+    }).join(''));
+
+    this.#el = nav;
+
+    this.addListener(window, 'resize', () => this.#handleResize());
 
     return nav;
+  }
+
+  /*
+   * Switch the active nav item and reposition the indicator.
+   * Short-circuits if the index hasn't changed (avoids redundant layout work)
+   * or is out of range.
+   *
+   * @param {number} index — target item index
+   */
+  setActiveIndex(index) {
+    if (index === this.#activeIndex && this.#initialized) return;
+    if (index < 0 || index >= this.#items.length) return;
+
+    const items = this.#el?.querySelectorAll('.bottom-nav__item');
+    if (!items || items.length !== this.#items.length) return;
+
+    const prevItem = items[this.#activeIndex];
+    if (prevItem) {
+      prevItem.classList.replace('bottom-nav__item--active', 'bottom-nav__item--inactive');
+      prevItem.setAttribute('aria-current', 'false');
+    }
+
+    const nextItem = items[index];
+    if (nextItem) {
+      nextItem.classList.replace('bottom-nav__item--inactive', 'bottom-nav__item--active');
+      nextItem.setAttribute('aria-current', 'page');
+    }
+
+    this.#activeIndex = index;
+    this.#positionIndicator();
+  }
+
+  /*
+   * Read the active item's icon-wrapper bounding rect and set CSS custom
+   * properties on the nav element so the indicator pill can position itself
+   * via transform/width/height without JS-commanded style recalc.
+   *
+   * On first call (#initialized = false) we apply a no-transition class to
+   * suppress the initial "snap from top-left" animation, force a synchronous
+   * style flush (offsetHeight), then remove the class so subsequent calls
+   * animate smoothly.
+   */
+  #positionIndicator() {
+    if (!this.#el || !this.#indicatorEl) return;
+
+    const activeItem = this.#el.querySelector('.bottom-nav__item--active');
+    if (!activeItem) return;
+
+    const wrapper = activeItem.querySelector('.bottom-nav__icon-wrapper');
+    if (!wrapper) return;
+
+    const navRect = this.#el.getBoundingClientRect();
+    const wrapperRect = wrapper.getBoundingClientRect();
+
+    const x = wrapperRect.left - navRect.left;
+    const y = wrapperRect.top - navRect.top;
+    const width = wrapperRect.width;
+    const height = wrapperRect.height;
+
+    if (!this.#initialized) {
+      this.#indicatorEl.classList.add('bottom-nav__indicator--no-transition');
+    }
+
+    this.#el.style.setProperty('--indicator-x', `${x}px`);
+    this.#el.style.setProperty('--indicator-y', `${y}px`);
+    this.#el.style.setProperty('--indicator-width', `${width}px`);
+    this.#el.style.setProperty('--indicator-height', `${height}px`);
+
+    if (!this.#initialized) {
+      void this.#indicatorEl.offsetHeight;
+      this.#indicatorEl.classList.remove('bottom-nav__indicator--no-transition');
+      this.#initialized = true;
+    }
+  }
+
+  /*
+   * RAF-throttled resize handler — avoids layout thrashing by batching all
+   * indicator repositioning into the next paint frame.
+   */
+  #handleResize() {
+    if (this.#resizeRaf) return;
+    this.#resizeRaf = requestAnimationFrame(() => {
+      this.#resizeRaf = null;
+      this.#positionIndicator();
+    });
+  }
+
+  /*
+   * Clean up: cancel any pending resize frame and nullify references so the
+   * component can be GC'd. Called by the Component base class when the nav
+   * is removed from the DOM.
+   */
+  onUnmount() {
+    if (this.#resizeRaf) {
+      cancelAnimationFrame(this.#resizeRaf);
+      this.#resizeRaf = null;
+    }
+    this.#el = null;
+    this.#indicatorEl = null;
   }
 }

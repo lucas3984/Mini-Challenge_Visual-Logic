@@ -6,7 +6,6 @@
 import { LevelMap } from '../components/level-map.js';
 import { RankingTable } from '../components/ranking-table.js';
 import { TopAppBar } from '../components/top-app-bar.js';
-import { BottomNav } from '../components/bottom-nav.js';
 import { getGameScores } from '../core/level-score-storage.js';
 import { buildOverallRankings, sortOverallRankings } from '../utils/ranking.js';
 import { GAME_CONFIG } from '../config/games.js';
@@ -114,9 +113,6 @@ export function render({ gameId = 'snake' } = {}) {
   main.className = 'main';
 
   const topAppBar = new TopAppBar();
-  const currentHash = location.hash;
-  const activeIndex = BottomNav.getActiveIndex(currentHash);
-  const bottomNav = new BottomNav(null, activeIndex);
 
   main.appendChild(topAppBar.render());
 
@@ -142,8 +138,6 @@ export function render({ gameId = 'snake' } = {}) {
   }));
   const rankingTable = new RankingTable({ ranking: tableData });
   main.appendChild(rankingTable.render());
-
-  main.appendChild(bottomNav.render());
 
   return main;
 }

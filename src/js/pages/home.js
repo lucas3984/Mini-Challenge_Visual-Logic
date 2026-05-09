@@ -1,7 +1,6 @@
 import { TopAppBar } from '../components/top-app-bar.js';
 import { GameCard } from '../components/game-card.js';
 import { ProgressStats } from '../components/progress-stats.js';
-import { BottomNav } from '../components/bottom-nav.js';
 import { hasAnyProfile, setActiveProfile, getActiveProfile } from '../core/profile.js';
 import { getGameProgress } from '../core/profile-data.js';
 import { GAME_CONFIG } from '../config/games.js';
@@ -104,10 +103,6 @@ export function render() {
   const progressStats = new ProgressStats(level, progress, lastProgress);
   lastProgress = progress;
 
-  const currentHash = location.hash;
-  const activeIndex = BottomNav.getActiveIndex(currentHash);
-  const bottomNav = new BottomNav(null, activeIndex);
-
   main.appendChild(topAppBar.render());
 
   /* Hero section: game-style header with animated icon and tagline. */
@@ -141,7 +136,6 @@ export function render() {
 
   main.appendChild(heroSection);
   main.appendChild(gamesSection);
-  main.appendChild(bottomNav.render());
 
   /*
    * Ripple effect adds tactile feedback on button clicks (gamified UI).

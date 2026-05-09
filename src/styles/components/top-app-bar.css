@@ -1,0 +1,120 @@
+/*
+ * Fixed top app bar. backdrop-filter: blur(12px) creates a frosted-glass
+ * effect (content scrolls under while the bar stays legible).
+ * The hard shadow (0 4px 0 0) mimics a raised game-UI block feel.
+ */
+.top-app-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-md) var(--space-lg);
+  background-color: var(--color-bg-home);
+  backdrop-filter: blur(12px);
+  border-bottom: 2px solid var(--color-primary);
+  box-shadow: 0 4px 0 0 var(--color-dark);
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.top-app-bar__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.top-app-bar__logo {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-default);
+  background-color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--home-shadow-hard);
+}
+
+.top-app-bar__icon {
+  font-size: 24px;
+  color: var(--color-dark);
+}
+
+.top-app-bar__title {
+  font-family: var(--font-headline);
+  font-size: var(--text-2xl);
+  font-weight: var(--font-weight-headline);
+  color: var(--color-primary);
+  text-shadow: 2px 2px 0 var(--color-dark);
+}
+
+.top-app-bar__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.top-app-bar__btn {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-default);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-muted);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+/* Slight lift on hover — the shadow disappears to simulate the button popping up */
+.top-app-bar__btn:hover {
+  transform: translateY(2px);
+  box-shadow: none;
+}
+
+.top-app-bar__btn:active {
+  transform: scale(0.95);
+}
+
+.top-app-bar__btn-icon {
+  font-size: var(--text-xl);
+}
+
+/*
+ * User pill — full border-radius creates a capsule shape.
+ * The border uses color-mix to produce a faint primary-tinted outline that
+ * adapts to the theme without a separate variable.
+ */
+.top-app-bar__user {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  background-color: var(--home-color-surface-low);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-full);
+  border: 2px solid color-mix(in srgb, var(--color-primary) 20%, transparent);
+}
+
+.top-app-bar__username {
+  font-family: var(--font-headline);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-headline);
+  color: var(--color-text);
+}
+
+.top-app-bar__username--desktop {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .top-app-bar__username--desktop {
+    display: inline;
+  }
+}
+
+.top-app-bar__user-icon {
+  color: var(--color-secondary);
+  font-size: 20px;
+}
