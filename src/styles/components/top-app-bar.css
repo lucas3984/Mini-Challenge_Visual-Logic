@@ -68,6 +68,7 @@
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
+/* Slight lift on hover — the shadow disappears to simulate the button popping up */
 .top-app-bar__btn:hover {
   transform: translateY(2px);
   box-shadow: none;
@@ -81,6 +82,11 @@
   font-size: var(--text-xl);
 }
 
+/*
+ * User pill — full border-radius creates a capsule shape.
+ * The border uses color-mix to produce a faint primary-tinted outline that
+ * adapts to the theme without a separate variable.
+ */
 .top-app-bar__user {
   display: flex;
   align-items: center;

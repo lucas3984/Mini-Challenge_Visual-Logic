@@ -39,10 +39,22 @@
   transition: transform 0.35s var(--easing-game), width 0.35s var(--easing-game);
 }
 
+/*
+ * Suppress the initial sliding animation on first paint.
+ * On page load the indicator would otherwise animate from (0,0) to its correct
+ * position; this class (applied before positioning, removed after a forced
+ * style flush) prevents that.  !important is required to beat the cascade of
+ * the transition on the base .bottom-nav__indicator rule.
+ */
 .bottom-nav__indicator--no-transition {
   transition: none !important;
 }
 
+/*
+ * Nav item — position: relative + z-index: 1 lifts it above the absolutely
+ * positioned indicator pill so the label and icon stay clickable and visible
+ * on top of the teal background.
+ */
 .bottom-nav__item {
   display: flex;
   flex-direction: column;
@@ -86,6 +98,12 @@
   color: var(--color-text-muted);
 }
 
+/*
+ * Icon wrapper — fixed 44x44px (--touch-target-sm) keeps all items at the
+ * same size regardless of icon shape, preventing layout shifts when the
+ * active state changes. The indicator pill uses getBoundingClientRect on this
+ * element to align itself.
+ */
 .bottom-nav__icon-wrapper {
   display: flex;
   align-items: center;
@@ -102,6 +120,10 @@
   display: block;
 }
 
+/*
+ * Label beneath each icon — headline font for game-UI feel, tiny size to
+ * fit four items on mobile. Letter-spacing improves legibility at small sizes.
+ */
 .bottom-nav__label {
   font-family: var(--font-headline);
   font-size: var(--text-2xs);

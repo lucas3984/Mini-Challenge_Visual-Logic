@@ -8,6 +8,15 @@ export class BottomNav extends Component {
   #initialized = false;
   #resizeRaf = null;
 
+  /*
+   * @param {Array<{id:string, label:string, hash:string, icon:string}>} [items]
+   *   Navigation items. Falls back to the default four (HOME, FASES, GAME, RANKING)
+   *   when omitted or empty.
+   * @param {number} [activeIndex=0] — Zero-based index of the initially active item.
+   *
+   * Default items provide our four primary destinations. The constructor stores
+   * them so the nav can be re-rendered without re-declaring the config.
+   */
   constructor(items, activeIndex) {
     super();
     this.#items = items && items.length > 0 ? items : [
@@ -39,6 +48,14 @@ export class BottomNav extends Component {
     this.#activeIndex = activeIndex ?? 0;
   }
 
+  /*
+   * Map a hash fragment to the index it represents.
+   * Used by the onRouteChange callback in app.js to sync the indicator.
+   * Falls back to 0 (home) for unrecognised or empty paths.
+   *
+   * @param {string} hash — e.g. '#/levels/snake/3'
+   * @returns {number} — index in the #items array
+   */
   static getActiveIndex(hash) {
     const path = hash.replace(/^#/, '') || '/';
     if (path === '/') return 0;
@@ -48,6 +65,13 @@ export class BottomNav extends Component {
     return 0;
   }
 
+  /*
+   * Build the nav DOM: indicator element followed by anchor items.
+   * Uses insertAdjacentHTML so existing child references (the indicator) are
+   * preserved — innerHTML += would destroy and recreate them.
+   *
+   * @returns {HTMLElement} — the nav element
+   */
   render() {
     const nav = document.createElement('nav');
     nav.className = 'bottom-nav';
@@ -78,6 +102,13 @@ export class BottomNav extends Component {
     return nav;
   }
 
+  /*
+   * Switch the active nav item and reposition the indicator.
+   * Short-circuits if the index hasn't changed (avoids redundant layout work)
+   * or is out of range.
+   *
+   * @param {number} index — target item index
+   */
   setActiveIndex(index) {
     if (index === this.#activeIndex && this.#initialized) return;
     if (index < 0 || index >= this.#items.length) return;
@@ -101,6 +132,16 @@ export class BottomNav extends Component {
     this.#positionIndicator();
   }
 
+  /*
+   * Read the active item's icon-wrapper bounding rect and set CSS custom
+   * properties on the nav element so the indicator pill can position itself
+   * via transform/width/height without JS-commanded style recalc.
+   *
+   * On first call (#initialized = false) we apply a no-transition class to
+   * suppress the initial "snap from top-left" animation, force a synchronous
+   * style flush (offsetHeight), then remove the class so subsequent calls
+   * animate smoothly.
+   */
   #positionIndicator() {
     if (!this.#el || !this.#indicatorEl) return;
 
@@ -134,6 +175,10 @@ export class BottomNav extends Component {
     }
   }
 
+  /*
+   * RAF-throttled resize handler — avoids layout thrashing by batching all
+   * indicator repositioning into the next paint frame.
+   */
   #handleResize() {
     if (this.#resizeRaf) return;
     this.#resizeRaf = requestAnimationFrame(() => {
@@ -142,6 +187,11 @@ export class BottomNav extends Component {
     });
   }
 
+  /*
+   * Clean up: cancel any pending resize frame and nullify references so the
+   * component can be GC'd. Called by the Component base class when the nav
+   * is removed from the DOM.
+   */
   onUnmount() {
     if (this.#resizeRaf) {
       cancelAnimationFrame(this.#resizeRaf);
