@@ -1,4 +1,6 @@
 import { Component } from './base.js';
+import { getActiveProfile } from '../core/profile.js';
+import { getGameCurrentLevel } from '../core/profile-data.js';
 
 /*
  * Fixed bottom navigation bar for the home screen.
@@ -56,15 +58,20 @@ export class BottomNav extends Component {
   }
 
   render() {
+    const profile = getActiveProfile();
+    const currentLevel = profile ? getGameCurrentLevel(profile, 'snake') : 0;
+    const gameHash = `#/levels/snake/${currentLevel + 1}`;
+
     const nav = document.createElement('nav');
     nav.className = 'bottom-nav';
     nav.setAttribute('aria-label', 'Main navigation');
 
     nav.innerHTML = this.#items.map((item, index) => {
       const isActive = index === this.#activeIndex;
+      const hash = index === 2 ? gameHash : item.hash;
       return `
         <a class="bottom-nav__item bottom-nav__item--${isActive ? 'active' : 'inactive'}"
-           href="${item.hash}"
+           href="${hash}"
            aria-current="${isActive ? 'page' : 'false'}"
            data-id="${item.id}">
           <span class="bottom-nav__icon-wrapper">${item.icon}</span>
