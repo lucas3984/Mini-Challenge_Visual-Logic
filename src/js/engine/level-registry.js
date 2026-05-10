@@ -10,7 +10,7 @@ import { generateSnakeLevel } from './level-generator.js';
 import { getJSON, setJSON } from '../core/storage.js';
 
 const STORAGE_KEY = 'lv_generated_levels_registry';
-const STORAGE_VERSION = 1;
+const STORAGE_VERSION = 5;
 const GENERATION_TRIGGER_PROGRESS = 7;
 let memoryState = createDefaultState();
 
@@ -44,10 +44,18 @@ function ensureGameState(state, gameId) {
     state.games[gameId] = {
       seed: null,
       generated: [],
+      names: [],
+      layoutSignatures: [],
     };
   }
   if (!Array.isArray(state.games[gameId].generated)) {
     state.games[gameId].generated = [];
+  }
+  if (!Array.isArray(state.games[gameId].names)) {
+    state.games[gameId].names = [];
+  }
+  if (!Array.isArray(state.games[gameId].layoutSignatures)) {
+    state.games[gameId].layoutSignatures = [];
   }
   return state.games[gameId];
 }
@@ -106,12 +114,25 @@ export function ensureGeneratedLevelsForProgress(gameId, highestCompleted) {
   const currentCount = gameState.generated.length;
 
   if (currentCount < targetCount) {
-    for (let i = currentCount; i < targetCount; i++) {
-      const levelId = snakeBaseLevels.length + i + 1;
-      const generatedLevel = generateSnakeLevel({ id: levelId, seed, index: i });
-      gameState.generated.push(generatedLevel);
+    try {
+      for (let i = currentCount; i < targetCount; i++) {
+        const levelId = snakeBaseLevels.length + i + 1;
+        const generatedLevel = generateSnakeLevel({
+          id: levelId,
+          seed,
+          index: i,
+          usedNames: gameState.names,
+          usedLayouts: gameState.layoutSignatures,
+        });
+        gameState.generated.push(generatedLevel);
+        gameState.names.push(generatedLevel.name);
+        gameState.layoutSignatures.push(generatedLevel.layoutSignature);
+        saveState(state);
+      }
+    } catch (error) {
+      console.error(`Failed to generate Snake levels for progress ${highestCompleted}:`, error);
+      saveState(state);
     }
-    saveState(state);
   }
 
   return getGameLevels(gameId);

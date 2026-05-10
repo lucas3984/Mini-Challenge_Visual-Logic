@@ -438,6 +438,53 @@ function init(root, initialLevelIndex) {
   // 1.5s so the player can see the success animation before transitioning.
   let autoAdvanceTimer = null;
 
+  function completeCurrentLevel({ autoAdvance = true } = {}) {
+    const profile = getActiveProfile();
+    const level = levels[currentLevelIndex];
+    if (!profile || !level) return false;
+
+    if (autoAdvanceTimer) {
+      clearTimeout(autoAdvanceTimer);
+      autoAdvanceTimer = null;
+    }
+
+    runner.abort();
+    isExecuting = false;
+
+    if (btnRun) btnRun.disabled = false;
+    if (btnPause) {
+      btnPause.disabled = true;
+      btnPause.textContent = '\u23F8 Pausar';
+    }
+
+    if (statusEl) statusEl.textContent = 'Vitória!';
+
+    // Track the highest level the player has *ever* reached so the level
+    // selector unlocks remain persistent across page visits.
+    highestCompletedLevel = Math.max(highestCompletedLevel, currentLevelIndex);
+    setGameProgress(profile, 'snake', highestCompletedLevel + 1);
+    syncLevels(highestCompletedLevel);
+
+    const usedBlocks = countAllBlocks(stackEl);
+    const starThree = level.starThree ?? Math.ceil(level.maxBlocks * 0.5);
+    const starTwo = level.starTwo ?? Math.ceil(level.maxBlocks * 0.7);
+    const stars = calculateStars(usedBlocks, starThree, starTwo);
+    saveLevelScore('snake', profile, currentLevelIndex + 1, stars);
+    updateLevelSelect();
+    audio.play('win');
+    showToast(`\u2B50`.repeat(stars) + ` Nível ${currentLevelIndex + 1} completo!`);
+
+    // Auto-advance only if there is a next level to play.
+    if (autoAdvance && currentLevelIndex + 1 < levels.length) {
+      autoAdvanceTimer = setTimeout(() => {
+        autoAdvanceTimer = null;
+        loadLevel(currentLevelIndex + 1);
+      }, 1500);
+    }
+
+    return true;
+  }
+
   /**
    * Displays a temporary toast message. Uses a timer stored on the element
    * itself to cancel any previous toast before showing the new one — this
@@ -659,28 +706,7 @@ function init(root, initialLevelIndex) {
 
       switch (result.status) {
         case 'win':
-          if (statusEl) statusEl.textContent = 'Vitória!';
-          // Track the highest level the player has *ever* reached so the level
-          // selector unlocks remain persistent across page visits.
-          highestCompletedLevel = Math.max(highestCompletedLevel, currentLevelIndex);
-          setGameProgress(getActiveProfile(), 'snake', highestCompletedLevel + 1);
-          syncLevels(highestCompletedLevel);
-          const usedBlocks = countAllBlocks(stackEl);
-          const level = levels[currentLevelIndex];
-          const starThree = level.starThree ?? Math.ceil(level.maxBlocks * 0.5);
-          const starTwo = level.starTwo ?? Math.ceil(level.maxBlocks * 0.7);
-          const stars = calculateStars(usedBlocks, starThree, starTwo);
-          saveLevelScore('snake', getActiveProfile(), currentLevelIndex + 1, stars);
-          updateLevelSelect();
-          audio.play('win');
-          showToast(`\u2B50`.repeat(stars) + ` Nível ${currentLevelIndex + 1} completo!`);
-          // Auto-advance only if there is a next level to play.
-          if (currentLevelIndex + 1 < levels.length) {
-            autoAdvanceTimer = setTimeout(() => {
-              autoAdvanceTimer = null;
-              loadLevel(currentLevelIndex + 1);
-            }, 1500);
-          }
+          completeCurrentLevel();
           break;
         case 'gameover':
           if (statusEl) statusEl.textContent = 'Fim de Jogo';
