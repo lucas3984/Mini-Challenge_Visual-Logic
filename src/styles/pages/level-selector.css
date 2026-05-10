@@ -329,7 +329,7 @@
 .text-on-secondary { color: var(--color-on-secondary); }
 .text-on-primary-container { color: var(--color-on-primary-container); }
 
-.bg-background { background-color: var(--color-surface-dim); }
+.bg-background { background-color: var(--color-bg); }
 .min-h-screen { min-height: 100vh; }
 .antialiased {
   -webkit-font-smoothing: antialiased;

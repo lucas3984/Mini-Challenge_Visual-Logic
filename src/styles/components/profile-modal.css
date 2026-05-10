@@ -30,7 +30,7 @@
   position: relative;
   width: 100%;
   max-width: var(--modal-max-width);
-  background-color: var(--color-bg-home);
+  background-color: var(--color-bg);
   border: 2px solid var(--color-primary);
   border-radius: calc(var(--radius-default) * 2);
   padding: var(--space-2xl) var(--space-xl);

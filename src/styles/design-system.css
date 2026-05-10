@@ -64,6 +64,11 @@
   --shadow-block: 0 4px 12px rgba(135, 137, 192, 0.25);
   --shadow-hard: 4px 4px 0 0 var(--color-dark);
   --shadow-hard-sm: 2px 2px 0 0 var(--color-dark);
+  --shadow-elevated: 8px 8px 0 0 rgba(0, 0, 0, 0.6);
+  --shadow-glow-warm: 0 0 8px rgba(255, 180, 171, 0.3);
+  --shadow-glow-secondary: 0 0 0.5rem rgba(69, 240, 223, 0.5);
+  --shadow-inset: inset 2px 2px 4px rgba(0, 0, 0, 0.3);
+  --shadow-panel: 0 -8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08);
   /* Page transition speed (200ms) + touch target min (44px eq). */
   --transition-default: 200ms ease;
   --transition-slow: 300ms ease;
@@ -178,17 +183,26 @@
   --color-clear-bg: rgba(255, 180, 171, 0.1);
   /* Drag-and-drop snap preview: glow background */
   --color-snap-bg: rgba(192, 194, 252, 0.08);
+  /* Creator page — snake body tint (page-specific) */
+  --creator-snake-body: var(--color-primary);
   /* Page background: radial dot pattern color */
   --color-grid-dot: rgba(192, 194, 252, 0.05);
   /* Layout tokens shared across games */
   --sidebar-width: 15rem;
+  --sidebar-width-lg: 16rem;
+  --sidebar-width-right: 20rem;
+  --size-cell: 3rem;
+  --size-preview: 3rem;
+  --size-asset-item: 3.5rem;
   --grid-max-width: 25rem;
   --grid-max-width-mobile: 18rem;
+  --grid-bg-size: 2rem;
   --modal-max-width: 24rem;
   --sidebar-height-mobile: 7rem;
   /* Border widths */
   --border-width-game: 4px;
   --border-width-thin: 2px;
+  --border-width-hairline: 1px;
   /* Glow/box-shadow spread distances */
   --glow-spread-2xs: 0.5rem;
   --glow-spread-xs: 0.625rem;
@@ -199,6 +213,7 @@
   --button-active-offset: 2px;
   /* Modal overlay background blur intensity */
   --backdrop-blur-amount: 4px;
+  --blur-panel: 12px;
   /* Layered stacking order for vanilla CSS, no z-index in component files. */
   --z-block-dragging: 15;
   --z-drawer: 15;
@@ -224,9 +239,8 @@
  * Dark backgrounds (#111d4a/#1a2450) + adjusted shadows/paths for readability.
  */
 [data-theme="dark"] {
-  --color-bg: #111d4a;
+  --color-bg: #131316;
   --color-bg-alt: #1a2450;
-  --color-bg-home: #131316;
   --color-surface: #1a2450;
   --color-surface-alt: #111d4a;
   --color-text: #f0f2ff;
@@ -244,7 +258,6 @@
   --color-surface-container: #201f23;
   --color-surface-container-lowest: #0e0e11;
   --color-surface-container-highest: #353438;
-  --color-surface-dim: #131316;
   --color-outline: #918f9a;
   --color-outline-variant: #46464f;
   --color-primary-container: #8a8cc3;

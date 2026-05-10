@@ -14,7 +14,7 @@
   align-items: center;
   gap: 6rem;
   padding: var(--space-xs)  var(--space-lg) var(--space-xs) var(--space-lg);
-  background-color: var(--color-bg-home);
+  background-color: var(--color-bg);
   border-top: 1px solid var(--home-color-surface-highest);
   border-radius: var(--radius-default) var(--radius-default) 0 0;
 }
