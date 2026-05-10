@@ -117,6 +117,11 @@
 }
 
 .top-app-bar__user-icon {
-  color: var(--color-secondary);
+  color: var(--color-accent);
   font-size: 20px;
+}
+
+/* Light mode: toggle button uses dark navy instead of muted gray */
+[data-theme="light"] .top-app-bar__btn {
+  color: var(--color-dark);
 }

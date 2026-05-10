@@ -1,3 +1,10 @@
+/**
+ * Main application entry point.
+ *
+ * Imports the theme manager (side-effect: applies data-theme attribute on load),
+ * assembles the SPA shell (TopAppBar + BottomNav + router), and wires
+ * persistent UI components that survive route transitions.
+ */
 import { Router } from './core/router.js';
 import { setAppRouter } from './core/router-state.js';
 import { render as renderHome } from './pages/home.js';
@@ -5,6 +12,7 @@ import { render as renderSnake } from './pages/snake.js';
 import { render as renderLevelSelector } from './pages/level-selector.js';
 import { TopAppBar } from './components/top-app-bar.js';
 import { BottomNav } from './components/bottom-nav.js';
+import './core/theme.js';
 
 const mountEl = document.getElementById('app');
 if (!mountEl) {

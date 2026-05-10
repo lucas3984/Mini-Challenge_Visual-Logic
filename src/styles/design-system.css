@@ -28,6 +28,7 @@
   --color-surface-high: #e5e5e5;
   --color-surface-highest: #d9d9d9;
   --color-secondary-fixed: #53fae9;
+  --color-accent: #45f0df;
   /* Fonts (Space Grotesk/Inter) + font weights */
   --font-headline: 'Space Grotesk', sans-serif;
   --font-body: 'Inter', sans-serif;
@@ -251,6 +252,7 @@
   --color-on-primary-container: #222455;
   --color-on-secondary: #003732;
   --color-primary-emphasis: #c0c2fc;
+  --color-accent: #45f0df;
   /* Additional dark mode tokens for Home page */
   --color-on-secondary: #003732;
   --color-tertiary: #bec6e3;
@@ -280,4 +282,30 @@
   --color-grid-dot: rgba(192, 194, 252, 0.05);
   --gradient-bg-game-home: none;
 
+}
+
+/*
+ * Light mode overrides.
+ * Light backgrounds (#faf9ff/#ffffff) + dark text + adjusted surface hierarchy.
+ * Brand colors (lavender, turquoise, periwinkle) remain the same across themes.
+ */
+[data-theme="light"] {
+  --color-bg-home: #faf9ff;
+  --color-surface-container: #ebedfa;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-highest: #e0e2ef;
+  --color-surface-dim: #d7d9e6;
+  --color-outline: #767680;
+  --color-outline-variant: #c6c5d0;
+  --color-primary-container: #111d4a;
+  --color-on-primary-container: #7b86b9;
+  --color-primary-emphasis: #111d4a;
+  --color-accent: #111d4a;
+  --gradient-bg-game-home: var(--gradient-bg-game);
+  /* Flip text-on-dark tokens to work over light backgrounds */
+  --color-text-bright: #111d4a;
+  --color-text-dim: rgba(17, 29, 74, 0.4);
+  --color-text-subtle: rgba(17, 29, 74, 0.6);
+  --color-text-faint: rgba(17, 29, 74, 0.35);
+  --color-text-ghost: rgba(17, 29, 74, 0.12);
 }

@@ -133,6 +133,19 @@
   letter-spacing: 0.1em;
 }
 
+/* Light mode: node labels use dark navy */
+[data-theme="light"] .node__label {
+  color: var(--color-dark);
+}
+
+[data-theme="light"] .node--completed .node__label {
+  color: var(--color-dark);
+}
+
+[data-theme="light"] .node--active .node__label {
+  color: var(--color-dark);
+}
+
 .node__badge {
   margin-top: calc(var(--space-2xs) * -0.25);
   padding: 0.2rem 0.5rem;
@@ -221,11 +234,19 @@
   color: var(--color-primary);
 }
 
+[data-theme="light"] .ranking__icon {
+  color: var(--color-dark);
+}
+
 .ranking__title {
   font-family: var(--font-headline);
   font-size: var(--text-xl);
   font-weight: 700;
   color: var(--color-primary);
+}
+
+[data-theme="light"] .ranking__title {
+  color: var(--color-dark);
 }
 
 /* === Table === */
