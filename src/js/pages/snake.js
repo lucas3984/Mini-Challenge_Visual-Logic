@@ -13,13 +13,14 @@ import { Stage } from '../components/stage.js';
 import { Snake } from '../actors/snake.js';
 import { Runner } from '../engine/runner.js';
 import { parseWorkspace } from '../engine/parser.js';
-import { countAllBlocks, countLoopBlocks, countIfBlocks, countIfChildren, countLoopChildren, countLoopsInIf, countIfsInLoop } from '../utils/dom.js';
+import { countAllBlocks, countLoopBlocks, countIfBlocks } from '../utils/dom.js';
 import { AudioFX } from '../core/audio.js';
 import { saveLevelScore, getProfileLevelScore } from '../core/level-score-storage.js';
 import { calculateStars } from '../utils/stars.js';
-import { levels } from '../engine/levels.js';
+import { ensureGeneratedLevelsForProgress, getGameLevels } from '../engine/level-registry.js';
 import { TopAppBar } from '../components/top-app-bar.js';
 import { hasAnyProfile, getActiveProfile } from '../core/profile.js';
+import { navigateTo, replaceRoute } from '../core/router-state.js';
 import {
   setGameProgress, getGameProgress,
   setGameCurrentLevel, getGameCurrentLevel,
@@ -47,7 +48,7 @@ const GRID_HTML = [0, 1, 2, 3, 4, 5, 6, 7].map((r) => {
 export function render(params = {}) {
   // Redirect to home if no profile is set (first-time access guard)
   if (!hasAnyProfile()) {
-    location.hash = '#/';
+    navigateTo('/');
     return document.createElement('div');
   }
 
@@ -100,19 +101,8 @@ export function render(params = {}) {
       </div>
     </header>
 
-    <div class="level-bar">
-        <select id="level-select" class="level-selector" aria-label="Selecionar nível">
-          <option value="0">Nível 1 — A Escada</option>
-          <option value="1" disabled>Nível 2 — Desvio</option>
-          <option value="2" disabled>Nível 3 — Festa de Maçãs</option>
-          <option value="3" disabled>Nível 4 — Desvie da Parede</option>
-          <option value="4" disabled>Nível 5 — O Corredor</option>
-          <option value="5" disabled>Nível 6 — Repetição e Giro</option>
-          <option value="6" disabled>Nível 7 — Desvie e Colet</option>
-          <option value="7" disabled>Nível 8 — O Labirinto</option>
-          <option value="8" disabled>Nível 9 — Perímetro</option>
-          <option value="9" disabled>Nível 10 — Desafio Final</option>
-        </select>
+      <div class="level-bar">
+        <select id="level-select" class="level-selector" aria-label="Selecionar nível"></select>
       <span class="level-name" id="level-name"></span>
       <button id="btn-rules" class="progress-reset-btn" aria-label="Ver regras">Regras</button>
       <span class="block-counter" id="block-counter">Blocos: 0 / 10</span>
@@ -264,6 +254,8 @@ export function render(params = {}) {
           <p><strong>🧩 Blocos de Ação</strong><br><em>Mover Frente</em> — Move 1 casa na direção atual<br><em>Girar Esquerda</em> — Gira 90° para a esquerda<br><em>Girar Direita</em> — Gira 90° para a direita</p>
           <p><strong>🔄 Bloco de Controle</strong><br><em>Repetir N vezes</em> — Executa os blocos dentro dele N vezes</p>
           <p><strong>🔍 Bloco Se</strong><br>Executa os blocos dentro apenas se a condição for verdadeira:<br>• Comeu maçã<br>• Parede à frente (ou borda)<br>• Cobra à frente</p>
+          <p><strong>🧮 Contagem</strong><br>Todos os blocos contam para o limite, inclusive os que estiverem dentro de Repetir e Se.</p>
+          <p><strong>⛔ Aninhamento</strong><br>Não é permitido colocar <em>Se</em> dentro de <em>Se</em> nem <em>Repetir</em> dentro de <em>Repetir</em>.</p>
           <p><strong>⚠️ Fim de Jogo</strong><br>• Bater na parede<br>• Bater no próprio corpo<br>• Sair do tabuleiro</p>
           <p><strong>⭐ Estrelas</strong><br>⭐ Completou o nível<br>⭐⭐ Usou poucos blocos<br>⭐⭐⭐ Usou o mínimo de blocos<br>Menos blocos = mais estrelas!</p>
           <p><strong>💡 Dicas</strong><br>• Use <em>Repetir</em> para economizar blocos<br>• Use <em>Se</em> para desviar de obstáculos<br>• Clique <em>Executar</em> para ver a cobra se mover</p>
@@ -276,7 +268,7 @@ export function render(params = {}) {
 
   wrapper.appendChild(root);
 
-  init(root, currentLevelIndex);
+  init(root, params.levelId ? currentLevelIndex : undefined);
   return wrapper;
 }
 
@@ -319,7 +311,7 @@ function init(root, initialLevelIndex) {
     }
   });
 
-  let currentLevelIndex = initialLevelIndex || 0;
+  let currentLevelIndex = initialLevelIndex ?? 0;
 
   const audio = new AudioFX();
   const snake = new Snake(8, 8, audio);
@@ -349,46 +341,6 @@ function init(root, initialLevelIndex) {
    */
   function canAddIf() {
     return countIfBlocks(stackEl) < levels[currentLevelIndex].maxIfs;
-  }
-
-  /**
-   * Checks whether another child block can be placed inside a given if block.
-   * Hard-capped at 3 to keep the visual/logical nesting shallow.
-   * @param {HTMLElement} ifBlock - The if container element.
-   * @returns {boolean}
-   */
-  function canAddToIf(ifBlock) {
-    return countIfChildren(ifBlock) < 3;
-  }
-
-  /**
-   * Checks whether another child block can be placed inside a given loop block.
-   * Hard-capped at 1 — only one action block per loop.
-   * @param {HTMLElement} loopBlock - The loop container element.
-   * @returns {boolean}
-   */
-  function canAddToLoop(loopBlock) {
-    return countLoopChildren(loopBlock) < 3;
-  }
-
-  /**
-   * Checks whether an if block can be placed inside a given loop block.
-   * Hard-capped at 1 — only one if per loop.
-   * @param {HTMLElement} loopBlock - The loop container element.
-   * @returns {boolean}
-   */
-  function canAddIfToLoop(loopBlock) {
-    return countIfsInLoop(loopBlock) < 1;
-  }
-
-  /**
-   * Checks whether a loop block can be placed inside a given if block.
-   * Hard-capped at 1 — only one loop per if.
-   * @param {HTMLElement} ifBlock - The if container element.
-   * @returns {boolean}
-   */
-  function canAddLoopToIf(ifBlock) {
-    return countLoopsInIf(ifBlock) < 1;
   }
 
   /**
@@ -462,10 +414,6 @@ function init(root, initialLevelIndex) {
     canAddBlock,
     canAddLoop,
     canAddIf,
-    canAddToIf,
-    canAddToLoop,
-    canAddLoopToIf,
-    canAddIfToLoop,
     onBlockChanged: updateBlockCounterLive,
     audio,
   });
@@ -485,6 +433,7 @@ function init(root, initialLevelIndex) {
 
   let isExecuting = false;
   let highestCompletedLevel = -1;
+  let levels = getGameLevels('snake');
   // Auto-advance timer: after a win, the next level loads automatically after
   // 1.5s so the player can see the success animation before transitioning.
   let autoAdvanceTimer = null;
@@ -523,22 +472,42 @@ function init(root, initialLevelIndex) {
   }
 
   /**
-   * Refreshes the level selector dropdown: enables levels up to the next
-   * unlockable one and appends saved star ratings so the player can see their
-   * progress at a glance.
+   * Synchronizes the dynamic level list with the globally generated registry.
+   * @param {number} progress
+   */
+  function syncLevels(progress = highestCompletedLevel) {
+    ensureGeneratedLevelsForProgress('snake', progress);
+    levels = getGameLevels('snake');
+  }
+
+  /**
+   * Rebuilds the dropdown so it reflects all available levels.
+   */
+  function renderLevelOptions() {
+    if (!levelSelect) return;
+
+    const currentValue = levelSelect.value;
+    levelSelect.innerHTML = '';
+
+    levels.forEach((level, index) => {
+      const option = document.createElement('option');
+      option.value = String(index);
+      option.disabled = index > highestCompletedLevel + 1;
+      option.textContent = `Nível ${String(level.id).padStart(2, '0')} — ${level.name}${starString(index)}`;
+      levelSelect.appendChild(option);
+    });
+
+    if (currentValue !== '') {
+      levelSelect.value = currentValue;
+    }
+  }
+
+  /**
+   * Refreshes the level selector dropdown so it reflects the current level
+   * list, unlock state, and saved star ratings.
    */
   function updateLevelSelect() {
-    if (!levelSelect) return;
-    const options = levelSelect.options;
-    for (let i = 0; i < options.length; i++) {
-      // Levels beyond the next unlockable index remain disabled — this enforces
-      // the linear progression requirement.
-      options[i].disabled = i > highestCompletedLevel + 1;
-      const level = levels[i];
-      if (level) {
-        options[i].textContent = `Nível ${i + 1} \u2014 ${level.name}${starString(i)}`;
-      }
-    }
+    renderLevelOptions();
   }
 
   /**
@@ -585,6 +554,8 @@ function init(root, initialLevelIndex) {
    * @param {number} index - The level index to load (0-based).
    */
   function loadLevel(index) {
+    syncLevels();
+
     // Guard against skipping locked levels.
     if (index > highestCompletedLevel + 1) return;
 
@@ -610,7 +581,7 @@ function init(root, initialLevelIndex) {
     setGameCurrentLevel(getActiveProfile(), 'snake', index);
 
     // Keep URL in sync so F5 restores the correct level
-    history.replaceState(null, '', `#/levels/snake/${index + 1}`);
+    replaceRoute(`/levels/snake/${index + 1}`);
 
     const level = levels[index];
     snake.loadLevel(level);
@@ -637,6 +608,8 @@ function init(root, initialLevelIndex) {
   // --- Run button ---
   if (btnRun) {
     btnRun.addEventListener('click', async () => {
+      syncLevels();
+
       // If paused, resume instead of restarting — this avoids resetting the
       // snake mid-execution.
       if (runner.paused && isExecuting) {
@@ -691,9 +664,12 @@ function init(root, initialLevelIndex) {
           // selector unlocks remain persistent across page visits.
           highestCompletedLevel = Math.max(highestCompletedLevel, currentLevelIndex);
           setGameProgress(getActiveProfile(), 'snake', highestCompletedLevel + 1);
+          syncLevels(highestCompletedLevel);
           const usedBlocks = countAllBlocks(stackEl);
           const level = levels[currentLevelIndex];
-          const stars = calculateStars(usedBlocks, level.starThree, level.starTwo);
+          const starThree = level.starThree ?? Math.ceil(level.maxBlocks * 0.5);
+          const starTwo = level.starTwo ?? Math.ceil(level.maxBlocks * 0.7);
+          const stars = calculateStars(usedBlocks, starThree, starTwo);
           saveLevelScore('snake', getActiveProfile(), currentLevelIndex + 1, stars);
           updateLevelSelect();
           audio.play('win');
@@ -804,6 +780,8 @@ function init(root, initialLevelIndex) {
   if (saved > 0) {
     highestCompletedLevel = saved - 1;  // storage stores COUNT, convert to INDEX
   }
+
+  syncLevels(highestCompletedLevel);
 
   updateLevelSelect();
   // Load the level from URL params if provided, otherwise restore the last

@@ -64,11 +64,18 @@ An english version will be added when this is sufficiently done
 #### Sistema de Pontuação
 - Pontos por: blocos usados (menos blocos = mais pontos), tempo de execução, tentativas
 - Bônus por: resolver sem erros, usar novos tipos de blocos, eficiência
+- No Snake, a contagem de blocos inclui também os blocos aninhados dentro de `Repetir` e `Se`
 
 #### Níveis e Progressão
 - Fases com progressão de dificuldade
 - Novos tipos de blocos desbloqueados por nível
 - Sistema de "Objetivo" por fase (meta clara para avançar)
+- `Se` dentro de `Se` e `Repetir` dentro de `Repetir` continuam bloqueados; blocos filhos em `Repetir` e `Se` não têm limite de quantidade
+- No Snake, as fases 11+ são geradas globalmente no localStorage do computador e aparecem para todos os perfis
+
+#### Jornada
+- A visualização de fases precisa suportar scroll horizontal para acomodar a expansão do mapa
+- O scroll da jornada pode ser salvo por perfil para manter a navegação consistente
 
 #### Conquistas (Achievements)
 - Badges por: usar todos os tipos de blocos, resolver sem erros, tempo recorde, usar loops, etc.

@@ -4,7 +4,9 @@ import { ProgressStats } from '../components/progress-stats.js';
 import { hasAnyProfile, setActiveProfile, getActiveProfile } from '../core/profile.js';
 import { getGameProgress } from '../core/profile-data.js';
 import { GAME_CONFIG } from '../config/games.js';
+import { getGameLevels, ensureGeneratedLevelsForProgress } from '../engine/level-registry.js';
 import { ProfileModal } from '../components/profile-modal.js';
+import { navigateTo } from '../core/router-state.js';
 
 /*
  * Static game catalog data lives outside render() so it is only
@@ -32,7 +34,7 @@ const games = [
     difficultyColor: 'var(--color-error)',
     difficultyShadow: '#93000a',
     backgroundIcon: 'line_curve',
-    onStart: () => { location.hash = '#/levels/snake'; }
+    onStart: () => { navigateTo('/levels/snake'); }
   }
 ];
 
@@ -51,8 +53,9 @@ function computeProfileProgress() {
 
   for (const [gameId, config] of Object.entries(GAME_CONFIG)) {
     const completed = getGameProgress(profile, gameId);
+    ensureGeneratedLevelsForProgress(gameId, completed);
     totalCompleted += completed;
-    totalLevels += config.levels.length;
+    totalLevels += getGameLevels(gameId).length;
   }
 
   const percentage = totalLevels > 0
@@ -74,8 +77,8 @@ let lastProgress = 0;
 
 /*
  * Maps the total number of completed levels to a player rank title.
- * Thresholds are calibrated for the current game count (snake = 10 levels);
- * higher thresholds (Lenda, etc.) remain aspirational as more games are added.
+ * Thresholds are tuned for the current game catalog and can be revisited as
+ * more games or phases are added.
  */
 function deriveTitle(completed) {
   if (completed >= 40) return 'Lenda';

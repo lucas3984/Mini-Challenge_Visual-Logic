@@ -4,7 +4,8 @@
  * Handles both mouse (native HTML5 drag-and-drop) and touch interactions for
  * moving code blocks from the sidebar palette into the workspace. Manages block
  * insertion order, container nesting (loop/if bodies), and enforces per-level
- * block limits via callback guards. Designed to work via event delegation on a
+ * block limits for new palette blocks while blocking same-type nesting.
+ * Designed to work via event delegation on a
  * single container element so that all sidebar and workspace blocks are handled
  * uniformly without per-block listener registration.
  *
@@ -26,10 +27,6 @@ export class DragDrop extends Component {
   #canAddBlock;
   #canAddLoop;
   #canAddIf;
-  #canAddToIf;
-  #canAddToLoop;
-  #canAddLoopToIf;
-  #canAddIfToLoop;
   #onBlockChanged;
   #audio;
 
@@ -40,14 +37,10 @@ export class DragDrop extends Component {
    * @param {Function} [options.canAddBlock] - Returns true if another block may be added.
    * @param {Function} [options.canAddLoop] - Returns true if another loop block may be added.
    * @param {Function} [options.canAddIf] - Returns true if another if block may be added.
-   * @param {Function} [options.canAddToIf] - Returns true for a given if block if a child may be added.
-   * @param {Function} [options.canAddToLoop] - Returns true for a given loop block if a child may be added.
-   * @param {Function} [options.canAddLoopToIf] - Returns true for a given if block if a loop may be added inside.
-   * @param {Function} [options.canAddIfToLoop] - Returns true for a given loop block if an if may be added inside.
    * @param {Function} [options.onBlockChanged] - Called after any block add/remove.
    * @param {Object} [options.audio] - AudioFX instance for snap/error sounds.
    */
-  constructor(container, { canAddBlock, canAddLoop, canAddIf, canAddToIf, canAddToLoop, canAddLoopToIf, canAddIfToLoop, onBlockChanged, audio } = {}) {
+  constructor(container, { canAddBlock, canAddLoop, canAddIf, onBlockChanged, audio } = {}) {
     super();
     this.#dragContainer = container;
     this.#draggedBlock = null;
@@ -58,10 +51,6 @@ export class DragDrop extends Component {
     this.#canAddBlock = canAddBlock || (() => true);
     this.#canAddLoop = canAddLoop || (() => true);
     this.#canAddIf = canAddIf || (() => true);
-    this.#canAddToIf = canAddToIf || (() => true);
-    this.#canAddToLoop = canAddToLoop || (() => true);
-    this.#canAddLoopToIf = canAddLoopToIf || (() => true);
-    this.#canAddIfToLoop = canAddIfToLoop || (() => true);
     this.#onBlockChanged = onBlockChanged || (() => {});
     this.#audio = audio || null;
     this.#bindEvents();
@@ -293,36 +282,32 @@ export class DragDrop extends Component {
     if (targetDropzone === blockToInsert || targetDropzone.contains(blockToInsert)) return;
 
     // --- Limit enforcement ---
-    if (!this.#canAddBlock()) {
+    // Only new clones from the sidebar need to respect the level caps.
+    // Moving blocks already in the workspace does not change the total count.
+    if (isSidebarSource && !this.#canAddBlock()) {
       this.#showLimitWarning('block');
-      if (isSidebarSource) {
-        this.#draggedBlock.classList.remove('block--dragging');
-        this.#draggedBlock.style.opacity = '';
-        this.#draggedBlock = null;
-        this.#sourceContainer = null;
-      }
+      this.#draggedBlock.classList.remove('block--dragging');
+      this.#draggedBlock.style.opacity = '';
+      this.#draggedBlock = null;
+      this.#sourceContainer = null;
       return;
     }
 
-    if (blockToInsert.classList.contains('c-block--loop') && !this.#canAddLoop()) {
+    if (isSidebarSource && blockToInsert.classList.contains('c-block--loop') && !this.#canAddLoop()) {
       this.#showLimitWarning('loop');
-      if (isSidebarSource) {
-        this.#draggedBlock.classList.remove('block--dragging');
-        this.#draggedBlock.style.opacity = '';
-        this.#draggedBlock = null;
-        this.#sourceContainer = null;
-      }
+      this.#draggedBlock.classList.remove('block--dragging');
+      this.#draggedBlock.style.opacity = '';
+      this.#draggedBlock = null;
+      this.#sourceContainer = null;
       return;
     }
 
-    if (blockToInsert.classList.contains('c-block--event') && !this.#canAddIf()) {
+    if (isSidebarSource && blockToInsert.classList.contains('c-block--event') && !this.#canAddIf()) {
       this.#showLimitWarning('if');
-      if (isSidebarSource) {
-        this.#draggedBlock.classList.remove('block--dragging');
-        this.#draggedBlock.style.opacity = '';
-        this.#draggedBlock = null;
-        this.#sourceContainer = null;
-      }
+      this.#draggedBlock.classList.remove('block--dragging');
+      this.#draggedBlock.style.opacity = '';
+      this.#draggedBlock = null;
+      this.#sourceContainer = null;
       return;
     }
 
@@ -333,68 +318,20 @@ export class DragDrop extends Component {
       // Prevent nesting an if-block inside another if-block.
       if (parentIf && blockToInsert.classList.contains('c-block--event')) {
         this.#showLimitWarning('ifnested');
-        if (isSidebarSource) {
-          this.#draggedBlock.classList.remove('block--dragging');
-          this.#draggedBlock.style.opacity = '';
-          this.#draggedBlock = null;
-          this.#sourceContainer = null;
-        }
+        this.#draggedBlock.classList.remove('block--dragging');
+        this.#draggedBlock.style.opacity = '';
+        this.#draggedBlock = null;
+        this.#sourceContainer = null;
         return;
       }
 
       // Loop dropzones do not accept nested loops
       if (parentLoop && blockToInsert.classList.contains('c-block--loop')) {
         this.#showLimitWarning('loopnested');
-        if (isSidebarSource) {
-          this.#draggedBlock.classList.remove('block--dragging');
-          this.#draggedBlock.style.opacity = '';
-          this.#draggedBlock = null;
-          this.#sourceContainer = null;
-        }
-        return;
-      }
-
-      if (parentIf && !this.#canAddToIf(parentIf)) {
-        this.#showLimitWarning('ifchildren');
-        if (isSidebarSource) {
-          this.#draggedBlock.classList.remove('block--dragging');
-          this.#draggedBlock.style.opacity = '';
-          this.#draggedBlock = null;
-          this.#sourceContainer = null;
-        }
-        return;
-      }
-
-      if (parentIf && blockToInsert.classList.contains('c-block--loop') && !this.#canAddLoopToIf(parentIf)) {
-        this.#showLimitWarning('iflooplimit');
-        if (isSidebarSource) {
-          this.#draggedBlock.classList.remove('block--dragging');
-          this.#draggedBlock.style.opacity = '';
-          this.#draggedBlock = null;
-          this.#sourceContainer = null;
-        }
-        return;
-      }
-
-      if (parentLoop && !this.#canAddToLoop(parentLoop)) {
-        this.#showLimitWarning('loopchildren');
-        if (isSidebarSource) {
-          this.#draggedBlock.classList.remove('block--dragging');
-          this.#draggedBlock.style.opacity = '';
-          this.#draggedBlock = null;
-          this.#sourceContainer = null;
-        }
-        return;
-      }
-
-      if (parentLoop && blockToInsert.classList.contains('c-block--event') && !this.#canAddIfToLoop(parentLoop)) {
-        this.#showLimitWarning('ifinlooplimit');
-        if (isSidebarSource) {
-          this.#draggedBlock.classList.remove('block--dragging');
-          this.#draggedBlock.style.opacity = '';
-          this.#draggedBlock = null;
-          this.#sourceContainer = null;
-        }
+        this.#draggedBlock.classList.remove('block--dragging');
+        this.#draggedBlock.style.opacity = '';
+        this.#draggedBlock = null;
+        this.#sourceContainer = null;
         return;
       }
 
@@ -559,20 +496,22 @@ export class DragDrop extends Component {
       return;
     }
 
-    // --- Limit enforcement (same guards as native drag) ---
-    if (!this.#canAddBlock()) {
+    // --- Limit enforcement ---
+    // Only new clones from the sidebar need to respect the level caps.
+    // Moving blocks already in the workspace does not change the total count.
+    if (isSidebarSource && !this.#canAddBlock()) {
       this.#showLimitWarning('block');
       this.#cleanupDrag();
       return;
     }
 
-    if (blockToInsert.classList.contains('c-block--loop') && !this.#canAddLoop()) {
+    if (isSidebarSource && blockToInsert.classList.contains('c-block--loop') && !this.#canAddLoop()) {
       this.#showLimitWarning('loop');
       this.#cleanupDrag();
       return;
     }
 
-    if (blockToInsert.classList.contains('c-block--event') && !this.#canAddIf()) {
+    if (isSidebarSource && blockToInsert.classList.contains('c-block--event') && !this.#canAddIf()) {
       this.#showLimitWarning('if');
       this.#cleanupDrag();
       return;
@@ -590,30 +529,6 @@ export class DragDrop extends Component {
 
       if (parentLoop && blockToInsert.classList.contains('c-block--loop')) {
         this.#showLimitWarning('loopnested');
-        this.#cleanupDrag();
-        return;
-      }
-
-      if (parentIf && !this.#canAddToIf(parentIf)) {
-        this.#showLimitWarning('ifchildren');
-        this.#cleanupDrag();
-        return;
-      }
-
-      if (parentIf && blockToInsert.classList.contains('c-block--loop') && !this.#canAddLoopToIf(parentIf)) {
-        this.#showLimitWarning('iflooplimit');
-        this.#cleanupDrag();
-        return;
-      }
-
-      if (parentLoop && !this.#canAddToLoop(parentLoop)) {
-        this.#showLimitWarning('loopchildren');
-        this.#cleanupDrag();
-        return;
-      }
-
-      if (parentLoop && blockToInsert.classList.contains('c-block--event') && !this.#canAddIfToLoop(parentLoop)) {
-        this.#showLimitWarning('ifinlooplimit');
         this.#cleanupDrag();
         return;
       }
@@ -650,7 +565,7 @@ export class DragDrop extends Component {
    * This provides in-context feedback without a modal dialog, and restores the
    * original counter text after 1.5s.
    *
-   * @param {string} [type='block'] - Which limit was hit ('block', 'loop', 'if', 'ifchildren').
+   * @param {string} [type='block'] - Which limit was hit ('block', 'loop', 'if', 'ifnested', 'loopnested').
    */
   #showLimitWarning(type = 'block') {
     this.#audio?.play('error');
@@ -658,12 +573,8 @@ export class DragDrop extends Component {
       block: 'Limite de blocos atingido!',
       loop: 'Limite de loops atingido!',
       if: 'Limite de Se atingido!',
-      ifchildren: 'Maximo 3 comandos dentro do Se!',
-      loopchildren: 'Maximo 3 comandos dentro do Loop!',
       ifnested: 'Não é permitido colocar um Se dentro de outro Se!',
       loopnested: 'Não é permitido colocar um Loop dentro de outro Loop!',
-      iflooplimit: 'Maximo 1 loop dentro do Se!',
-      ifinlooplimit: 'Maximo 1 Se dentro do Loop!',
     };
     // Walk up to the page root to find the counter element.
     const root = this.#dragContainer.closest('.page--snake');

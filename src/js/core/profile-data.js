@@ -7,7 +7,7 @@
  *
  * Key format: lv_profile_data_{profileName}
  * Value shape:
- *   { games: { [gameId]: { progress, currentLevel, workspaces } } }
+ *   { games: { [gameId]: { progress, currentLevel, mapScrollLeft, workspaces } } }
  *
  * The level-score storage (lv_level_scores) stays separate because it is
  * cross-profile by design — the ranking table compares scores across users.
@@ -57,6 +57,7 @@ function ensureGameState(data, gameId) {
     data.games[gameId] = {
       progress: 0,
       currentLevel: 0,
+      mapScrollLeft: null,
       workspaces: {},
     };
   }
@@ -111,6 +112,31 @@ export function getGameCurrentLevel(profileName, gameId) {
   const data = getProfileData(profileName);
   const game = data.games[gameId];
   return game ? game.currentLevel : 0;
+}
+
+/**
+ * Saves the current horizontal scroll position of the level journey.
+ * @param {string} profileName
+ * @param {string} gameId
+ * @param {number} scrollLeft
+ */
+export function setGameMapScroll(profileName, gameId, scrollLeft) {
+  const data = getProfileData(profileName);
+  const game = ensureGameState(data, gameId);
+  game.mapScrollLeft = scrollLeft;
+  saveProfileData(profileName, data);
+}
+
+/**
+ * Reads the saved journey scroll position.
+ * @param {string} profileName
+ * @param {string} gameId
+ * @returns {number|null}
+ */
+export function getGameMapScroll(profileName, gameId) {
+  const data = getProfileData(profileName);
+  const game = data.games[gameId];
+  return game && typeof game.mapScrollLeft === 'number' ? game.mapScrollLeft : null;
 }
 
 /**
