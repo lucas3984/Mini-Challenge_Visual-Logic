@@ -316,7 +316,7 @@
 @media (min-width: 48rem) {
   .page--snake .app-container {
     display: grid;
-    grid-template-columns: var(--sidebar-width) 1fr 40rem;
+    grid-template-columns: var(--sidebar-width) 1fr 28rem;
     grid-template-rows: 1fr;
     gap: var(--space-sm);
     padding: var(--space-sm);
