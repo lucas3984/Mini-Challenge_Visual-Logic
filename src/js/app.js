@@ -1,4 +1,5 @@
 import { Router } from './core/router.js';
+import { setAppRouter } from './core/router-state.js';
 import { render as renderHome } from './pages/home.js';
 import { render as renderSnake } from './pages/snake.js';
 import { render as renderLevelSelector } from './pages/level-selector.js';
@@ -24,6 +25,7 @@ mountEl.appendChild(pageContainer);
 
 /* Router drives the SPA — hash-based routing maps each path to a page render */
 const router = new Router(pageContainer);
+setAppRouter(router);
 
 /*
  * Route table: home → /, level selector → /levels (with optional :gameId),

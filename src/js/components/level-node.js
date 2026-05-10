@@ -15,7 +15,7 @@ export class LevelNode extends Component {
   }
 
   render() {
-    const { id, status, label, number } = this.#level;
+    const { id, status, label, number, isGenerated } = this.#level;
     const node = document.createElement('div');
     node.className = `node node--${status}`;
     // Inline positioning: allows dynamic layout based on level data
@@ -51,6 +51,13 @@ export class LevelNode extends Component {
 
     node.appendChild(circle);
     node.appendChild(labelEl);
+
+    if (isGenerated) {
+      const badge = document.createElement('span');
+      badge.className = 'node__badge';
+      badge.textContent = 'Gerada';
+      node.appendChild(badge);
+    }
 
     return node;
   }

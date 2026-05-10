@@ -7,7 +7,7 @@
  * Lower values demand more optimized solutions in fewer blocks.
  *
  * maxBlocks / maxLoops / maxIfs: absolute limits on the player's program.
- * Controls puzzle difficulty by restricting available constructs.
+ * maxBlocks counts every block recursively, including nested blocks.
  */
 export const levels = [
   {
@@ -41,7 +41,7 @@ export const levels = [
     maxIfs: 1,
     // Star thresholds: tighter 3-star encourages efficient repeat usage
     starThree: 8,
-    starTwo: 12,
+    starTwo: 11,
     gridSize: 8,
   },
   {
@@ -105,8 +105,8 @@ export const levels = [
     maxBlocks: 20,
     maxLoops: 6,
     maxIfs: 3,
-    starThree: 5,
-    starTwo: 10,
+    starThree: 10,
+    starTwo: 14,
     gridSize: 8,
   },
   {
@@ -131,8 +131,8 @@ export const levels = [
     maxBlocks: 8,
     maxLoops: 4,
     maxIfs: 2,
-    starThree: 3,
-    starTwo: 5,
+    starThree: 4,
+    starTwo: 6,
     gridSize: 8,
   },
   {
@@ -159,7 +159,7 @@ export const levels = [
     maxLoops: 5,
     maxIfs: 2,
     starThree: 5,
-    starTwo: 8,
+    starTwo: 7,
     gridSize: 8,
   },
   {
@@ -185,8 +185,8 @@ export const levels = [
     maxBlocks: 12,
     maxLoops: 4,
     maxIfs: 2,
-    starThree: 9,
-    starTwo: 12,
+    starThree: 6,
+    starTwo: 9,
     gridSize: 8,
   },
   {
@@ -214,10 +214,10 @@ export const levels = [
       { row: 2, col: 7 },
       { row: 4, col: 0 },
     ],
-    maxBlocks: 12,
+    maxBlocks: 14,
     maxLoops: 2,
     maxIfs: 2,
-    starThree: 8,
+    starThree: 7,
     starTwo: 10,
     gridSize: 8,
   },
@@ -249,8 +249,8 @@ export const levels = [
     maxBlocks: 25,
     maxLoops: 6,
     maxIfs: 3,
-    starThree: 17,
-    starTwo: 20,
+    starThree: 13,
+    starTwo: 18,
     gridSize: 8,
   },
   {
@@ -270,11 +270,11 @@ export const levels = [
       { row: 0, col: 3 },
       { row: 3, col: 7 },
     ],
-    maxBlocks: 10,
+    maxBlocks: 12,
     maxLoops: 5,
     maxIfs: 2,
-    starThree: 1,
-    starTwo: 5,
+    starThree: 6,
+    starTwo: 9,
     gridSize: 8,
   },
   {
@@ -299,11 +299,11 @@ export const levels = [
       { row: 3, col: 7 },
       { row: 3, col: 2 },
     ],
-    maxBlocks: 14,
+    maxBlocks: 16,
     maxLoops: 6,
     maxIfs: 3,
     starThree: 8,
-    starTwo: 11,
+    starTwo: 12,
     gridSize: 8,
   },
 ];

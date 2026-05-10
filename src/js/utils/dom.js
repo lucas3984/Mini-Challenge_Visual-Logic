@@ -31,10 +31,9 @@ export function delay(ms) {
 }
 
 /**
- * Counts top-level blocks inside the container (action, loop, and if blocks).
- * Each top-level block counts as 1 toward maxBlocks regardless of type.
- * Blocks nested inside loop/if dropzones are NOT counted here — they do not
- * consume the maxBlocks budget.
+ * Counts every block inside the container recursively.
+ * Each action, loop, and if block counts toward maxBlocks, including blocks
+ * nested inside loop/if dropzones.
  *
  * Used to measure program complexity and enforce block limits
  * before the user submits their solution.
@@ -45,15 +44,13 @@ export function delay(ms) {
 export function countAllBlocks(container) {
   let count = 0;
   for (const child of container.children) {
-    if (
-      child.classList.contains('block--action') ||
-      child.classList.contains('c-block--loop') ||
-      child.classList.contains('c-block--event')
-    ) {
+    if (child.classList.contains('block') || child.classList.contains('c-block')) {
       count++;
+      const dropzone = child.querySelector('.c-block__dropzone');
+      if (dropzone) {
+        count += countAllBlocks(dropzone);
+      }
     }
-    // Do NOT recurse into dropzones — nested blocks inside if/loop
-    // containers do not count toward maxBlocks.
   }
   return count;
 }

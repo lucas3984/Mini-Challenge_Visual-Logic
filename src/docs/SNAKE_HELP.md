@@ -19,7 +19,7 @@ Mini-Challenge_Visual-Logic/
 │   │   │   ├── router.js         # Roteador SPA baseado em hash (#/)
 │   │   │   └── storage.js        # Wrapper do localStorage com try/catch
 │   │   ├── engine/
-│   │   │   ├── levels.js         # Definição dos 5 níveis do jogo (dados)
+│   │   │   ├── levels.js         # Definição das 10 fases base do jogo (dados)
 │   │   │   ├── parser.js         # Leitor DOM → AST (árvore de comandos)
 │   │   │   └── runner.js         # Executor assíncrono da AST com pause/resume
 │   │   ├── pages/
@@ -59,6 +59,7 @@ Mini-Challenge_Visual-Logic/
 - Gerencia pontuação: cálculo de estrelas, persistência em localStorage via `storage.js`
 - Conecta todos os botões: Executar, Pausar, Limpar, Regras, Voltar
 - Mantém estado global em closure (`currentLevelIndex`, `isExecuting`, `highestCompletedLevel`)
+- Recarrega a lista de fases dinamicamente quando novas fases geradas são adicionadas ao jogo
 
 **Por que está separado:** Isola a lógica de UI e orquestração da lógica de jogo (que está no ator e engine).
 
@@ -118,8 +119,10 @@ Gerencia todo o fluxo de montagem dos blocos no workspace.
 3. **Teclado** — Delete/Backspace remove bloco focado, Escape cancela arrasto
 
 **Lógica de permissão:**
-- Verifica limites do nível (`maxBlocks`, `maxLoops`, `maxIfs`) antes de cada drop
+- Verifica limites do nível (`maxBlocks`, `maxLoops`, `maxIfs`) antes de cada drop de novos blocos da paleta
 - Blocos da sidebar são **clonados** (cópia), blocos do workspace são **movidos**
+- Não há limite de quantidade de blocos dentro de `Repetir` e `Se`
+- Continua proibido aninhar `Se` dentro de `Se` e `Repetir` dentro de `Repetir`
 - Snap preview: borda glow azul aparece nas zonas de encaixe durante o arrasto
 - Botão de delete (×) aparece no hover de cada bloco no workspace
 
@@ -180,13 +183,23 @@ Percorre a AST e executa cada comando no ator Snake com delays visíveis.
 
 ### `engine/levels.js` — Dados dos níveis
 
-Array com 5 níveis, cada um definindo:
+Array com 10 fases base, cada uma definindo:
 - Posição inicial da cobra, direção, paredes, maçãs
 - Limites: `maxBlocks`, `maxLoops`, `maxIfs`
 - Thresholds de estrelas: `starThree`, `starTwo`
 - Grid: `gridSize: 8` (fixo)
 
 Nenhuma lógica — apenas dados puros.
+
+### `engine/level-registry.js` — Catálogo dinâmico de fases
+
+Une as fases base com as fases geradas globalmente para o Snake.
+
+**Regras principais:**
+- Fases 1-10 vêm de `levels.js`
+- Fases 11+ são geradas uma vez por computador e compartilhadas entre todos os perfis
+- A geração começa quando um perfil alcança a fase 8 (progressão 7)
+- O catálogo é lido por `home.js`, `snake.js` e `level-selector.js`
 
 ---
 
@@ -199,7 +212,7 @@ Funções sem estado, sem efeitos colaterais:
 - `getCellElement(gridEl, row, col)` — querySelector por `data-row`/`data-col`
 - `escapeHtml(str)` — sanitização XSS (exigida pelo DOCUMENTATION.md RNF04)
 - `delay(ms)` — Promise que resolve após N ms
-- `countAllBlocks(container)` — conta blocos de ação **recursivamente** (entra em dropzones)
+- `countAllBlocks(container)` — conta blocos de ação, loop e if **recursivamente** (entra em dropzones)
 - `countLoopBlocks(container)` — conta blocos Repeat recursivamente
 - `countIfBlocks(container)` — conta blocos Se recursivamente
 - `countIfChildren(ifBlock)` — conta filhos diretos no dropzone de um Se

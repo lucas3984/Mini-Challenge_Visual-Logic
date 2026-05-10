@@ -42,6 +42,15 @@ export class Router {
   }
 
   /**
+   * Replaces the current hash without causing a route transition.
+   * Used when a page needs to keep the URL in sync during in-page state changes.
+   * @param {string} path - target hash path (e.g. '/levels/snake/3')
+   */
+  replace(path) {
+    history.replaceState(null, '', `#${path}`);
+  }
+
+  /**
    * Re-renders the current route without changing the hash.
    * Used when the active profile changes to refresh all page data.
    */
