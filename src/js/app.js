@@ -3,6 +3,7 @@ import { setAppRouter } from './core/router-state.js';
 import { render as renderHome } from './pages/home.js';
 import { render as renderSnake } from './pages/snake.js';
 import { render as renderLevelSelector } from './pages/level-selector.js';
+import { render as renderCreator } from './pages/creator.js';
 import { BottomNav } from './components/bottom-nav.js';
 
 /*
@@ -34,6 +35,7 @@ setAppRouter(router);
 router.addRoute('/', renderHome);
 router.addRoute('/levels', () => renderLevelSelector({ gameId: 'snake' }));
 router.addRoute('/levels/:gameId', (params) => renderLevelSelector(params));
+router.addRoute('/creator', renderCreator);
 router.addRoute('/levels/snake/:levelId', (params) => renderSnake({
   levelId: params.levelId
 }));

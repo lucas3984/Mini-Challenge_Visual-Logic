@@ -41,10 +41,10 @@ export class BottomNav extends Component {
         icon: `<svg class="nav-icon" viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg"><path d="m384-336 56-57-87-87 87-87-56-57-144 144 144 144Zm192 0 144-144-144-144-56 57 87 87-87 87 56 57ZM200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm0-560v560-560Z" fill="currentColor"/></svg>`
       },
       {
-        id: 'ranking',
-        label: 'RANKING',
-        hash: '#/ranking',
-        icon: `<svg class="nav-icon" viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg"><path d="M607.5-212.5Q660-265 660-340t-52.5-127.5Q555-520 480-520t-127.5 52.5Q300-415 300-340t52.5 127.5Q405-160 480-160t127.5-52.5ZM363-572q20-11 42.5-17.5T451-598L350-800H250l113 228Zm234 0 114-228H610l-85 170 19 38q14 4 27 8.5t26 11.5ZM256-208q-17-29-26.5-62.5T220-340q0-36 9.5-69.5T256-472q-42 14-69 49.5T160-340q0 47 27 82.5t69 49.5Zm448 0q42-14 69-49.5t27-82.5q0-47-27-82.5T704-472q17 29 26.5 62.5T740-340q0 36-9.5 69.5T704-208ZM403.5-91.5Q367-103 336-123q-9 2-18 2.5t-19 .5q-91 0-155-64T80-339q0-87 58-149t143-69L120-880h280l80 160 80-160h280L680-559q85 8 142.5 70T880-340q0 92-64 156t-156 64q-9 0-18.5-.5T623-123q-31 20-67 31.5T480-80q-40 0-76.5-11.5ZM480-340ZM363-572 250-800l113 228Zm234 0 114-228-114 228ZM406-230l28-91-74-53h91l29-96 29 96h91l-74 53 28 91-74-56-74 56Z" fill="currentColor"/></svg>`
+        id: 'creator',
+        label: 'CRIAR',
+        hash: '#/creator',
+        icon: `<svg class="nav-icon" viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h357l-80 80H200v560h560v-278l80-80v358q0 33-23.5 56.5T760-120H200Zm120-160v-170l364-364q11-11 28-11t28 11l74 74q11 11 11 28t-11 28L450-280H320Zm80-80h56l232-232-28-28-28-28-232 232v56Zm268-268-56-56 56 56Zm-84 28-28-28 56 56-28-28Z" fill="currentColor"/></svg>`
       }
     ];
     this.#activeIndex = activeIndex ?? 0;
@@ -63,7 +63,7 @@ export class BottomNav extends Component {
     if (path === '/') return 0;
     if (path.match(/^\/levels\/snake\/\d+$/)) return 2;
     if (path.startsWith('/levels')) return 1;
-    if (path.startsWith('/ranking')) return 3;
+    if (path.startsWith('/creator')) return 3;
     return 0;
   }
 
