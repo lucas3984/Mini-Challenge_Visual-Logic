@@ -20,8 +20,11 @@ export class TopAppBar extends Component {
   /** @type {HTMLElement|null} */
   #userEl = null;
 
+  /** @type {HTMLElement|null} */
+  #el = null;
+
   render() {
-    const header = document.createElement('header');
+    const header = document.createElement('div');
     header.className = 'top-app-bar';
 
     const activeProfile = getActiveProfile() || 'Visitante';
@@ -49,9 +52,9 @@ export class TopAppBar extends Component {
       </div>
     `;
 
+    this.#el = header;
     this.#userEl = header.querySelector('.top-app-bar__user');
 
-    // Dark mode toggle
     this.addListener(header.querySelector('#darkModeToggle'), 'click', this.#handleDarkModeToggle);
 
     // Profile menu toggle
@@ -139,7 +142,7 @@ export class TopAppBar extends Component {
   #handleDarkModeToggle() {
     const html = document.documentElement;
     const isDark = html.classList.contains('dark');
-    const btn = document.getElementById('darkModeToggle');
+    const btn = this.#el?.querySelector('#darkModeToggle');
 
     if (isDark) {
       html.classList.remove('dark');
@@ -162,5 +165,6 @@ export class TopAppBar extends Component {
       this.#profileMenu = null;
     }
     this.#userEl = null;
+    this.#el = null;
   }
 }

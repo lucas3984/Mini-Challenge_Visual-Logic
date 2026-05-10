@@ -1,4 +1,3 @@
-import { TopAppBar } from '../components/top-app-bar.js';
 import { GameCard } from '../components/game-card.js';
 import { ProgressStats } from '../components/progress-stats.js';
 import { hasAnyProfile, setActiveProfile, getActiveProfile } from '../core/profile.js';
@@ -98,15 +97,12 @@ function deriveTitle(completed) {
  * component owns its own container lifecycle.
  */
 export function render() {
-  const main = document.createElement('main');
-  main.className = 'home-page';
+  const page = document.createElement('div');
+  page.className = 'home-page';
 
-  const topAppBar = new TopAppBar();
   const { level, progress } = computeProfileProgress();
   const progressStats = new ProgressStats(level, progress, lastProgress);
   lastProgress = progress;
-
-  main.appendChild(topAppBar.render());
 
   /* Hero section: game-style header with animated icon and tagline. */
   const heroSection = document.createElement('section');
@@ -137,8 +133,8 @@ export function render() {
   gamesSection.appendChild(gamesGrid);
   gamesSection.appendChild(progressStats.render());
 
-  main.appendChild(heroSection);
-  main.appendChild(gamesSection);
+  page.appendChild(heroSection);
+  page.appendChild(gamesSection);
 
   /*
    * Ripple effect adds tactile feedback on button clicks (gamified UI).
@@ -164,7 +160,7 @@ export function render() {
     profileModal.mount(document.body);
   }
 
-  return main;
+  return page;
 }
 
 /*
