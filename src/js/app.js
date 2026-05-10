@@ -35,15 +35,7 @@ mountEl.appendChild(appFooter);
 const bottomNav = new BottomNav();
 appFooter.appendChild(bottomNav.render());
 
-/*
- * Snake pages create their own TopAppBar (not yet refactored).
- * Hide the shell header on those routes so only one TopAppBar is visible.
- */
-function isSnakeRoute(hash) {
-  return /^#\/levels\/snake/.test(hash);
-}
-
-let topAppBar = new TopAppBar();
+const topAppBar = new TopAppBar();
 appHeader.appendChild(topAppBar.render());
 
 /* Router drives the SPA — hash-based routing maps each path to a page render */
@@ -62,31 +54,19 @@ router.addRoute('/levels/snake/:levelId', (params) => renderSnake({
 }));
 
 /*
- * On every route change: slide the BottomNav indicator and toggle shell
- * header visibility for snake routes (which provide their own TopAppBar).
+ * On every route change: slide the BottomNav indicator to the correct tab.
  */
 router.onRouteChange = (hash) => {
   bottomNav.setActiveIndex(BottomNav.getActiveIndex(hash));
-  appHeader.hidden = isSnakeRoute(hash);
 };
 
 /*
- * Prevent a paint-frame flash when the initial URL is a snake route.
- * Without this, both the shell TopAppBar and the snake page's own TopAppBar
- * would be visible for one frame before onRouteChange hides the shell.
- */
-appHeader.hidden = isSnakeRoute(location.hash);
-
-/*
  * TopAppBar is persistent — when the active profile changes, re-render it
- * so the username pill reflects the new profile. Re-check visibility in case
- * the route changed in the meantime.
+ * so the username pill reflects the new profile.
  */
 window.addEventListener('profile-changed', () => {
   appHeader.innerHTML = '';
-  topAppBar = new TopAppBar();
-  appHeader.appendChild(topAppBar.render());
-  appHeader.hidden = isSnakeRoute(location.hash);
+  appHeader.appendChild(new TopAppBar().render());
   router.refresh();
 });
 

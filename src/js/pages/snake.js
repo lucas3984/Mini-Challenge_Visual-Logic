@@ -18,7 +18,6 @@ import { AudioFX } from '../core/audio.js';
 import { saveLevelScore, getProfileLevelScore } from '../core/level-score-storage.js';
 import { calculateStars } from '../utils/stars.js';
 import { ensureGeneratedLevelsForProgress, getGameLevels } from '../engine/level-registry.js';
-import { TopAppBar } from '../components/top-app-bar.js';
 import { hasAnyProfile, getActiveProfile } from '../core/profile.js';
 import { navigateTo, replaceRoute } from '../core/router-state.js';
 import {
@@ -73,10 +72,6 @@ export function render(params = {}) {
   const wrapper = document.createElement('div');
   wrapper.className = 'page--snake';
   wrapper.setAttribute('data-theme', 'dark');
-
-  const topAppBar = new TopAppBar();
-
-  wrapper.appendChild(topAppBar.render());
 
   const root = document.createElement('div');
   root.innerHTML = `
@@ -833,9 +828,6 @@ function renderAccessDenied() {
   const wrapper = document.createElement('div');
   wrapper.className = 'page--snake';
   wrapper.setAttribute('data-theme', 'dark');
-
-  const topAppBar = new TopAppBar();
-  wrapper.appendChild(topAppBar.render());
 
   const content = document.createElement('div');
   content.className = 'access-denied';
