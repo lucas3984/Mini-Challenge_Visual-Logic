@@ -141,6 +141,7 @@ export function render({ gameId = 'snake' } = {}) {
 
     mapEl.addEventListener('pointerdown', (event) => {
       if (event.button !== 0 && event.pointerType !== 'touch') return;
+      if (event.target instanceof Element && event.target.closest('.node')) return;
 
       dragState = {
         pointerId: event.pointerId,
