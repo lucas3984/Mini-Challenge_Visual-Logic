@@ -95,6 +95,8 @@
   padding: var(--space-sm) var(--space-md);
   border-radius: var(--radius-full);
   border: 2px solid color-mix(in srgb, var(--color-primary) 20%, transparent);
+  cursor: pointer;
+  user-select: none;
 }
 
 .top-app-bar__username {
