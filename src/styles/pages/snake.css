@@ -5,28 +5,28 @@
 
 /* ---- Tokens derived from design-system ---- */
 .page--snake {
-  --bg-app: var(--color-bg);
-  --bg-surface: var(--color-surface);
-  --bg-elevated: #243060;
-  --bg-grid-light: var(--color-bg-alt);
-  --bg-grid-dark: var(--color-surface-alt);
-  --bg-grid-line: var(--color-border);
-  --border-dark: var(--color-border);
+  --bg-app: var(--color-bg-neutral);
+  --bg-surface: var(--color-surface-neutral);
+  --bg-elevated: var(--color-surface-neutral-elevated);
+  --bg-grid-light: var(--color-bg-neutral);
+  --bg-grid-dark: var(--color-surface-neutral);
+  --bg-grid-line: var(--color-border-neutral);
+  --border-dark: var(--color-border-neutral);
 
-  --color-action: var(--color-primary);
-  --color-action-hover: #9b9dd4;
-  --color-action-text: var(--color-text);
-  --color-action-border: var(--color-primary-dark);
+  --color-action: var(--color-block-action);
+  --color-action-hover: var(--color-block-action-hover);
+  --color-action-text: var(--color-block-text-action);
+  --color-action-border: transparent;
 
-  --color-control: var(--color-primary-dark);
-  --color-control-hover: #575a8d;
-  --color-control-text: var(--color-text);
-  --color-control-border: var(--color-dark);
+  --color-control: var(--color-block-control);
+  --color-control-hover: var(--color-block-control-hover);
+  --color-control-text: var(--color-block-text-control);
+  --color-control-border: transparent;
 
-  --color-events: #575a8d;
-  --color-events-hover: #6b6ea3;
-  --color-events-text: var(--color-text);
-  --color-events-border: var(--color-dark);
+  --color-events: var(--color-block-event);
+  --color-events-hover: var(--color-block-event-hover);
+  --color-events-text: var(--color-block-text-control);
+  --color-events-border: transparent;
 
   --color-snake-head: var(--color-secondary);
   --color-snake-glow: rgba(69, 240, 223, 0.5);
@@ -43,9 +43,9 @@
   --color-executing-glow: rgba(69, 240, 223, 0.5);
 
   --color-run: var(--color-secondary);
-  --color-run-hover: #69f5e7;
+  --color-run-hover: #5FF8E9;
   --color-pause: var(--color-secondary-alt);
-  --color-pause-hover: #d3d4ff;
+  --color-pause-hover: #D0D0D0;
   --color-clear: #ffb4ab;
 
   /* Snake entity colors (game-specific) */
@@ -53,18 +53,24 @@
   --color-apple-stem: #4a2828;
   --color-apple-highlight: rgba(255, 255, 255, 0.3);
   --color-wall-shadow: rgba(0, 0, 0, 0.6);
+  /* Input fields — neutral dark theme */
+  --color-input-bg: var(--color-input-bg-neutral);
+  --color-input-border: var(--color-input-border-neutral);
   /* Header button colors */
   --color-run-text: #00201d;
   --color-run-shadow: #005049;
   --color-pause-text: #131546;
-  /* C-block gradient bottoms */
-  --color-control-gradient-end: #35386a;
-  --color-events-gradient-end: #4a4d7a;
+  /* C-block gradient bottoms (solid colors for Figma prototype) */
+  --color-control-gradient-end: var(--color-block-control);
+  --color-events-gradient-end: var(--color-block-event);
   /* Snake body segment fade-out opacities */
   --snake-body-opacity-far: 0.7;
   --snake-body-opacity-mid: 0.85;
 
-  --color-shadow: var(--color-dark);
+  --color-shadow: #000000;
+
+  /* Snap preview background — neutral dark theme */
+  --color-snap-bg: var(--color-snap-bg-neutral);
 
   --font-ui: var(--font-body);
   --font-mono: var(--font-headline);
@@ -88,8 +94,6 @@
   flex-direction: column;
   overflow: hidden;
   background: var(--bg-app);
-  background-image: radial-gradient(circle, var(--color-grid-dot) 1px, transparent 1px);
-  background-size: 1.5rem 1.5rem;
   font-family: var(--font-ui);
   font-size: var(--text-sm);
   line-height: 1.5;
@@ -209,9 +213,25 @@
 }
 
 .page--snake .header-btn--clear {
-  background: transparent;
-  color: var(--color-text-dim);
-  box-shadow: none;
+  background: var(--color-action);
+  color: var(--color-block-text-action);
+  border: none;
+  border-bottom: 2px solid var(--color-action-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-2xs) var(--space-between);
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  min-height: var(--touch-target-sm);
+  transition: background var(--duration-fast);
+}
+
+.page--snake .header-btn--clear:hover {
+  background: var(--color-action-hover);
 }
 
 .page--snake .header-divider {
@@ -305,21 +325,108 @@
 
 /* ---- App Layout ---- */
 .page--snake .app-container {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  overflow: hidden;
+  display: grid;
+  grid-template-columns: var(--sidebar-width) 1fr var(--stage-column-width-desktop);
+  grid-template-rows: 1fr;
   gap: var(--space-sm);
   padding: var(--space-sm);
+  height: calc(100vh - 72px - 80px);
+  max-height: calc(100vh - 72px - 80px);
+  overflow: hidden;
 }
 
-@media (min-width: 48rem) {
+/* Stage column - wrapper for stage + card */
+.page--snake .stage-column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* Stage wrapper - contains stage, controls, info */
+.page--snake .stage-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* Stage individual */
+.page--snake .stage {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* Stage body - where grid lives */
+.page--snake .stage__body {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-sm);
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* Level objective card - fluid height */
+.page--snake .level-objective-card {
+  flex: 0 0 auto;
+  min-height: 10rem;
+  max-height: 16rem;
+  overflow: hidden;
+}
+
+/* Sidebar with internal scroll */
+.page--snake .sidebar {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.page--snake .sidebar__categories {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-md);
+}
+
+/* Workspace with internal scroll */
+.page--snake .workspace {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.page--snake .workspace__area {
+  flex: 1;
+  overflow: auto;
+  padding-right: 20rem;
+}
+
+/* Responsive breakpoints */
+@media (max-width: 75rem) {
   .page--snake .app-container {
-    display: grid;
-    grid-template-columns: var(--sidebar-width) 1fr 28rem;
-    grid-template-rows: 1fr;
-    gap: var(--space-sm);
-    padding: var(--space-sm);
+    grid-template-columns: var(--sidebar-width-laptop) 1fr var(--stage-column-width-laptop);
+  }
+}
+
+@media (max-width: 56.1875rem) {
+  .page--snake .app-container {
+    grid-template-columns: var(--sidebar-width-tablet) 1fr var(--stage-column-width-tablet);
+  }
+  
+  .page--snake .level-objective-card {
+    min-height: 10rem;
+    max-height: 14rem;
   }
 }
 
@@ -498,12 +605,62 @@
   color: var(--color-danger-text);
 }
 
-.page--snake .rules-content p {
-  margin-bottom: 0.75rem;
+.page--snake .rules-content {
+  max-height: 60vh;
+  overflow-y: auto;
 }
 
-.page--snake .rules-content p:last-child {
-  margin-bottom: 0;
+.page--snake .rules-grid {
+  display: grid;
+  gap: var(--space-md);
+  grid-template-columns: 1fr;
+}
+
+.page--snake .rules-card {
+  background: var(--bg-grid-line);
+  border: 1px solid var(--border-dark);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+}
+
+.page--snake .rules-card h4 {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm-md);
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0 0 var(--space-sm) 0;
+}
+
+.page--snake .rules-card p {
+  font-family: var(--font-ui);
+  font-size: var(--text-sm);
+  color: var(--color-text-subtle);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.page--snake .rules-card--full {
+  grid-column: 1 / -1;
+}
+
+@media (min-width: 768px) {
+  .page--snake .rules-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .page--snake .modal.modal--rules {
+    max-width: 48rem;
+  }
+
+  .page--snake .rules-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .page--snake .rules-card--full {
+    grid-column: 1 / -1;
+  }
 }
 
 /* Account for fixed TopAppBar and BottomNav height */
@@ -518,4 +675,291 @@
   flex-direction: column;
   flex: 1;
   overflow: hidden;
+}
+
+/* =============================================
+   Stage Wrapper - Contains stage, controls, info, and objective card
+   ============================================= */
+.page--snake .stage-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* ---- Stage Header ---- */
+.page--snake .stage__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-md);
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-dark);
+}
+
+.page--snake .stage__title {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  color: var(--color-text-subtle);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.page--snake .stage__stars {
+  display: flex;
+  gap: 0.125rem;
+  align-items: center;
+}
+
+.page--snake .stage__stars .star {
+  font-size: 1rem;
+  line-height: 1;
+  transition: color 0.2s ease, text-shadow 0.2s ease;
+}
+
+.page--snake .stage__stars .star--lit {
+  color: var(--color-executing);
+  text-shadow: 0 0 0.5rem var(--color-executing-glow);
+}
+
+.page--snake .stage__stars .star--empty {
+  color: var(--color-text-ghost);
+}
+
+.page--snake .stage__level {
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  color: var(--color-text-dim);
+  background: rgba(0, 0, 0, 0.3);
+  padding: 0.125rem 0.5rem;
+  border-radius: var(--radius-sm);
+}
+
+/* ---- Stage Footer ---- */
+.page--snake .stage__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-sm) var(--space-md);
+  background: var(--bg-surface);
+  border-top: 1px solid var(--border-dark);
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  color: var(--color-text-subtle);
+}
+
+.page--snake .stage__apple-counter {
+  color: var(--color-apple);
+  font-weight: 700;
+}
+
+.page--snake .stage__status {
+  color: var(--color-executing);
+  font-weight: 700;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.page--snake .stage__status::before {
+  content: '';
+  display: inline-block;
+  width: 0.5rem;
+  height: 0.5rem;
+  background: var(--color-executing);
+  border-radius: 50%;
+}
+
+/* ---- Stage Controls ---- */
+.page--snake .stage-controls {
+  position: absolute;
+  bottom: var(--space-md);
+  right: var(--space-md);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--border-dark);
+  border-radius: var(--radius-md);
+  z-index: 10;
+}
+
+/* All 3 buttons same size */
+.page--snake .header-btn--run,
+.page--snake .header-btn--pause,
+.page--snake .header-btn--stop {
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Run button - primary style with glow (circular) */
+.page--snake .header-btn--run {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+  background: var(--color-run);
+  box-shadow: 0 0 1rem var(--color-executing-glow);
+  border: none;
+}
+
+.page--snake .header-btn--run:hover:not(:disabled) {
+  background: var(--color-run-hover);
+  box-shadow: 0 0 1.5rem var(--color-executing-glow);
+}
+
+.page--snake .header-btn--run img {
+  width: 1.25rem;
+  height: 1.25rem;
+  filter: brightness(0);
+}
+
+/* Pause and Stop - secondary style (rounded square) */
+.page--snake .header-btn--pause,
+.page--snake .header-btn--stop {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--radius-md);
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: none;
+}
+
+.page--snake .header-btn--pause:hover:not(:disabled),
+.page--snake .header-btn--stop:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.page--snake .header-btn--pause img,
+.page--snake .header-btn--stop img {
+  width: 1.25rem;
+  height: 1.25rem;
+  filter: brightness(0) invert(1);
+}
+
+/* ---- Workspace Counters ---- */
+.page--snake .workspace__counters {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-2xs) var(--space-sm);
+  border: 1px solid var(--border-dark);
+  border-radius: var(--radius-md);
+  justify-self: center;
+}
+
+.page--snake .block-counter {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  color: var(--color-text-subtle);
+  white-space: nowrap;
+  transition: color var(--duration-normal) ease;
+}
+
+.page--snake .block-counter--limit {
+  color: var(--color-apple) !important;
+  animation: snakePulseLimit var(--duration-slow) ease-in-out 3;
+}
+
+.page--snake .loop-counter {
+  color: var(--color-text-muted);
+  font-weight: 700;
+}
+
+/* ---- Level Objective Card ---- */
+.page--snake .level-objective-card {
+  position: absolute;
+  top: 5.5rem;
+  right: var(--space-md);
+  width: 18rem;
+  max-width: 20rem;
+  z-index: 10;
+  background: #1E1E2E;
+  border-radius: var(--radius-lg);
+  padding: var(--space-md);
+  border: 1px solid rgba(74, 144, 226, 0.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.page--snake .level-objective-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-sm);
+}
+
+.page--snake .level-objective-card__title {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  color: #8E8E93;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.page--snake .level-objective-card__icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: #4A90E2;
+}
+
+.page--snake .level-objective-card__description {
+  font-family: var(--font-ui);
+  font-size: var(--text-sm);
+  color: #A0A0B0;
+  line-height: 1.6;
+}
+
+/* ---- Workspace Rules Button ---- */
+.page--snake .workspace__rules-btn {
+  background: var(--color-primary);
+  color: #ffffff;
+  border: none;
+  border-bottom: 2px solid var(--color-primary-dark);
+  border-radius: var(--radius-md);
+  padding: var(--space-2xs) var(--space-between);
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  min-height: var(--touch-target-sm);
+  transition: background var(--duration-fast);
+}
+
+.page--snake .workspace__rules-btn:hover {
+  background: var(--color-primary-dark);
+}
+
+.page--snake .workspace__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  justify-self: end;
+  padding-right: var(--space-md);
+}
+
+.page--snake .workspace__header {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: var(--space-md);
 }

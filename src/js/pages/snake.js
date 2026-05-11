@@ -160,58 +160,75 @@ export function render(params = {}) {
 
       <section class="workspace" aria-label="Área de montagem de código">
         <div class="workspace__header">
-          <span class="workspace__title">Área de Trabalho - Fase 12</span>
-          <button id="btn-clear-workspace" class="header-btn header-btn--clear" title="Limpar" aria-label="Limpar área">
-            <img src="src/assets/images/icons/snake-icons/icon-clear.svg" alt="Limpar área de trabalho" class="btn-icon" width="20" height="20">
-          </button>
+          <span class="workspace__title">ÁREA DE TRABALHO - FASE 12</span>
+          <div class="workspace__counters">
+            <span class="block-counter" id="block-counter">Blocos: 0 / 10</span>
+            <span class="block-counter loop-counter" id="loop-counter">Loops: 0 / 1</span>
+            <span class="block-counter loop-counter" id="if-counter">Se: 0 / 1</span>
+          </div>
+          <div class="workspace__actions">
+            <button id="btn-rules" class="workspace__rules-btn" aria-label="Ver regras">
+              <img src="src/assets/images/icons/snake-icons/Rule-Icon.svg" alt="" width="16" height="16">
+              Regras
+            </button>
+            <button id="btn-clear-workspace" class="header-btn header-btn--clear" title="Limpar" aria-label="Limpar área">
+              <img src="src/assets/images/icons/snake-icons/icon-clear.svg" alt="" aria-hidden="true" class="btn-icon" width="16" height="16">
+              Limpar
+            </button>
+          </div>
         </div>
         <div class="workspace__area">
           <div class="workspace__stack"></div>
         </div>
-      </section>
-
-      <section class="stage" aria-label="Tabuleiro do jogo" aria-live="polite">
-        <div class="stage__header">
-          <h2 class="stage__title">Palco</h2>
-          <div class="stage__stars" id="stage-stars" aria-label="Classificação por estrelas">
-            <span class="star star--empty" data-star="3" aria-hidden="true">&#9733;</span>
-            <span class="star star--empty" data-star="2" aria-hidden="true">&#9733;</span>
-            <span class="star star--empty" data-star="1" aria-hidden="true">&#9733;</span>
+        <div class="level-objective-card" role="region" aria-label="Objetivo do nível">
+          <div class="level-objective-card__header">
+            <span class="level-objective-card__title">Objetivo do Nível</span>
+            <img src="src/assets/images/icons/visual-programming-icons/Trophy-Icon.svg" alt="" class="level-objective-card__icon" width="24" height="24">
           </div>
-          <span class="stage__level" id="stage-level">Nível 1: Apple Hunt</span>
+          <p class="level-objective-card__description">
+            Navegue com a Snake pela grade e colete exatamente 5 maçãs sem atingir o perímetro do firewall.
+          </p>
         </div>
-
-        <div class="stage__body">
-          <div class="grid" role="grid" aria-label="Tabuleiro 8 por 8">
-            ${GRID_HTML}
-          </div>
-        </div>
-
-        <div class="stage__footer">
-          <span id="stage-position">Pos: (&mdash;, &mdash;) direção &mdash;</span>
-          <span id="apple-counter" class="stage__apple-counter">&#127822; 0/0</span>
-          <span id="stage-status" class="stage__status">Pronto</span>
-        </div>
-
         <div class="stage-controls">
           <button id="btn-run" class="header-btn header-btn--run" aria-label="Executar código">
-            <img src="src/assets/images/icons/snake-icons/icon-run.svg" alt="" aria-hidden="true" class="btn-icon" width="20" height="20"> Executar
+            <img src="src/assets/images/icons/visual-programming-icons/Play-Icon.svg" alt="" aria-hidden="true" class="btn-icon" width="24" height="24">
           </button>
           <button id="btn-pause" class="header-btn header-btn--pause" aria-label="Pausar execução" disabled>
-            <img src="src/assets/images/icons/snake-icons/icon-pause.svg" alt="" aria-hidden="true" class="btn-icon" width="20" height="20"> Pausar
+            <img src="src/assets/images/icons/visual-programming-icons/Pause-Icon.svg" alt="" aria-hidden="true" class="btn-icon" width="24" height="24">
           </button>
-          <button id="btn-stop" class="header-btn stage-btn--stop" aria-label="Parar execução" disabled>
-            <img src="src/assets/images/icons/visual-programming-icons/Stop-Icon.svg" alt="" aria-hidden="true" class="btn-icon" width="20" height="20"> Parar
+          <button id="btn-stop" class="header-btn header-btn--stop" aria-label="Parar execução" disabled>
+            <img src="src/assets/images/icons/visual-programming-icons/Stop-Icon.svg" alt="" aria-hidden="true" class="btn-icon" width="24" height="24">
           </button>
-        </div>
-
-        <div class="stage-info">
-          <button id="btn-rules" class="progress-reset-btn" aria-label="Ver regras">Regras</button>
-          <span class="block-counter" id="block-counter">Blocos: 0 / 10</span>
-          <span class="block-counter loop-counter" id="loop-counter">Loops: 0 / 1</span>
-          <span class="block-counter loop-counter" id="if-counter">Se: 0 / 1</span>
         </div>
       </section>
+
+      <div class="stage-column">
+        <section class="stage-wrapper">
+          <section class="stage" aria-label="Tabuleiro do jogo" aria-live="polite">
+            <div class="stage__header">
+              <h2 class="stage__title">PALCO DE EXIBIÇÃO</h2>
+              <div class="stage__stars" id="stage-stars" aria-label="Classificação por estrelas">
+                <span class="star star--empty" data-star="3" aria-hidden="true">&#9733;</span>
+                <span class="star star--empty" data-star="2" aria-hidden="true">&#9733;</span>
+                <span class="star star--empty" data-star="1" aria-hidden="true">&#9733;</span>
+              </div>
+              <span class="stage__level" id="stage-level">Nível 1: Apple Hunt</span>
+            </div>
+
+            <div class="stage__body">
+              <div class="grid" role="grid" aria-label="Tabuleiro 8 por 8">
+                ${GRID_HTML}
+              </div>
+            </div>
+
+            <div class="stage__footer">
+              <span id="stage-position">Pos: (&mdash;, &mdash;)</span>
+              <span id="apple-counter" class="stage__apple-counter">&#127822; 0/0</span>
+              <span id="stage-status" class="stage__status">Pronto</span>
+            </div>
+          </section>
+        </section>
+      </div>
     </div>
 
     <div id="modal-rules" class="modal-overlay" hidden>
@@ -219,13 +236,36 @@ export function render(params = {}) {
         <button id="btn-rules-close" class="modal__close-btn" aria-label="Fechar">&#10005;</button>
         <h3 id="rules-title" class="modal__title">📋 Regras do Jogo</h3>
         <div class="modal__body rules-content">
-          <p><strong>🎯 Objetivo</strong><br>Programe a cobra usando blocos para coletar todas as maçãs no tabuleiro.</p>
-          <p><strong>🧩 Blocos de Ação</strong><br><em>Mover Frente</em> — Move 1 casa na direção atual<br><em>Girar Esquerda</em> — Gira 90° para a esquerda<br><em>Girar Direita</em> — Gira 90° para a direita</p>
-          <p><strong>🔄 Bloco de Controle</strong><br><em>Repetir N vezes</em> — Executa os blocos dentro dele N vezes</p>
-          <p><strong>🔍 Bloco Se</strong><br>Executa os blocos dentro apenas se a condição for verdadeira:<br>• Comeu maçã<br>• Parede à frente (ou borda)<br>• Cobra à frente</p>
-          <p><strong>⚠️ Fim de Jogo</strong><br>• Bater na parede<br>• Bater no próprio corpo<br>• Sair do tabuleiro</p>
-          <p><strong>⭐ Estrelas</strong><br>⭐ Completou o nível<br>⭐⭐ Usou poucos blocos<br>⭐⭐⭐ Usou o mínimo de blocos<br>Menos blocos = mais estrelas!</p>
-          <p><strong>💡 Dicas</strong><br>• Use <em>Repetir</em> para economizar blocos<br>• Use <em>Se</em> para desviar de obstáculos<br>• Clique <em>Executar</em> para ver a cobra se mover</p>
+          <div class="rules-grid">
+            <div class="rules-card">
+              <h4>🎯 Objetivo</h4>
+              <p>Programe a cobra usando blocos para coletar todas as maçãs no tabuleiro.</p>
+            </div>
+            <div class="rules-card">
+              <h4>🧩 Blocos de Ação</h4>
+              <p><em>Mover Frente</em> — Move 1 casa na direção atual<br><em>Girar Esquerda</em> — Gira 90° para a esquerda<br><em>Girar Direita</em> — Gira 90° para a direita</p>
+            </div>
+            <div class="rules-card">
+              <h4>🔄 Bloco de Controle</h4>
+              <p><em>Repetir N vezes</em> — Executa os blocos dentro dele N vezes</p>
+            </div>
+            <div class="rules-card">
+              <h4>🔍 Bloco Se</h4>
+              <p>Executa os blocos dentro apenas se a condição for verdadeira:<br>• Comeu maçã<br>• Parede à frente (ou borda)<br>• Cobra à frente</p>
+            </div>
+            <div class="rules-card">
+              <h4>⚠️ Fim de Jogo</h4>
+              <p>• Bater na parede<br>• Bater no próprio corpo<br>• Sair do tabuleiro</p>
+            </div>
+            <div class="rules-card">
+              <h4>⭐ Estrelas</h4>
+              <p>⭐ Completou o nível<br>⭐⭐ Usou poucos blocos<br>⭐⭐⭐ Usou o mínimo de blocos<br>Menos blocos = mais estrelas!</p>
+            </div>
+            <div class="rules-card rules-card--full">
+              <h4>💡 Dicas</h4>
+              <p>• Use <em>Repetir</em> para economizar blocos<br>• Use <em>Se</em> para desviar de obstáculos<br>• Clique <em>Executar</em> para ver a cobra se mover</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -573,7 +613,6 @@ function init(root, initialLevelIndex) {
     if (btnRun) btnRun.disabled = false;
     if (btnPause) {
       btnPause.disabled = true;
-      btnPause.textContent = '\u23F8 Pausar';
     }
     isExecuting = false;
   }
@@ -585,7 +624,6 @@ function init(root, initialLevelIndex) {
       // snake mid-execution.
       if (runner.paused && isExecuting) {
         runner.resume();
-        if (btnPause) btnPause.textContent = '\u23F8 Pausar';
         if (statusEl) statusEl.textContent = 'Executando...';
         return;
       }
@@ -620,7 +658,6 @@ function init(root, initialLevelIndex) {
       if (btnRun) btnRun.disabled = false;
       if (btnPause) {
         btnPause.disabled = true;
-        btnPause.textContent = '\u23F8 Pausar';
       }
 
       const blockCounterEl = root.querySelector('#block-counter');
@@ -669,11 +706,9 @@ function init(root, initialLevelIndex) {
 
       if (runner.paused) {
         runner.resume();
-        btnPause.textContent = '\u23F8 Pausar';
         if (statusEl) statusEl.textContent = 'Executando...';
       } else {
         runner.pause();
-        btnPause.textContent = '\u25B6 Continuar';
         if (statusEl) statusEl.textContent = 'Pausado';
       }
     });
