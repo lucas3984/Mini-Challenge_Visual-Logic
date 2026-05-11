@@ -243,23 +243,6 @@
   font-size: var(--text-xs);
 }
 
-.page--snake .level-selector {
-  background: var(--bg-surface);
-  color: var(--color-text);
-  border: 2px solid var(--border-dark);
-  border-radius: var(--radius-md);
-  padding: var(--space-xs) var(--space-sm);
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  cursor: pointer;
-  min-height: var(--touch-target-min);
-}
-
-.page--snake .level-selector:focus {
-  outline: 2px solid var(--color-executing);
-  outline-offset: 1px;
-}
-
 .page--snake .block-counter {
   color: var(--color-text-muted);
   font-weight: 700;
@@ -869,7 +852,17 @@
 
 /* All 3 buttons same size */
 .page--snake .header-btn--run,
-.page--snake .header-btn--pause,
+.page--snake .header-btn--pause {
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+
+/*
 .page--snake .header-btn--stop {
   width: 2.5rem;
   height: 2.5rem;
@@ -879,6 +872,7 @@
   justify-content: center;
   transition: background 0.2s ease, box-shadow 0.2s ease;
 }
+*/
 
 /* Run button - primary style with glow (circular) */
 .page--snake .header-btn--run {
@@ -906,9 +900,8 @@
   filter: brightness(0);
 }
 
-/* Pause and Stop - secondary style (rounded square) */
-.page--snake .header-btn--pause,
-.page--snake .header-btn--stop {
+/* Pause - secondary style (rounded square) */
+.page--snake .header-btn--pause {
   width: 2.5rem;
   height: 2.5rem;
   border-radius: var(--radius-md);
@@ -922,17 +915,45 @@
   box-shadow: none;
 }
 
-.page--snake .header-btn--pause:hover:not(:disabled),
-.page--snake .header-btn--stop:hover:not(:disabled) {
+/*
+.page--snake .header-btn--stop {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--radius-md);
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: none;
+}
+*/
+
+.page--snake .header-btn--pause:hover:not(:disabled) {
   background: rgba(255, 255, 255, 0.15);
 }
 
-.page--snake .header-btn--pause img,
+/*
+.page--snake .header-btn--stop:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.15);
+}
+*/
+
+.page--snake .header-btn--pause img {
+  width: 1.25rem;
+  height: 1.25rem;
+  filter: brightness(0) invert(1);
+}
+
+/*
 .page--snake .header-btn--stop img {
   width: 1.25rem;
   height: 1.25rem;
   filter: brightness(0) invert(1);
 }
+*/
 
 /* ---- Workspace Counters ---- */
 .page--snake .workspace__counters {
