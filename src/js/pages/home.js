@@ -198,8 +198,8 @@ function initMaterialSymbols() {
  */
 function initRippleEffect() {
   document.querySelectorAll('button').forEach(button => {
-    button.addEventListener('click', function(e) {
-      const rect = this.getBoundingClientRect();
+    button.addEventListener('click', (e) => {
+      const rect = e.currentTarget.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
 
