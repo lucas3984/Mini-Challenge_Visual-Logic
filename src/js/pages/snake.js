@@ -177,7 +177,7 @@ export function render(params = {}) {
 
       <section class="workspace" aria-label="Área de montagem de código">
         <div class="workspace__header">
-          <span class="workspace__title">ÁREA DE TRABALHO - FASE 12</span>
+          <span class="workspace__title">Área de trabalho</span>
           <div class="workspace__counters">
             <span class="block-counter" id="block-counter">Blocos: 0 / 10</span>
             <span class="block-counter loop-counter" id="loop-counter">Loops: 0 / 1</span>
@@ -213,9 +213,11 @@ export function render(params = {}) {
           <button id="btn-pause" class="header-btn header-btn--pause" aria-label="Pausar execução" disabled>
             <img src="src/assets/images/icons/visual-programming-icons/Pause-Icon.svg" alt="" aria-hidden="true" class="btn-icon" width="24" height="24">
           </button>
+          <!--
           <button id="btn-stop" class="header-btn header-btn--stop" aria-label="Parar execução" disabled>
             <img src="src/assets/images/icons/visual-programming-icons/Stop-Icon.svg" alt="" aria-hidden="true" class="btn-icon" width="24" height="24">
           </button>
+          -->
         </div>
       </section>
 
@@ -482,7 +484,6 @@ function init(root, initialLevelIndex) {
     if (btnRun) btnRun.disabled = false;
     if (btnPause) {
       btnPause.disabled = true;
-      btnPause.textContent = '\u23F8 Pausar';
     }
 
     if (statusEl) statusEl.textContent = 'Vitória!';
@@ -498,7 +499,6 @@ function init(root, initialLevelIndex) {
     const starTwo = level.starTwo ?? Math.ceil(level.maxBlocks * 0.7);
     const stars = calculateStars(usedBlocks, starThree, starTwo);
     saveLevelScore('snake', profile, currentLevelIndex + 1, stars);
-    updateLevelSelect();
     audio.play('win');
     showToast(`\u2B50`.repeat(stars) + ` Nível ${currentLevelIndex + 1} completo!`);
 
@@ -554,33 +554,6 @@ function init(root, initialLevelIndex) {
     ensureGeneratedLevelsForProgress('snake', progress);
     levels = getGameLevels('snake');
   }
-
-  /**
-   * Rebuilds the dropdown so it reflects all available levels.
-   */
-  function renderLevelOptions() {
-    if (!levelSelect) return;
-
-    const currentValue = levelSelect.value;
-    levelSelect.innerHTML = '';
-
-    levels.forEach((level, index) => {
-      const option = document.createElement('option');
-      option.value = String(index);
-      option.disabled = index > highestCompletedLevel + 1;
-      option.textContent = `Nível ${String(level.id).padStart(2, '0')} — ${level.name}${starString(index)}`;
-      levelSelect.appendChild(option);
-    });
-
-    if (currentValue !== '') {
-      levelSelect.value = currentValue;
-    }
-  }
-
-  /**
-   * Refreshes the level selector dropdown so it reflects the current level
-   * list, unlock state, and saved star ratings.
-   */
 
   /**
    * Saves the current workspace blocks to localStorage for the given level.
@@ -797,7 +770,6 @@ function init(root, initialLevelIndex) {
 
   syncLevels(highestCompletedLevel);
 
-  updateLevelSelect();
   // Load the level from URL params if provided, otherwise restore the last
   // visited level from localStorage, falling back to the next uncompleted level.
   if (initialLevelIndex !== undefined && initialLevelIndex >= 0) {
