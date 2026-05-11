@@ -43,7 +43,7 @@ export class TopAppBar extends Component {
              aria-haspopup="dialog"
              aria-label="Trocar perfil">
           <span class="material-symbols-outlined top-app-bar__user-icon">account_circle</span>
-          <span class="top-app-bar__username">${escapeHtml(activeProfile)}</span>
+          <span class="top-app-bar__username top-app-bar__username--desktop">${escapeHtml(activeProfile)}</span>
           <span class="material-symbols-outlined top-app-bar__user-arrow">arrow_drop_down</span>
         </div>
       </div>

@@ -12,7 +12,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--space-md) var(--space-lg);
+  padding: var(--space-md) var(--space-md);
   background-color: var(--color-bg);
   backdrop-filter: blur(12px);
   border-bottom: 2px solid var(--color-primary);
@@ -45,10 +45,11 @@
 
 .top-app-bar__title {
   font-family: var(--font-headline);
-  font-size: var(--text-2xl);
+  font-size: var(--text-xl);
   font-weight: var(--font-weight-headline);
   color: var(--color-primary);
   text-shadow: 2px 2px 0 var(--color-dark);
+  white-space: nowrap;
 }
 
 .top-app-bar__actions {
@@ -104,6 +105,10 @@
   font-size: var(--text-sm);
   font-weight: var(--font-weight-headline);
   color: var(--color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100px;
 }
 
 .top-app-bar__username--desktop {
@@ -111,8 +116,17 @@
 }
 
 @media (min-width: 768px) {
+  .top-app-bar {
+    padding: var(--space-md) var(--space-lg);
+  }
+
+  .top-app-bar__title {
+    font-size: var(--text-2xl);
+  }
+
   .top-app-bar__username--desktop {
     display: inline;
+    max-width: 150px;
   }
 }
 
