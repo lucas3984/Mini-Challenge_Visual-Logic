@@ -8,6 +8,7 @@
  */
 
 const GRID_SIZE = 8;
+const GENERATED_MAX_BLOCKS_SCALE = 1.375;
 
 const NAME_POOL = [
   'Encruzilhada Aberta',
@@ -366,9 +367,10 @@ function buildOpenArenaLevel({ id, seed, index, template, rotation, mirrored, pl
   const routeDistances = apples.map((apple) => shortestPathDistance(start, apple, blocked, snake));
   const farthestDistance = Math.max(...routeDistances);
   const openCellCount = GRID_SIZE * GRID_SIZE - walls.length - snake.length;
-  const maxBlocks = Math.max(14, Math.ceil((farthestDistance + openCellCount / 8) * 1.25));
-  const starThree = Math.max(6, Math.ceil(maxBlocks * 0.5));
-  const starTwo = Math.max(starThree + 2, Math.ceil(maxBlocks * 0.75));
+  const baseMaxBlocks = Math.max(14, Math.ceil((farthestDistance + openCellCount / 8) * 1.25));
+  const maxBlocks = softenGeneratedMaxBlocks(baseMaxBlocks);
+  const starThree = Math.ceil(maxBlocks * 0.7);
+  const starTwo = Math.ceil(maxBlocks * 0.9);
 
   return {
     id,
@@ -426,9 +428,10 @@ function buildAdaptiveFallbackArenaLevel({ id, seed, index, rng, usedNameSet, us
     usedNameSet.add(candidateName);
     const routeDistances = apples.map((apple) => shortestPathDistance(start, apple, blocked, snake));
     const farthestDistance = Math.max(...routeDistances);
-    const maxBlocks = Math.max(14, Math.ceil((farthestDistance + walls.length / 2) * 1.1));
-    const starThree = Math.max(6, Math.ceil(maxBlocks * 0.5));
-    const starTwo = Math.max(starThree + 2, Math.ceil(maxBlocks * 0.75));
+    const baseMaxBlocks = Math.max(14, Math.ceil((farthestDistance + walls.length / 2) * 1.1));
+    const maxBlocks = softenGeneratedMaxBlocks(baseMaxBlocks);
+    const starThree = Math.ceil(maxBlocks * 0.7);
+    const starTwo = Math.ceil(maxBlocks * 0.9);
 
     return {
       id,
@@ -451,6 +454,10 @@ function buildAdaptiveFallbackArenaLevel({ id, seed, index, rng, usedNameSet, us
   }
 
   return null;
+}
+
+function softenGeneratedMaxBlocks(baseMaxBlocks) {
+  return Math.ceil(baseMaxBlocks * GENERATED_MAX_BLOCKS_SCALE);
 }
 
 function buildArenaCandidateOrder(seed, index) {

@@ -10,7 +10,7 @@ import { generateSnakeLevel } from './level-generator.js';
 import { getJSON, setJSON } from '../core/storage.js';
 
 const STORAGE_KEY = 'lv_generated_levels_registry';
-const STORAGE_VERSION = 5;
+const STORAGE_VERSION = 7;
 const GENERATION_TRIGGER_PROGRESS = 7;
 let memoryState = createDefaultState();
 
