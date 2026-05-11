@@ -165,7 +165,6 @@ export class DragDrop extends Component {
     while (el && el !== this.#dragContainer && el !== document.body) {
       if (
         el.classList.contains('c-block__dropzone') ||
-        el.classList.contains('workspace__stack') ||
         el.classList.contains('workspace__area')
       ) {
         return el;
