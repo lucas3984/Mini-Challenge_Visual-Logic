@@ -341,5 +341,33 @@
   --stage-column-width-desktop: 28rem;
   --stage-column-width-laptop: 24rem;
   --stage-column-width-tablet: 20rem;
+  
+  /* =============================================
+     SNAKE PAGE ADDITIONAL TOKENS (Pedro DLucca)
+     Date: 2026-05-10
+     Purpose: Game-specific color tokens and layout
+     tokens required by snake.css that do not exist
+     in the current design system.
+     ============================================= */
+  /* Game entity colors */
+  --color-snake-body: #00d5c5;
+  --color-apple: #ffb4ab;
+  --color-apple-glow: rgba(255, 180, 171, 0.5);
+  --color-spike: #b0adb8;
+  --color-apple-stem: #4a2828;
+  --color-apple-highlight: rgba(255, 255, 255, 0.3);
+  --color-run-shadow: #005049;
+  --color-pause-text: #131546;
+  --color-shadow-pure: #000000;
+  --color-card-icon: #4a90e2;
+  --color-card-border: rgba(74, 144, 226, 0.2);
+
+  /* Layout heights (measured from real components) */
+  --layout-header-height: 5rem;       /* 80px - TopAppBar */
+  --layout-nav-height: 5.125rem;      /* 82px - BottomNav */
+
+  /* Desktop-first breakpoints specific to snake page */
+  --breakpoint-snake-laptop: 75rem;      /* 1200px */
+  --breakpoint-snake-tablet: 56.1875rem; /* 899px */
   /* ============================================= */
 }
