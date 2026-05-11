@@ -133,7 +133,7 @@ a {
  * it specifically for the home route.
  */
 body {
-  background-color: var(--color-bg-home) !important;
+  background-color: var(--color-bg) !important;
   background-image: var(--gradient-bg-game-home) !important;
 }
 

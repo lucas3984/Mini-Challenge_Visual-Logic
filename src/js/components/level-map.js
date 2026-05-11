@@ -10,17 +10,31 @@ export class LevelMap extends Component {
   #levels;
   #onLevelSelect;
   #layout;
+  #customMode;
+  #onToggleCustom;
+  #customLevelsCount;
 
-  constructor({ levels, onLevelSelect, layout }) {
+  constructor({ levels, onLevelSelect, layout, customMode, onToggleCustom, customLevelsCount }) {
     super();
     this.#levels = levels;
     this.#onLevelSelect = onLevelSelect;
     this.#layout = layout || { width: 0, height: 0 };
+    this.#customMode = customMode;
+    this.#onToggleCustom = onToggleCustom;
+    this.#customLevelsCount = customLevelsCount || 0;
   }
 
   render() {
     const map = document.createElement('section');
     map.className = 'map';
+
+    const toggle = this.#buildToggle();
+    if (toggle) {
+      map.appendChild(toggle);
+    }
+
+    const scrollContainer = document.createElement('div');
+    scrollContainer.className = 'map__scroll';
 
     const track = document.createElement('div');
     track.className = 'map__track';
@@ -43,10 +57,10 @@ export class LevelMap extends Component {
 
       const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
       line.setAttribute('class', 'map__line');
-      line.setAttribute('x1', current.position.x);
-      line.setAttribute('y1', current.position.y);
-      line.setAttribute('x2', next.position.x);
-      line.setAttribute('y2', next.position.y);
+      line.setAttribute('x1', parseFloat(current.position.x));
+      line.setAttribute('y1', parseFloat(current.position.y));
+      line.setAttribute('x2', parseFloat(next.position.x));
+      line.setAttribute('y2', parseFloat(next.position.y));
       svg.appendChild(line);
     }
 
@@ -67,8 +81,41 @@ export class LevelMap extends Component {
     });
 
     track.appendChild(nodesContainer);
-    map.appendChild(track);
+    scrollContainer.appendChild(track);
+    map.appendChild(scrollContainer);
 
     return map;
+  }
+
+  #buildToggle() {
+    if (this.#customMode === undefined) return null;
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'map__toggle';
+
+    const btnNormal = document.createElement('button');
+    btnNormal.className = `map__toggle-btn${this.#customMode ? '' : ' map__toggle-btn--active'}`;
+    btnNormal.textContent = 'Originais';
+    btnNormal.setAttribute('aria-pressed', this.#customMode ? 'false' : 'true');
+    btnNormal.addEventListener('click', () => {
+      if (this.#customMode && this.#onToggleCustom) {
+        this.#onToggleCustom(false);
+      }
+    });
+
+    const btnCustom = document.createElement('button');
+    btnCustom.className = `map__toggle-btn${this.#customMode ? ' map__toggle-btn--active' : ''}`;
+    btnCustom.textContent = `Personalizadas${this.#customLevelsCount > 0 ? ` (${this.#customLevelsCount})` : ''}`;
+    btnCustom.setAttribute('aria-pressed', this.#customMode ? 'true' : 'false');
+    btnCustom.addEventListener('click', () => {
+      if (!this.#customMode && this.#onToggleCustom) {
+        this.#onToggleCustom(true);
+      }
+    });
+
+    wrapper.appendChild(btnNormal);
+    wrapper.appendChild(btnCustom);
+
+    return wrapper;
   }
 }

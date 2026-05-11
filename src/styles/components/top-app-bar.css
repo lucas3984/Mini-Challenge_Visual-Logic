@@ -13,7 +13,7 @@
   justify-content: space-between;
   align-items: center;
   padding: var(--space-md) var(--space-lg);
-  background-color: var(--color-bg-home);
+  background-color: var(--color-bg);
   backdrop-filter: blur(12px);
   border-bottom: 2px solid var(--color-primary);
   box-shadow: 0 4px 0 0 var(--color-dark);

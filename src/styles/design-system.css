@@ -65,6 +65,11 @@
   --shadow-block: 0 4px 12px rgba(135, 137, 192, 0.25);
   --shadow-hard: 4px 4px 0 0 var(--color-dark);
   --shadow-hard-sm: 2px 2px 0 0 var(--color-dark);
+  --shadow-elevated: 8px 8px 0 0 rgba(0, 0, 0, 0.6);
+  --shadow-glow-warm: 0 0 8px rgba(255, 180, 171, 0.3);
+  --shadow-glow-secondary: 0 0 0.5rem rgba(69, 240, 223, 0.5);
+  --shadow-inset: inset 2px 2px 4px rgba(0, 0, 0, 0.3);
+  --shadow-panel: 0 -8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08);
   /* Page transition speed (200ms) + touch target min (44px eq). */
   --transition-default: 200ms ease;
   --transition-slow: 300ms ease;
@@ -163,10 +168,10 @@
   --color-danger-shadow: #690005;
   /* C-block input fields (number input inside Repeat/If blocks) */
   --color-input-bg: #ffffff;
-  --color-input-text: #131316;
-  --color-input-border: rgba(0, 0, 0, 0.15);
+  --color-input-text: #111d4a;
+  --color-input-border: rgba(17, 29, 74, 0.15);
   /* C-block dropzone (dashed area inside Repeat/If blocks) */
-  --color-dropzone-border: rgba(255, 255, 255, 0.15);
+  --color-dropzone-border: rgba(17, 29, 74, 0.15);
   /* Surface hover state (scrollbar thumb, cancel button hover) */
   --color-surface-hover: #6b6b75;
   /* Modal/overlay backdrop */
@@ -178,18 +183,27 @@
   /* Workspace controls: clear button subtle background */
   --color-clear-bg: rgba(255, 180, 171, 0.1);
   /* Drag-and-drop snap preview: glow background */
-  --color-snap-bg: rgba(192, 194, 252, 0.08);
+  --color-snap-bg: rgba(69, 240, 223, 0.08);
+  /* Creator page — snake body tint (page-specific) */
+  --creator-snake-body: var(--color-primary);
   /* Page background: radial dot pattern color */
   --color-grid-dot: rgba(192, 194, 252, 0.05);
   /* Layout tokens shared across games */
   --sidebar-width: 15rem;
+  --sidebar-width-lg: 16rem;
+  --sidebar-width-right: 20rem;
+  --size-cell: 3rem;
+  --size-preview: 3rem;
+  --size-asset-item: 3.5rem;
   --grid-max-width: 25rem;
   --grid-max-width-mobile: 18rem;
+  --grid-bg-size: 2rem;
   --modal-max-width: 24rem;
   --sidebar-height-mobile: 7rem;
   /* Border widths */
   --border-width-game: 4px;
   --border-width-thin: 2px;
+  --border-width-hairline: 1px;
   /* Glow/box-shadow spread distances */
   --glow-spread-2xs: 0.5rem;
   --glow-spread-xs: 0.625rem;
@@ -200,6 +214,7 @@
   --button-active-offset: 2px;
   /* Modal overlay background blur intensity */
   --backdrop-blur-amount: 4px;
+  --blur-panel: 12px;
   /* Layered stacking order for vanilla CSS, no z-index in component files. */
   --z-block-dragging: 15;
   --z-drawer: 15;
@@ -225,9 +240,8 @@
  * Dark backgrounds (#111d4a/#1a2450) + adjusted shadows/paths for readability.
  */
 [data-theme="dark"] {
-  --color-bg: #111d4a;
+  --color-bg: #131316;
   --color-bg-alt: #1a2450;
-  --color-bg-home: #131316;
   --color-surface: #1a2450;
   --color-surface-alt: #111d4a;
   --color-text: #f0f2ff;
@@ -245,7 +259,6 @@
   --color-surface-container: #201f23;
   --color-surface-container-lowest: #0e0e11;
   --color-surface-container-highest: #353438;
-  --color-surface-dim: #131316;
   --color-outline: #918f9a;
   --color-outline-variant: #46464f;
   --color-primary-container: #8a8cc3;
@@ -271,17 +284,95 @@
   --color-text-faint: rgba(229, 225, 230, 0.35);
   --color-text-ghost: rgba(229, 225, 230, 0.12);
   /* Input fields — dark mode: dark surface with light text */
-  --color-input-bg: #1a2450;
+  --color-input-bg: #2A2A2A;
   --color-input-text: #f0f2ff;
-  --color-input-border: rgba(194, 202, 232, 0.3);
+  --color-input-border: rgba(255, 255, 255, 0.15);
   /* Dropzone border inside c-blocks */
-  --color-dropzone-border: rgba(194, 202, 232, 0.15);
+  --color-dropzone-border: rgba(255, 255, 255, 0.15);
   /* Badge background in dark mode */
   --color-badge-bg: rgba(0, 0, 0, 0.5);
   /* Grid dot pattern in dark mode */
   --color-grid-dot: rgba(192, 194, 252, 0.05);
   --gradient-bg-game-home: none;
 
+  /* =============================================
+     VISUAL-LOGIC UPDATE (Pedro DLucca)
+     Visual Programming Page - Figma Prototype Reference
+     Date: 2026-05-10
+     Purpose: Neutral dark backgrounds matching Figma prototype
+     ============================================= */
+  --color-bg-neutral: #121212;
+  --color-surface-neutral: #1E1E1E;
+  --color-surface-neutral-elevated: #2A2A2A;
+  --color-surface-modal: #1E1E2E;
+  --color-border-neutral: rgba(255, 255, 255, 0.12);
+  --color-input-bg-neutral: #2A2A2A;
+  --color-input-border-neutral: rgba(255, 255, 255, 0.15);
+  --color-snap-bg-neutral: rgba(69, 240, 223, 0.08);
+  
+  /* Block colors matching Figma prototype */
+  --color-block-action: #45F0DF;
+  --color-block-action-hover: #5FF8E9;
+  --color-block-control: #2D2D44;
+  --color-block-control-hover: #3D3D54;
+  --color-block-event: #2D2D44;
+  --color-block-event-hover: #3D3D54;
+  --color-block-text-action: #00201D;
+  --color-block-text-control: #E5E1E6;
+  --radius-block: 0.75rem;
+  
+  /* Workspace clear button styling - Opção 2 (danger style) */
+  --color-clear-btn-bg: transparent;
+  --color-clear-btn-border: var(--color-clear);
+  --color-clear-btn-hover-bg: var(--color-clear);
+  --color-clear-btn-hover-border: var(--color-clear);
+  
+  /* Level Objective Card */
+  --color-card-bg: #F5F5F7;
+  --color-card-text-title: #8E8E93;
+  --color-card-text-body: #8E8E93;
+  --color-card-progress-bg: #1A1A2E;
+  --color-card-progress-fill-start: #45F0DF;
+  --color-card-progress-fill-end: #8789C0;
+  --color-card-icon: #8789C0;
+  --color-card-counter: #8789C0;
+  
+  /* Responsive layout tokens */
+  --sidebar-width-desktop: 15rem;
+  --sidebar-width-laptop: 13rem;
+  --sidebar-width-tablet: 12rem;
+  --stage-column-width-desktop: 28rem;
+  --stage-column-width-laptop: 24rem;
+  --stage-column-width-tablet: 20rem;
+  
+  /* =============================================
+     SNAKE PAGE ADDITIONAL TOKENS (Pedro DLucca)
+     Date: 2026-05-10
+     Purpose: Game-specific color tokens and layout
+     tokens required by snake.css that do not exist
+     in the current design system.
+     ============================================= */
+  /* Game entity colors */
+  --color-snake-body: #00d5c5;
+  --color-apple: #ffb4ab;
+  --color-apple-glow: rgba(255, 180, 171, 0.5);
+  --color-spike: #b0adb8;
+  --color-apple-stem: #4a2828;
+  --color-apple-highlight: rgba(255, 255, 255, 0.3);
+  --color-run-shadow: #005049;
+  --color-pause-text: #131546;
+  --color-shadow-pure: #000000;
+  --color-card-icon: #4a90e2;
+  --color-card-border: rgba(74, 144, 226, 0.2);
+
+  /* Layout heights (measured from real components) */
+  --layout-header-height: 5rem;       /* 80px - TopAppBar */
+  --layout-nav-height: 5.125rem;      /* 82px - BottomNav */
+
+  /* Desktop-first breakpoints specific to snake page */
+  --breakpoint-snake-laptop: 75rem;      /* 1200px */
+  --breakpoint-snake-tablet: 56.1875rem; /* 899px */
+  /* ============================================= */
 }
 
 /*
