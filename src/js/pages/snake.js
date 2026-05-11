@@ -220,7 +220,7 @@ export function render(params = {}) {
         </div>
         <div class="level-objective-card" role="region" aria-label="Objetivo do nível">
           <div class="level-objective-card__header">
-            <span class="level-objective-card__title">Objetivo do Nível</span>
+            <span class="level-objective-card__title">DESCRIÇÃO DO NÍVEL</span>
             <img src="src/assets/images/icons/visual-programming-icons/Trophy-Icon.svg" alt="" class="level-objective-card__icon" width="24" height="24">
           </div>
           <p class="level-objective-card__description">
