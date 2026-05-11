@@ -37,7 +37,7 @@ export class TopAppBar extends Component {
         <div class="top-app-bar__logo">
           <span class="material-symbols-outlined top-app-bar__icon">extension</span>
         </div>
-        <span class="top-app-bar__title">LogicForge</span>
+        <span class="top-app-bar__title">Blockap</span>
       </div>
       <div class="top-app-bar__actions">
         <button id="darkModeToggle" class="top-app-bar__btn" aria-label="${themeLabel}">

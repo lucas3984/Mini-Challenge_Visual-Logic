@@ -17,7 +17,7 @@ export function render() {
 
   const h1 = document.createElement('h1');
   h1.className = 'sr-only';
-  h1.textContent = 'LogicForge - Editor de Fases';
+  h1.textContent = 'Blockap - Editor de Fases';
   main.appendChild(h1);
 
   const layout = document.createElement('div');
