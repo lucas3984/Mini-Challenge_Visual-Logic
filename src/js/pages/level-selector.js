@@ -316,7 +316,8 @@ export function render({ gameId = 'snake' } = {}) {
     }, true);
 
     const restoreScroll = () => {
-      const focusIndex = Math.max(0, Math.min(currentLevelIndex, 0));
+      const nodes = scrollEl.querySelectorAll('.node');
+      const focusIndex = Math.max(0, Math.min(currentLevelIndex, nodes.length - 1));
       const focusNode = scrollEl.querySelectorAll('.node')[focusIndex];
       if (focusNode) {
         const focusLeft = focusNode.offsetLeft + (focusNode.offsetWidth / 2);
