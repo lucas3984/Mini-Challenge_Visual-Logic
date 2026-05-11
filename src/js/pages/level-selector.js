@@ -16,8 +16,9 @@ function buildLevelMapLayout(totalLevels) {
     return { positions: [], width: 0, height: 0 };
   }
 
-  const NODE_SPACING = 220;
-  const X_MARGIN = 120;
+  const isMobile = window.innerWidth < 768;
+  const NODE_SPACING = isMobile ? 140 : 220;
+  const X_MARGIN = isMobile ? 60 : 120;
   const MAP_HEIGHT = 320;
   const Y_CENTER = MAP_HEIGHT / 2;
   const Y_OFFSET = 26;

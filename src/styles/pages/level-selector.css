@@ -16,11 +16,13 @@
 
 .section-header__title {
   font-family: var(--font-headline);
-  font-size: var(--text-4xl);
+  font-size: clamp(2rem, 8vw, var(--text-4xl));
   font-weight: 700;
   line-height: 1.1;
   letter-spacing: -0.02em;
   color: var(--color-primary-emphasis);
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 /* === Main Content === */
@@ -28,7 +30,7 @@
   max-width: var(--max-width-container, 1280px);
   margin: 0 auto;
   padding: var(--space-xl);
-  padding-top: var(--layout-header-height);
+  padding-top: calc(var(--layout-header-height) + var(--space-sm));
   padding-bottom: calc(var(--layout-nav-height) + var(--space-xl));
   display: flex;
   flex-direction: column;
@@ -40,7 +42,7 @@
   position: relative;
   width: 100%;
   aspect-ratio: 21/9;
-  min-height: 20rem;
+  min-height: 16rem;
   background-color: var(--color-surface-container);
   border-radius: var(--radius-lg);
   border: 1px solid var(--color-outline-variant);
@@ -66,6 +68,7 @@
   align-items: center;
   flex: 1;
   touch-action: pan-y;
+  padding: 0 var(--space-md);
 }
 
 .map__scroll::-webkit-scrollbar {
@@ -123,8 +126,8 @@
 }
 
 .node__circle {
-  width: 5rem;
-  height: 5rem;
+  width: clamp(3.5rem, 12vw, 5rem);
+  height: clamp(3.5rem, 12vw, 5rem);
   border-radius: var(--radius-full, 9999px);
   border: 1px solid var(--color-surface-container);
   box-shadow: var(--shadow-lg, 0 10px 15px rgba(0, 0, 0, 0.2));
@@ -262,6 +265,12 @@
   padding: var(--space-xl);
 }
 
+.level-selector-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+}
+
 .map__empty-text {
   font-family: var(--font-headline);
   font-size: var(--text-lg);
@@ -350,7 +359,7 @@
 }
 
 .table__cell {
-  padding: var(--space-lg);
+  padding: var(--space-md);
   text-align: center;
 }
 
@@ -474,4 +483,95 @@
   padding: var(--space-xl);
   color: var(--color-text-muted);
   font-style: italic;
+}
+
+/* === Responsive: tablet+ overrides === */
+@media (min-width: 768px) {
+  .map {
+    min-height: 20rem;
+  }
+
+  .table__cell {
+    padding: var(--space-lg);
+  }
+}
+
+/* === Mobile: ranking card layout === */
+@media (max-width: 47.9375rem) {
+  .table__header {
+    display: none;
+  }
+
+  .table,
+  .table__body {
+    display: block;
+  }
+
+  .table__row {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    grid-template-areas:
+      "pos  user  score"
+      "date date  date";
+    align-items: center;
+    gap: var(--space-2xs) var(--space-md);
+    padding: var(--space-md);
+    margin-bottom: var(--space-sm);
+    border: 1px solid var(--color-outline-variant);
+    border-radius: var(--radius-default);
+    background-color: var(--color-bg);
+  }
+
+  .table__cell {
+    padding: 0;
+    border: none;
+    text-align: left;
+  }
+
+  .table__cell::before {
+    font-size: var(--text-xs);
+    font-weight: 700;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  [data-label="Posição"] {
+    grid-area: pos;
+  }
+
+  [data-label="Usuário"] {
+    grid-area: user;
+  }
+
+  [data-label="Pontuação"] {
+    grid-area: score;
+  }
+
+  [data-label="Data"] {
+    grid-area: date;
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-top: var(--space-2xs);
+    font-size: var(--text-xs);
+  }
+
+  [data-label="Data"]::before {
+    content: attr(data-label);
+  }
+
+  [data-label="Posição"]::before,
+  [data-label="Usuário"]::before,
+  [data-label="Pontuação"]::before {
+    display: none;
+  }
+
+  .table__user {
+    justify-content: flex-start;
+  }
+
+  .position-badge {
+    justify-content: flex-start;
+  }
 }

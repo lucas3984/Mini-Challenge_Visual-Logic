@@ -94,6 +94,7 @@ export class RankingTable extends Component {
       // Position cell: special badge for 1st place
       const posCell = document.createElement('td');
       posCell.className = 'table__cell';
+      posCell.dataset.label = 'Posição';
       posCell.innerHTML = `
         <div class="position-badge">
           <span class="position-badge__circle ${entry.isFirst ? 'position-badge__circle--first' : 'position-badge__circle--other'}">${entry.position}º</span>
@@ -103,6 +104,7 @@ export class RankingTable extends Component {
       // Name cell with user icon
       const nameCell = document.createElement('td');
       nameCell.className = 'table__cell';
+      nameCell.dataset.label = 'Usuário';
       nameCell.innerHTML = `
         <div class="table__user">
           <span class="table__user-name">${escapeHtml(entry.name)}</span>
@@ -112,11 +114,13 @@ export class RankingTable extends Component {
       // Score cell with star icon
       const scoreCell = document.createElement('td');
       scoreCell.className = 'table__cell table__cell--bold';
+      scoreCell.dataset.label = 'Pontuação';
       scoreCell.innerHTML = `${entry.score} <span class="material-symbols-outlined">star</span>`;
 
       // Date cell with muted text
       const dateCell = document.createElement('td');
       dateCell.className = 'table__cell text-on-surface-variant';
+      dateCell.dataset.label = 'Data';
       dateCell.textContent = entry.date;
 
       tr.appendChild(posCell);
