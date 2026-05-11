@@ -36,6 +36,10 @@
   color: var(--color-text-dim);  margin-top: 0.25rem;
 }
 
+[data-theme="light"] .sidebar__subtitle {
+  color: var(--color-dark);
+}
+
 .sidebar__categories {
   flex: 1;
   overflow-y: auto;
@@ -60,6 +64,10 @@
   color: var(--color-text-subtle);  margin-bottom: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+}
+
+[data-theme="light"] .sidebar__category-header {
+  color: var(--color-dark);
 }
 
 .sidebar__category-dot {
@@ -371,6 +379,10 @@
   color: var(--color-text-subtle);
   text-transform: uppercase;
   letter-spacing: 0.05em;
+}
+
+[data-theme="light"] .workspace__title {
+  color: var(--color-dark);
 }
 
 .workspace__stack {
