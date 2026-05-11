@@ -35,6 +35,12 @@
   gap: var(--space-xl);
 }
 
+.level-selector-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+}
+
 /* === Map Section === */
 .map {
   position: relative;
@@ -142,6 +148,31 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* Light mode: node labels use dark navy */
+[data-theme="light"] .node__label {
+  color: var(--color-dark);
+}
+
+[data-theme="light"] .node--completed .node__label {
+  color: var(--color-dark);
+}
+
+[data-theme="light"] .node--active .node__label {
+  color: var(--color-dark);
+}
+
+[data-theme="light"] .node--locked .node__label {
+  color: var(--color-dark);
+}
+
+[data-theme="light"] .node--unlocked .node__label {
+  color: var(--color-dark);
+}
+
+[data-theme="light"] .node--unlocked .text-on-secondary {
+  color: var(--color-on-primary-container);
 }
 
 .node__badge {
@@ -303,11 +334,19 @@
   color: var(--color-primary);
 }
 
+[data-theme="light"] .ranking__icon {
+  color: var(--color-dark);
+}
+
 .ranking__title {
   font-family: var(--font-headline);
   font-size: var(--text-xl);
   font-weight: 700;
   color: var(--color-primary);
+}
+
+[data-theme="light"] .ranking__title {
+  color: var(--color-dark);
 }
 
 /* === Table === */

@@ -75,7 +75,7 @@
 }
 
 .bottom-nav__item--active .bottom-nav__label {
-  color: var(--color-secondary);
+  color: var(--color-accent);
 }
 
 .bottom-nav__item--inactive {
@@ -83,7 +83,7 @@
 }
 
 .bottom-nav__item--inactive:hover {
-  color: var(--color-secondary);
+  color: var(--color-accent);
 }
 
 .bottom-nav__item--inactive:active {
