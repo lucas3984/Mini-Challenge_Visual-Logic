@@ -2,13 +2,28 @@ import { Component } from './base.js';
 import { escapeHtml } from '../utils/sanitize.js';
 
 export class CreatorProperties extends Component {
-  #nameInput = null;
-  #descInput = null;
-  #onAction = null;
+  #state;
+  #nameInput;
+  #descInput;
+  #onAction;
+  #cleanup;
 
-  constructor({ onAction } = {}) {
+  constructor({ state, onAction } = {}) {
     super();
+    this.#state = state;
     this.#onAction = typeof onAction === 'function' ? onAction : null;
+    this.#cleanup = [];
+  }
+
+  #trackListener(target, event, handler) {
+    target.addEventListener(event, handler);
+    this.#cleanup.push(() => target.removeEventListener(event, handler));
+  }
+
+  unmount() {
+    this.#cleanup.forEach(fn => fn());
+    this.#cleanup = [];
+    super.unmount();
   }
 
   render() {
@@ -24,7 +39,6 @@ export class CreatorProperties extends Component {
     const fields = document.createElement('div');
     fields.className = 'creator-properties__fields';
 
-    // Nome da Fase
     const nameField = document.createElement('div');
     nameField.className = 'creator-properties__field';
 
@@ -38,12 +52,12 @@ export class CreatorProperties extends Component {
     this.#nameInput.className = 'creator-properties__input';
     this.#nameInput.id = 'level-name';
     this.#nameInput.type = 'text';
-    this.#nameInput.value = 'Snake Trap 01';
+    this.#nameInput.placeholder = 'Nome da fase';
+    this.#nameInput.value = '';
     nameField.appendChild(this.#nameInput);
 
     fields.appendChild(nameField);
 
-    // Descrição
     const descField = document.createElement('div');
     descField.className = 'creator-properties__field';
 
@@ -57,13 +71,12 @@ export class CreatorProperties extends Component {
     this.#descInput.className = 'creator-properties__input creator-properties__input--textarea';
     this.#descInput.id = 'level-desc';
     this.#descInput.rows = 3;
-    this.#descInput.placeholder = 'Descrição da fase...';
+    this.#descInput.placeholder = 'Descrição da fase';
     descField.appendChild(this.#descInput);
 
     fields.appendChild(descField);
     aside.appendChild(fields);
 
-    // Actions
     const actions = document.createElement('div');
     actions.className = 'creator-properties__actions';
 
@@ -87,8 +100,12 @@ export class CreatorProperties extends Component {
     const clearLabel = document.createTextNode(' Limpar Tudo');
     clearBtn.appendChild(clearLabel);
 
-    clearBtn.addEventListener('click', () => {
-      if (this.#onAction) this.#onAction('clear');
+    this.#trackListener(clearBtn, 'click', () => {
+      if (this.#state) {
+        this.#state.clearAll();
+      } else if (this.#onAction) {
+        this.#onAction('clear');
+      }
     });
 
     actions.appendChild(clearBtn);
@@ -110,13 +127,14 @@ export class CreatorProperties extends Component {
 
     btn.appendChild(document.createTextNode(` ${text}`));
 
-    btn.addEventListener('click', () => {
+    this.#trackListener(btn, 'click', () => {
       if (this.#onAction) this.#onAction(actionId);
     });
 
     return btn;
   }
 
+  // Sanitize against XSS before storing/exporting user-provided text
   getValues() {
     return {
       name: this.#nameInput ? escapeHtml(this.#nameInput.value) : '',
