@@ -100,8 +100,8 @@
   transition: background 0.3s ease, box-shadow 0.3s ease;
 }
 
-.grid__cell--light { background: #121212; }
-.grid__cell--dark  { background: #1A1A1A; }
+.grid__cell--light { background: var(--bg-grid-light); }
+.grid__cell--dark  { background: var(--bg-grid-dark); }
 
 /* ===== Snake Head ===== */
 .grid__cell--snake-head {

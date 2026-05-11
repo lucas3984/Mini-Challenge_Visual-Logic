@@ -643,6 +643,10 @@
   display: block;
 }
 
+[data-theme="light"] .creator-properties__btn-img {
+  filter: brightness(0) invert(1);
+}
+
 /* ============================================================
    Desktop overrides (min-width: 768px)
    ============================================================ */

@@ -177,15 +177,21 @@
   filter: brightness(0) invert(1);
 }
 
+/* Light mode: keep icons black instead of white so they contrast with light block backgrounds */
+[data-theme="light"] .c-block--event .block__icon,
+[data-theme="light"] .c-block--loop .block__icon {
+  filter: brightness(0);
+}
+
 /* Icons in action blocks (turquoise) remain black */
 .block--action .block__icon {
   filter: brightness(0);
 }
 
 .c-block__input {
-  background: #3A3A3A;
-  color: var(--color-text-bright);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--color-input-bg);
+  color: var(--color-input-text);
+  border: 1px solid var(--color-input-border);
   border-radius: var(--radius-full);
   padding: 0.125rem 0.5rem;
   font-family: var(--font-mono);
@@ -210,9 +216,9 @@
 }
 
 .c-block__select {
-  background: #3A3A3A;
-  color: var(--color-text-bright);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--color-input-bg);
+  color: var(--color-input-text);
+  border: 1px solid var(--color-input-border);
   border-radius: var(--radius-md);
   padding: 0.125rem 0.5rem;
   font-family: var(--font-mono);

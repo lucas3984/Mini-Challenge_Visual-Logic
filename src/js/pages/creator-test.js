@@ -31,7 +31,6 @@ export function render() {
 
   const wrapper = document.createElement('div');
   wrapper.className = 'page--snake page--creator-test';
-  wrapper.dataset.theme = 'dark';
 
   const root = document.createElement('div');
   root.className = 'page--snake__content';

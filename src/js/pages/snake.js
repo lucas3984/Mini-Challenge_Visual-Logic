@@ -90,8 +90,6 @@ export function render(params = {}) {
 
   const wrapper = document.createElement('div');
   wrapper.className = 'page--snake';
-  wrapper.setAttribute('data-theme', 'dark');
-
 
   const root = document.createElement('div');
   root.className = 'page--snake__content';
@@ -863,7 +861,6 @@ function init(root, initialLevelIndex, isCustom) {
 function renderAccessDenied() {
   const wrapper = document.createElement('div');
   wrapper.className = 'page--snake';
-  wrapper.setAttribute('data-theme', 'dark');
 
   const content = document.createElement('div');
   content.className = 'access-denied';

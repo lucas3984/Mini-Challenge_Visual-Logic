@@ -389,7 +389,7 @@
   --color-outline: #767680;
   --color-outline-variant: #c6c5d0;
   --color-primary-container: #111d4a;
-  --color-on-primary-container: #7b86b9;
+  --color-on-primary-container: #f0f2ff;
   --color-primary-emphasis: #111d4a;
   --color-accent: #111d4a;
   --gradient-bg-game-home: var(--gradient-bg-game);
@@ -399,4 +399,73 @@
   --color-text-subtle: rgba(17, 29, 74, 0.6);
   --color-text-faint: rgba(17, 29, 74, 0.35);
   --color-text-ghost: rgba(17, 29, 74, 0.12);
+
+  /* Layout tokens — theme-agnostic (same values as dark mode) */
+  --layout-header-height: 5rem;
+  --layout-nav-height: 5.125rem;
+  --breakpoint-snake-laptop: 75rem;
+  --breakpoint-snake-tablet: 56.1875rem;
+  --sidebar-width-desktop: 15rem;
+  --sidebar-width-laptop: 13rem;
+  --sidebar-width-tablet: 12rem;
+  --stage-column-width-desktop: 28rem;
+  --stage-column-width-laptop: 24rem;
+  --stage-column-width-tablet: 20rem;
+  --radius-block: 0.75rem;
+
+  /* Neutral surface tokens — light backgrounds */
+  --color-bg-neutral: #faf9ff;
+  --color-surface-neutral: #ffffff;
+  --color-surface-neutral-elevated: #ebedfa;
+  --color-surface-modal: #ffffff;
+  --color-border-neutral: rgba(17, 29, 74, 0.1);
+
+  /* Input tokens — light mode */
+  --color-input-bg-neutral: #ffffff;
+  --color-input-border-neutral: rgba(17, 29, 74, 0.25);
+
+  /* Snap preview — adjusted for light bg */
+  --color-snap-bg-neutral: rgba(135, 137, 192, 0.08);
+
+  /* Block palette colors — light mode */
+  --color-block-action: #45F0DF;
+  --color-block-action-hover: #5FF8E9;
+  --color-block-text-action: #00201D;
+  --color-block-control: #d7d9e6;
+  --color-block-control-hover: #c6c5d0;
+  --color-block-text-control: #111d4a;
+  --color-block-event: #d7d9e6;
+  --color-block-event-hover: #c6c5d0;
+
+  /* Clear/danger button tokens */
+  --color-clear-btn-bg: transparent;
+  --color-clear-btn-border: var(--color-error);
+  --color-clear-btn-hover-bg: var(--color-error);
+  --color-clear-btn-hover-border: var(--color-error);
+
+  /* Card tokens — light mode */
+  --color-card-bg: #f0f2ff;
+  --color-card-text-title: #111d4a;
+  --color-card-text-body: rgba(17, 29, 74, 0.7);
+  --color-card-progress-bg: #d7d9e6;
+  --color-card-progress-fill-start: #45F0DF;
+  --color-card-progress-fill-end: #8789C0;
+  --color-card-icon: #8789C0;
+  --color-card-counter: #8789C0;
+
+  /* Secondary actions — darker shade for visibility on light bg */
+  --color-secondary-alt: #8789c0;
+
+  /* Game entity colors — light mode */
+  --color-snake-body: #00d5c5;
+  --color-apple: #ff6b6b;
+  --color-apple-glow: rgba(255, 107, 107, 0.3);
+  --color-spike: #767680;
+  --color-apple-stem: #4a2828;
+  --color-apple-highlight: rgba(255, 255, 255, 0.3);
+  --color-run-shadow: #00332e;
+  --color-pause-text: #111d4a;
+  --color-shadow-pure: #111d4a;
+  --color-card-icon: #4a90e2;
+  --color-card-border: rgba(74, 144, 226, 0.2);
 }

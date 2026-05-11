@@ -14,7 +14,6 @@ export function render() {
   const state = new CreatorState();
   const main = document.createElement('main');
   main.className = 'page--creator';
-  main.dataset.theme = 'dark';
 
   const h1 = document.createElement('h1');
   h1.className = 'sr-only';

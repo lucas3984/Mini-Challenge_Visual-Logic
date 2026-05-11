@@ -77,6 +77,11 @@
   --sidebar-width: 15rem;
 }
 
+/* Light mode: visible checkerboard grid cells */
+[data-theme="light"] .page--snake {
+  --bg-grid-dark: #ebedfa;
+}
+
 /* ---- Page layout ---- */
 .page--snake {
   height: 100vh;
@@ -910,9 +915,6 @@
   align-items: center;
   justify-content: center;
   transition: background 0.2s ease, box-shadow 0.2s ease;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  box-shadow: none;
 }
 
 /*
@@ -945,6 +947,10 @@
   width: 1.25rem;
   height: 1.25rem;
   filter: brightness(0) invert(1);
+}
+
+[data-theme="light"] .page--snake .header-btn--pause img {
+  filter: brightness(0);
 }
 
 /*
