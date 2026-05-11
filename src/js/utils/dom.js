@@ -198,6 +198,12 @@ export function cloneBlockForWorkspace(block) {
   clone.tabIndex = 0;
   clone.style.opacity = '';
 
+  // Ensure icons inside the clone are not natively draggable.
+  // Prevents the browser from treating them as independent drag targets.
+  clone.querySelectorAll('.block__icon').forEach((icon) => {
+    icon.draggable = false;
+  });
+
   // Also clean any nested elements that may have inherited transient classes.
   clone.querySelectorAll('.block--executing, .block--dragging, .block--selected').forEach((el) => {
     el.classList.remove('block--executing', 'block--dragging', 'block--selected');
