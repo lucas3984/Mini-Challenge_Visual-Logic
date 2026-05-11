@@ -12,7 +12,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--space-md) var(--space-lg);
+  padding: var(--space-md) var(--space-md);
   background-color: var(--color-bg);
   backdrop-filter: blur(12px);
   border-bottom: 2px solid var(--color-primary);
@@ -45,10 +45,11 @@
 
 .top-app-bar__title {
   font-family: var(--font-headline);
-  font-size: var(--text-2xl);
+  font-size: var(--text-xl);
   font-weight: var(--font-weight-headline);
   color: var(--color-primary);
   text-shadow: 2px 2px 0 var(--color-dark);
+  white-space: nowrap;
 }
 
 .top-app-bar__actions {
@@ -90,9 +91,9 @@
 .top-app-bar__user {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
+  gap: var(--space-md);
   background-color: var(--home-color-surface-low);
-  padding: var(--space-sm) var(--space-md);
+  padding: var(--space-md) var(--space-lg);
   border-radius: var(--radius-full);
   border: 2px solid color-mix(in srgb, var(--color-primary) 20%, transparent);
   cursor: pointer;
@@ -101,9 +102,13 @@
 
 .top-app-bar__username {
   font-family: var(--font-headline);
-  font-size: var(--text-sm);
+  font-size: var(--text-md);
   font-weight: var(--font-weight-headline);
   color: var(--color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 120px;
 }
 
 .top-app-bar__username--desktop {
@@ -111,14 +116,23 @@
 }
 
 @media (min-width: 768px) {
+  .top-app-bar {
+    padding: var(--space-md) var(--space-lg);
+  }
+
+  .top-app-bar__title {
+    font-size: var(--text-2xl);
+  }
+
   .top-app-bar__username--desktop {
     display: inline;
+    max-width: 180px;
   }
 }
 
 .top-app-bar__user-icon {
   color: var(--color-accent);
-  font-size: 20px;
+  font-size: 24px;
 }
 
 /* Light mode: toggle button uses dark navy instead of muted gray */

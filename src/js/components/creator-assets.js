@@ -48,12 +48,21 @@ export class CreatorAssets extends Component {
   #items;
   #listEl;
   #cleanup;
+  #longPressTimer;
+  #longPressActive;
+  #touchClone;
+  #startX;
+  #startY;
+  #currentAssetId;
 
   constructor({ state } = {}) {
     super();
     this.#state = state;
     this.#items = ASSETS;
     this.#cleanup = [];
+    this.#longPressActive = false;
+    this.#touchClone = null;
+    this.#currentAssetId = null;
   }
 
   render() {
@@ -122,6 +131,18 @@ export class CreatorAssets extends Component {
       btn.addEventListener('dragstart', onDragStart);
       this.#cleanup.push(() => btn.removeEventListener('dragstart', onDragStart));
 
+      const onTouchStart = (e) => this.#onTouchStart(e, item.id);
+      btn.addEventListener('touchstart', onTouchStart, { passive: false });
+      this.#cleanup.push(() => btn.removeEventListener('touchstart', onTouchStart));
+
+      const onTouchMove = (e) => this.#onTouchMove(e);
+      document.addEventListener('touchmove', onTouchMove, { passive: false });
+      this.#cleanup.push(() => document.removeEventListener('touchmove', onTouchMove));
+
+      const onTouchEnd = (e) => this.#onTouchEnd(e);
+      document.addEventListener('touchend', onTouchEnd);
+      this.#cleanup.push(() => document.removeEventListener('touchend', onTouchEnd));
+
       list.appendChild(btn);
     });
 
@@ -181,4 +202,109 @@ export class CreatorAssets extends Component {
       btn.classList.toggle('creator-assets__item--selected', btn.dataset.assetId === selected);
     });
   }
+
+  #onTouchStart(e, assetId) {
+    const btn = e.target.closest('.creator-assets__item');
+    if (!btn) return;
+
+    e.preventDefault();
+
+    this.#startX = e.touches[0].clientX;
+    this.#startY = e.touches[0].clientY;
+    this.#currentAssetId = assetId;
+
+    clearTimeout(this.#longPressTimer);
+    this.#longPressTimer = setTimeout(() => {
+      this.#longPressActive = true;
+
+      const preview = btn.querySelector('.creator-assets__preview');
+      if (!preview) return;
+
+      this.#touchClone = preview.cloneNode(true);
+      this.#touchClone.style.position = 'fixed';
+      this.#touchClone.style.pointerEvents = 'none';
+      this.#touchClone.style.zIndex = '1000';
+      this.#touchClone.style.opacity = '0.9';
+      this.#touchClone.style.width = preview.offsetWidth + 'px';
+      this.#touchClone.style.height = preview.offsetHeight + 'px';
+      document.body.appendChild(this.#touchClone);
+
+      btn.classList.add('creator-assets__item--dragging');
+      document.body.style.overscrollBehavior = 'none';
+    }, 300);
+  }
+
+  #onTouchMove(e) {
+    if (!this.#longPressActive || !this.#touchClone) return;
+
+    e.preventDefault();
+
+    const touch = e.touches[0];
+    const x = touch.clientX;
+    const y = touch.clientY;
+
+    this.#touchClone.style.left = x - this.#touchClone.offsetWidth / 2 + 'px';
+    this.#touchClone.style.top = y - 20 + 'px';
+  }
+
+  #onTouchEnd(e) {
+    clearTimeout(this.#longPressTimer);
+
+    if (!this.#longPressActive || !this.#touchClone) {
+      this.#longPressActive = false;
+      return;
+    }
+
+    this.#longPressActive = false;
+
+    const touch = e.changedTouches[0];
+    const x = touch.clientX;
+    const y = touch.clientY;
+
+    this.#touchClone.style.display = 'none';
+    const el = document.elementFromPoint(x, y);
+    this.#touchClone.style.display = '';
+
+    const cell = el ? el.closest('.creator-board__cell') : null;
+
+    if (this.#touchClone) {
+      this.#touchClone.remove();
+      this.#touchClone = null;
+    }
+
+    const btn = this.#listEl.querySelector(`[data-asset-id="${this.#currentAssetId}"]`);
+    if (btn) {
+      btn.classList.remove('creator-assets__item--dragging');
+    }
+    document.body.style.overscrollBehavior = '';
+
+    if (!cell) {
+      this.#currentAssetId = null;
+      return;
+    }
+
+    const r = parseInt(cell.dataset.row, 10);
+    const c = parseInt(cell.dataset.col, 10);
+
+    if (this.#state) {
+      const result = this.#state.setCell(r, c, { type: this.#currentAssetId });
+      if (!result.success) {
+        const board = cell.closest('.creator-board');
+        if (board) {
+          const toast = board.querySelector('.creator-board__toast');
+          if (toast) {
+            toast.textContent = result.reason;
+            toast.hidden = false;
+            clearTimeout(toast._timeout);
+            toast._timeout = setTimeout(() => {
+              toast.hidden = true;
+            }, 2000);
+          }
+        }
+      }
+    }
+
+    this.#currentAssetId = null;
+  }
+
 }

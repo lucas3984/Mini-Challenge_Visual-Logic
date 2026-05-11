@@ -200,6 +200,9 @@
   --grid-bg-size: 2rem;
   --modal-max-width: 24rem;
   --sidebar-height-mobile: 7rem;
+  /* Layout heights for fixed top-app-bar and bottom-nav (measured from real components) */
+  --layout-header-height: 5rem;       /* 80px - TopAppBar */
+  --layout-nav-height: 5.125rem;      /* 82px - BottomNav */
   /* Border widths */
   --border-width-game: 4px;
   --border-width-thin: 2px;

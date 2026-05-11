@@ -50,7 +50,7 @@ export class ProfileModal extends Component {
           <div class="profile-modal__glow"></div>
           <span class="material-symbols-outlined profile-modal__icon" style="font-variation-settings: 'FILL' 1;">assignment_ind</span>
         </div>
-        <h1 class="profile-modal__title">Bem-vindo ao LogicForge</h1>
+        <h1 class="profile-modal__title">Bem-vindo ao Blockap</h1>
         <p class="profile-modal__subtitle">
           Crie um perfil para acompanhar seu progresso e salvar suas conquistas nos desafios de lógica.
         </p>

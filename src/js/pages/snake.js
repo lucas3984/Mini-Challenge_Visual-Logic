@@ -95,10 +95,100 @@ export function render(params = {}) {
   root.className = 'page--snake__content';
   root.innerHTML = `
     <div class="app-container">
+      <div class="stage-column">
+        <section class="stage-wrapper">
+          <section class="stage" aria-label="Tabuleiro do jogo" aria-live="polite">
+            <div class="stage__header">
+              <h2 class="stage__title">PALCO DE EXIBIÇÃO</h2>
+              <div class="stage__stars" id="stage-stars" aria-label="Classificação por estrelas">
+                <span class="star star--empty" data-star="3" aria-hidden="true">&#9733;</span>
+                <span class="star star--empty" data-star="2" aria-hidden="true">&#9733;</span>
+                <span class="star star--empty" data-star="1" aria-hidden="true">&#9733;</span>
+              </div>
+              <span class="stage__level" id="stage-level">Nível 1: Apple Hunt</span>
+            </div>
+
+            <div class="stage__body">
+              <div class="grid" role="grid" aria-label="Tabuleiro 8 por 8">
+                ${GRID_HTML}
+              </div>
+            </div>
+
+            <div class="stage__footer">
+              <span id="stage-position">Pos: (&mdash;, &mdash;)</span>
+              <span id="apple-counter" class="stage__apple-counter">&#127822; 0/0</span>
+              <span id="stage-status" class="stage__status">Pronto</span>
+            </div>
+          </section>
+        </section>
+      </div>
+
+      <div class="game-controls" role="toolbar" aria-label="Controles do jogo">
+        <div class="game-controls__primary">
+          <button id="btn-run" class="header-btn header-btn--run" aria-label="Executar código">
+            <img src="src/assets/images/icons/visual-programming-icons/Play-Icon.svg" alt="" aria-hidden="true" class="btn-icon" width="24" height="24">
+          </button>
+          <button id="btn-pause" class="header-btn header-btn--pause" aria-label="Pausar execução" disabled>
+            <img src="src/assets/images/icons/visual-programming-icons/Pause-Icon.svg" alt="" aria-hidden="true" class="btn-icon" width="24" height="24">
+          </button>
+          <button id="btn-objective" class="header-btn header-btn--objective" aria-label="Ver descrição do nível" title="Descrição do nível">
+            <img src="src/assets/images/icons/visual-programming-icons/Trophy-Icon.svg" alt="" aria-hidden="true" class="btn-icon" width="16" height="16">
+            <span class="objective-label">Descrição</span>
+          </button>
+        </div>
+        <div class="game-controls__secondary">
+          <button id="btn-sidebar-toggle" class="game-controls__btn game-controls__btn--sidebar" aria-label="Abrir blocos" title="Blocos">
+            <span class="material-symbols-outlined" aria-hidden="true" style="font-size:16px">widgets</span>
+            Blocos
+          </button>
+          <button id="btn-rules" class="workspace__rules-btn" aria-label="Ver regras">
+            <img src="src/assets/images/icons/snake-icons/Rule-Icon.svg" alt="" width="16" height="16">
+            Regras
+          </button>
+          <button id="btn-clear-workspace" class="header-btn header-btn--clear" title="Limpar" aria-label="Limpar área">
+            <img src="src/assets/images/icons/snake-icons/icon-clear.svg" alt="" aria-hidden="true" class="btn-icon" width="16" height="16">
+            Limpar
+          </button>
+          ${isCustom ? `
+          <button id="btn-export" class="header-btn header-btn--clear" aria-label="Exportar fase">
+            <span class="material-symbols-outlined" aria-hidden="true" style="font-size:16px">upload</span>
+            Exportar
+          </button>` : ''}
+        </div>
+      </div>
+
+      <section class="workspace" aria-label="Área de montagem de código">
+        <div class="workspace__header">
+          <span class="workspace__title">Área de trabalho</span>
+          <div class="workspace__counters">
+            <span class="block-counter" id="block-counter">Blocos: 0 / 10</span>
+            <span class="block-counter loop-counter" id="loop-counter">Loops: 0 / 1</span>
+            <span class="block-counter loop-counter" id="if-counter">Se: 0 / 1</span>
+          </div>
+        </div>
+        <div class="workspace__area">
+          <div class="workspace__stack"></div>
+        </div>
+        <div class="level-objective-card" role="region" aria-label="Objetivo do nível">
+          <div class="level-objective-card__header">
+            <span class="level-objective-card__title">DESCRIÇÃO DO NÍVEL</span>
+            <img src="src/assets/images/icons/visual-programming-icons/Trophy-Icon.svg" alt="" class="level-objective-card__icon" width="24" height="24">
+          </div>
+          <p class="level-objective-card__description">
+            Navegue com a Snake pela grade e colete exatamente 5 maçãs sem atingir o perímetro do firewall.
+          </p>
+        </div>
+      </section>
+
       <aside class="sidebar" aria-label="Paleta de blocos">
         <div class="sidebar__header">
-          <h2 class="sidebar__title">Blocos</h2>
-          <p class="sidebar__subtitle">Arraste para a área de trabalho</p>
+          <div class="sidebar__header-left">
+            <h2 class="sidebar__title">Blocos</h2>
+            <p class="sidebar__subtitle">Arraste para a área de trabalho</p>
+          </div>
+          <button id="btn-sidebar-close" class="sidebar__close-btn" aria-label="Fechar blocos">
+            <span class="material-symbols-outlined" aria-hidden="true">close</span>
+          </button>
         </div>
 
         <div class="sidebar__categories">
@@ -187,86 +277,9 @@ export function render(params = {}) {
           </section>
         </div>
       </aside>
-
-      <section class="workspace" aria-label="Área de montagem de código">
-        <div class="workspace__header">
-          <span class="workspace__title">Área de trabalho</span>
-          <div class="workspace__counters">
-            <span class="block-counter" id="block-counter">Blocos: 0 / 10</span>
-            <span class="block-counter loop-counter" id="loop-counter">Loops: 0 / 1</span>
-            <span class="block-counter loop-counter" id="if-counter">Se: 0 / 1</span>
-          </div>
-          <div class="workspace__actions">
-            <button id="btn-rules" class="workspace__rules-btn" aria-label="Ver regras">
-              <img src="src/assets/images/icons/snake-icons/Rule-Icon.svg" alt="" width="16" height="16">
-              Regras
-            </button>
-            <button id="btn-clear-workspace" class="header-btn header-btn--clear" title="Limpar" aria-label="Limpar área">
-              <img src="src/assets/images/icons/snake-icons/icon-clear.svg" alt="" aria-hidden="true" class="btn-icon" width="16" height="16">
-              Limpar
-            </button>
-            ${isCustom ? `
-            <button id="btn-export" class="header-btn header-btn--clear" aria-label="Exportar fase">
-              <span class="material-symbols-outlined" aria-hidden="true" style="font-size:16px">upload</span>
-              Exportar
-            </button>` : ''}
-          </div>
-        </div>
-        <div class="workspace__area">
-          <div class="workspace__stack"></div>
-        </div>
-        <div class="level-objective-card" role="region" aria-label="Objetivo do nível">
-          <div class="level-objective-card__header">
-            <span class="level-objective-card__title">DESCRIÇÃO DO NÍVEL</span>
-            <img src="src/assets/images/icons/visual-programming-icons/Trophy-Icon.svg" alt="" class="level-objective-card__icon" width="24" height="24">
-          </div>
-          <p class="level-objective-card__description">
-            Navegue com a Snake pela grade e colete exatamente 5 maçãs sem atingir o perímetro do firewall.
-          </p>
-        </div>
-        <div class="stage-controls">
-          <button id="btn-run" class="header-btn header-btn--run" aria-label="Executar código">
-            <img src="src/assets/images/icons/visual-programming-icons/Play-Icon.svg" alt="" aria-hidden="true" class="btn-icon" width="24" height="24">
-          </button>
-          <button id="btn-pause" class="header-btn header-btn--pause" aria-label="Pausar execução" disabled>
-            <img src="src/assets/images/icons/visual-programming-icons/Pause-Icon.svg" alt="" aria-hidden="true" class="btn-icon" width="24" height="24">
-          </button>
-          <!--
-          <button id="btn-stop" class="header-btn header-btn--stop" aria-label="Parar execução" disabled>
-            <img src="src/assets/images/icons/visual-programming-icons/Stop-Icon.svg" alt="" aria-hidden="true" class="btn-icon" width="24" height="24">
-          </button>
-          -->
-        </div>
-      </section>
-
-      <div class="stage-column">
-        <section class="stage-wrapper">
-          <section class="stage" aria-label="Tabuleiro do jogo" aria-live="polite">
-            <div class="stage__header">
-              <h2 class="stage__title">PALCO DE EXIBIÇÃO</h2>
-              <div class="stage__stars" id="stage-stars" aria-label="Classificação por estrelas">
-                <span class="star star--empty" data-star="3" aria-hidden="true">&#9733;</span>
-                <span class="star star--empty" data-star="2" aria-hidden="true">&#9733;</span>
-                <span class="star star--empty" data-star="1" aria-hidden="true">&#9733;</span>
-              </div>
-              <span class="stage__level" id="stage-level">Nível 1: Apple Hunt</span>
-            </div>
-
-            <div class="stage__body">
-              <div class="grid" role="grid" aria-label="Tabuleiro 8 por 8">
-                ${GRID_HTML}
-              </div>
-            </div>
-
-            <div class="stage__footer">
-              <span id="stage-position">Pos: (&mdash;, &mdash;)</span>
-              <span id="apple-counter" class="stage__apple-counter">&#127822; 0/0</span>
-              <span id="stage-status" class="stage__status">Pronto</span>
-            </div>
-          </section>
-        </section>
-      </div>
     </div>
+
+    <div id="sidebar-backdrop" class="sidebar-backdrop" hidden tabindex="-1" aria-hidden="true"></div>
 
     <div id="modal-rules" class="modal-overlay" hidden>
       <div class="modal modal--rules" role="dialog" aria-modal="true" aria-labelledby="rules-title">
@@ -311,6 +324,21 @@ export function render(params = {}) {
               <p>• Use <em>Repetir</em> para economizar blocos<br>• Use <em>Se</em> para desviar de obstáculos<br>• Clique <em>Executar</em> para ver a cobra se mover</p>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="modal-objective" class="modal-overlay" hidden>
+      <div class="modal modal--objective" role="dialog" aria-modal="true" aria-labelledby="objective-modal-title">
+        <button id="btn-objective-close" class="modal__close-btn" aria-label="Fechar">&#10005;</button>
+        <h3 id="objective-modal-title" class="modal__title">
+          <img src="src/assets/images/icons/visual-programming-icons/Trophy-Icon.svg" alt="" class="objective-modal__icon" width="24" height="24">
+          DESCRIÇÃO DO NÍVEL
+        </h3>
+        <div class="modal__body">
+          <p class="level-objective-card__description">
+            Navegue com a Snake pela grade e colete exatamente 5 maçãs sem atingir o perímetro do firewall.
+          </p>
         </div>
       </div>
     </div>
@@ -468,6 +496,23 @@ function init(root, initialLevelIndex, isCustom) {
     canAddIf,
     onBlockChanged: updateBlockCounterLive,
     audio,
+    onDragStart: () => {
+      isDraggingBlock = true;
+      // Close sidebar immediately and disable its pointer events during drag
+      if (sidebar) {
+        if (sidebar.classList.contains('sidebar--open')) {
+          closeSidebar();
+        }
+        sidebar.style.pointerEvents = 'none';
+      }
+    },
+    onDragEnd: () => {
+      isDraggingBlock = false;
+      // Re-enable sidebar pointer events after drag completes
+      if (sidebar) {
+        sidebar.style.pointerEvents = '';
+      }
+    },
   });
 
   const btnRun = root.querySelector('#btn-run');
@@ -480,6 +525,90 @@ function init(root, initialLevelIndex, isCustom) {
   const statusEl = root.querySelector('#stage-status');
   const descriptionEl = root.querySelector('.level-objective-card__description');
   const btnExport = root.querySelector('#btn-export');
+
+  // --- Sidebar drawer toggle ---
+  const btnSidebarToggle = root.querySelector('#btn-sidebar-toggle');
+  const btnSidebarClose = root.querySelector('#btn-sidebar-close');
+  const sidebar = root.querySelector('.sidebar');
+  const sidebarBackdrop = root.querySelector('#sidebar-backdrop');
+
+  function openSidebar() {
+    if (!sidebar) return;
+    sidebar.classList.add('sidebar--open');
+    if (sidebarBackdrop) sidebarBackdrop.hidden = false;
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeSidebar() {
+    if (!sidebar) return;
+    sidebar.classList.remove('sidebar--open');
+    if (sidebarBackdrop) sidebarBackdrop.hidden = true;
+    document.body.style.overflow = '';
+  }
+
+  if (btnSidebarToggle) {
+    btnSidebarToggle.addEventListener('click', openSidebar);
+  }
+
+  if (btnSidebarClose) {
+    btnSidebarClose.addEventListener('click', closeSidebar);
+  }
+
+  if (sidebarBackdrop) {
+    sidebarBackdrop.addEventListener('click', closeSidebar);
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && sidebar?.classList.contains('sidebar--open')) {
+      closeSidebar();
+    }
+  });
+
+  // --- Sidebar swipe to close (mobile) ---
+  let isDraggingBlock = false;
+  let sidebarTouchStartX = 0;
+  let sidebarTouchCurrentX = 0;
+  let sidebarIsSwiping = false;
+
+  if (sidebar) {
+    sidebar.addEventListener('touchstart', (e) => {
+      // If touching a draggable block, flag immediately so sidebar swipe
+      // handlers bail out during the long-press wait period
+      if (e.target.closest('.block, .c-block')) {
+        isDraggingBlock = true;
+      }
+      sidebarTouchStartX = e.touches[0].clientX;
+      sidebarIsSwiping = false;
+    }, { passive: true });
+
+    sidebar.addEventListener('touchmove', (e) => {
+      if (isDraggingBlock) return;
+      const deltaX = e.touches[0].clientX - sidebarTouchStartX;
+
+      if (deltaX > 5) {
+        sidebarIsSwiping = true;
+        // Follow finger with resistance (50% movement)
+        if (deltaX < 200) {
+          sidebar.style.transform = `translateX(calc(-100% + ${deltaX * 0.5}px))`;
+        }
+      }
+    }, { passive: true });
+
+    sidebar.addEventListener('touchend', (e) => {
+      if (!isDraggingBlock) {
+        sidebarTouchCurrentX = e.changedTouches[0].clientX;
+        const deltaX = sidebarTouchCurrentX - sidebarTouchStartX;
+
+        if (deltaX > 100) {
+          closeSidebar();
+        }
+        // Reset inline transform regardless of outcome
+        sidebar.style.transform = '';
+        sidebarIsSwiping = false;
+      }
+      isDraggingBlock = false;
+    }, { passive: true });
+  }
 
   let isExecuting = false;
   let highestCompletedLevel = -1;
@@ -796,6 +925,29 @@ function init(root, initialLevelIndex, isCustom) {
   if (modalRules) {
     modalRules.addEventListener('click', (e) => {
       if (e.target === modalRules) modalRules.hidden = true;
+    });
+  }
+
+  // --- Objective modal ---
+  const btnObjective = root.querySelector('#btn-objective');
+  const modalObjective = root.querySelector('#modal-objective');
+  const btnObjectiveClose = root.querySelector('#btn-objective-close');
+
+  if (btnObjective && modalObjective) {
+    btnObjective.addEventListener('click', () => {
+      modalObjective.hidden = false;
+    });
+  }
+
+  if (btnObjectiveClose && modalObjective) {
+    btnObjectiveClose.addEventListener('click', () => {
+      modalObjective.hidden = true;
+    });
+  }
+
+  if (modalObjective) {
+    modalObjective.addEventListener('click', (e) => {
+      if (e.target === modalObjective) modalObjective.hidden = true;
     });
   }
 

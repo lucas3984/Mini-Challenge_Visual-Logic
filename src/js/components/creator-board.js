@@ -26,6 +26,17 @@ export class CreatorBoard extends Component {
   #hoverRow;
   #hoverCol;
   #cleanup;
+  #touchStartRow;
+  #touchStartCol;
+  #touchCurrentRow;
+  #touchCurrentCol;
+  #longPressTimer;
+  #longPressActive;
+  #touchClone;
+  #startX;
+  #startY;
+  #trashCan;
+  #trashCanActive;
 
   constructor({ state } = {}) {
     super();
@@ -33,6 +44,14 @@ export class CreatorBoard extends Component {
     this.#hoverRow = -1;
     this.#hoverCol = -1;
     this.#cleanup = [];
+    this.#touchStartRow = -1;
+    this.#touchStartCol = -1;
+    this.#touchCurrentRow = -1;
+    this.#touchCurrentCol = -1;
+    this.#longPressActive = false;
+    this.#touchClone = null;
+    this.#trashCan = null;
+    this.#trashCanActive = false;
   }
 
   // ── Rendering ──
@@ -92,6 +111,7 @@ export class CreatorBoard extends Component {
     this.#toastEl.hidden = true;
     section.appendChild(this.#toastEl);
 
+    this.#initTrashCan();
     this.#bindEvents();
     const gridChange = () => this.#syncCells();
     const historyChange = ({ canUndo, canRedo }) => {
@@ -190,6 +210,40 @@ export class CreatorBoard extends Component {
     img.height = 20;
     btn.appendChild(img);
     return btn;
+  }
+
+  #initTrashCan() {
+    this.#trashCan = document.createElement('div');
+    this.#trashCan.className = 'creator-board__trash-can';
+    this.#trashCan.innerHTML = `
+      <span class="material-symbols-outlined" aria-hidden="true">delete</span>
+      <span class="creator-board__trash-can-label">Solte para excluir</span>
+    `;
+    this.#trashCan.hidden = true;
+    this.#trashCanActive = false;
+    document.body.appendChild(this.#trashCan);
+  }
+
+  #showTrashCan() {
+    if (!this.#trashCan) return;
+    this.#trashCan.hidden = false;
+    this.#trashCanActive = false;
+    requestAnimationFrame(() => {
+      this.#trashCan.classList.add('creator-board__trash-can--visible');
+    });
+  }
+
+  #hideTrashCan() {
+    if (!this.#trashCan || this.#trashCan.hidden) return;
+    this.#trashCan.classList.remove('creator-board__trash-can--visible', 'creator-board__trash-can--active');
+    this.#trashCanActive = false;
+    this.#trashCan.hidden = true;
+  }
+
+  #isOverTrashCan(x, y) {
+    if (!this.#trashCan || this.#trashCan.hidden) return false;
+    const rect = this.#trashCan.getBoundingClientRect();
+    return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
   }
 
   // ── Event binding ──
@@ -306,6 +360,11 @@ export class CreatorBoard extends Component {
         if (!result.success) this.#showToast(result.reason);
       }
     });
+
+    // Touch events for mobile drag-and-drop
+    this.#trackListener(grid, 'touchstart', (e) => this.#onTouchStart(e), { passive: false });
+    this.#trackListener(grid, 'touchmove', (e) => this.#onTouchMove(e), { passive: false });
+    this.#trackListener(grid, 'touchend', (e) => this.#onTouchEnd(e));
   }
 
   // Delegates to state.canPlaceBody — validates full body placement rules
@@ -324,6 +383,205 @@ export class CreatorBoard extends Component {
     return false;
   }
 
+  #onTouchStart(e) {
+    const cell = e.target.closest('.creator-board__cell');
+    if (!cell) return;
+    const r = parseInt(cell.dataset.row, 10);
+    const c = parseInt(cell.dataset.col, 10);
+    const val = this.#state.getCell(r, c);
+    if (!val) return;
+
+    e.preventDefault();
+
+    this.#startX = e.touches[0].clientX;
+    this.#startY = e.touches[0].clientY;
+    this.#touchStartRow = r;
+    this.#touchStartCol = c;
+
+    clearTimeout(this.#longPressTimer);
+    this.#longPressTimer = setTimeout(() => {
+      this.#longPressActive = true;
+      this.#touchClone = cell.cloneNode(true);
+      this.#touchClone.style.position = 'fixed';
+      this.#touchClone.style.pointerEvents = 'none';
+      this.#touchClone.style.zIndex = '1000';
+      this.#touchClone.style.opacity = '0.8';
+      this.#touchClone.style.width = cell.offsetWidth + 'px';
+      this.#touchClone.style.height = cell.offsetHeight + 'px';
+      document.body.appendChild(this.#touchClone);
+
+      cell.classList.add('creator-board__cell--dragging');
+      document.body.style.overscrollBehavior = 'none';
+      this.#showTrashCan();
+
+      const sprite = cell.querySelector('.creator-board__sprite');
+      if (sprite) {
+        const img = this.#touchClone.querySelector('.creator-board__sprite');
+        if (img) {
+          img.style.transform = sprite.style.transform;
+        }
+      }
+    }, 500);
+  }
+
+  #onTouchMove(e) {
+    if (!this.#longPressActive || !this.#touchClone) return;
+    e.preventDefault();
+
+    const touch = e.touches[0];
+    const x = touch.clientX;
+    const y = touch.clientY;
+
+    const edgeThreshold = 50;
+    const maxScrollSpeed = 25;
+    const nearTop = y < edgeThreshold;
+    const nearBottom = window.innerHeight - y < edgeThreshold;
+
+    if (nearTop) {
+      const intensity = 1 - (y / edgeThreshold);
+      window.scrollBy(0, -Math.floor(intensity * maxScrollSpeed));
+    } else if (nearBottom) {
+      const intensity = 1 - ((window.innerHeight - y) / edgeThreshold);
+      window.scrollBy(0, Math.floor(intensity * maxScrollSpeed));
+    }
+
+    this.#touchClone.style.left = x - this.#touchClone.offsetWidth / 2 + 'px';
+    this.#touchClone.style.top = y - 20 + 'px';
+
+    if (this.#trashCan && !this.#trashCan.hidden) {
+      const over = this.#isOverTrashCan(x, y);
+      if (over && !this.#trashCanActive) {
+        this.#trashCanActive = true;
+        this.#trashCan.classList.add('creator-board__trash-can--active');
+      } else if (!over && this.#trashCanActive) {
+        this.#trashCanActive = false;
+        this.#trashCan.classList.remove('creator-board__trash-can--active');
+      }
+    }
+
+    this.#clearHover();
+    this.#clearDropHighlights();
+    const targetCell = this.#findCellFromPoint(x, y);
+    if (targetCell) {
+      const r = parseInt(targetCell.dataset.row, 10);
+      const c = parseInt(targetCell.dataset.col, 10);
+      this.#touchCurrentRow = r;
+      this.#touchCurrentCol = c;
+
+      const sourceVal = this.#state.getCell(this.#touchStartRow, this.#touchStartCol);
+      const targetVal = this.#state.getCell(r, c);
+
+      if (sourceVal && !targetVal) {
+        targetCell.classList.add('creator-board__cell--drop-valid');
+      } else if (sourceVal && targetVal && (r !== this.#touchStartRow || c !== this.#touchStartCol)) {
+        targetCell.classList.add('creator-board__cell--drop-target');
+      }
+    }
+  }
+
+  #onTouchEnd(e) {
+    clearTimeout(this.#longPressTimer);
+
+    if (!this.#longPressActive || !this.#touchClone) {
+      this.#longPressActive = false;
+      return;
+    }
+
+    this.#longPressActive = false;
+
+    const touch = e.changedTouches[0];
+    const x = touch.clientX;
+    const y = touch.clientY;
+
+    if (this.#isOverTrashCan(x, y)) {
+      if (this.#touchClone) {
+        const trashRect = this.#trashCan.getBoundingClientRect();
+        const tx = trashRect.left + trashRect.width / 2 - this.#touchClone.offsetWidth / 2;
+        const ty = trashRect.top + trashRect.height / 2 - this.#touchClone.offsetHeight / 2;
+        this.#touchClone.style.transition = 'all 300ms ease';
+        this.#touchClone.style.left = tx + 'px';
+        this.#touchClone.style.top = ty + 'px';
+        this.#touchClone.style.transform = 'scale(0.2) rotate(20deg)';
+        this.#touchClone.style.opacity = '0';
+      }
+
+      this.#hideTrashCan();
+
+      setTimeout(() => {
+        if (this.#touchClone) {
+          this.#touchClone.remove();
+          this.#touchClone = null;
+        }
+        if (this.#touchStartRow >= 0 && this.#touchStartCol >= 0) {
+          this.#state.clearCell(this.#touchStartRow, this.#touchStartCol);
+        }
+        this.#cleanupTouch();
+      }, 300);
+      return;
+    }
+
+    if (this.#touchClone) {
+      this.#touchClone.remove();
+      this.#touchClone = null;
+    }
+
+    this.#clearHover();
+    const targetCell = this.#findCellFromPoint(x, y);
+    if (!targetCell) {
+      this.#cleanupTouch();
+      return;
+    }
+
+    const r = parseInt(targetCell.dataset.row, 10);
+    const c = parseInt(targetCell.dataset.col, 10);
+
+    targetCell.classList.remove('creator-board__cell--drop-target', 'creator-board__cell--drop-valid', 'creator-board__cell--drop-invalid');
+
+    if (r === this.#touchStartRow && c === this.#touchStartCol) {
+      this.#cleanupTouch();
+      return;
+    }
+
+    const result = this.#state.moveCell(this.#touchStartRow, this.#touchStartCol, r, c);
+    if (!result.success) {
+      this.#showToast(result.reason);
+    }
+
+    this.#cleanupTouch();
+  }
+
+  #findCellFromPoint(x, y) {
+    this.#touchClone.style.display = 'none';
+    const el = document.elementFromPoint(x, y);
+    this.#touchClone.style.display = '';
+    if (!el) return null;
+    return el.closest('.creator-board__cell');
+  }
+
+  #clearDropHighlights() {
+    this.#gridEl.querySelectorAll('.creator-board__cell').forEach(cell => {
+      cell.classList.remove('creator-board__cell--drop-target', 'creator-board__cell--drop-valid', 'creator-board__cell--drop-invalid');
+    });
+  }
+
+  #cleanupTouch() {
+    this.#hideTrashCan();
+    this.#clearDropHighlights();
+    if (this.#touchClone) {
+      this.#touchClone.remove();
+      this.#touchClone = null;
+    }
+    const startCell = this.#gridEl.querySelector(`[data-row="${this.#touchStartRow}"][data-col="${this.#touchStartCol}"]`);
+    if (startCell) {
+      startCell.classList.remove('creator-board__cell--dragging');
+    }
+    document.body.style.overscrollBehavior = '';
+    this.#touchStartRow = -1;
+    this.#touchStartCol = -1;
+    this.#touchCurrentRow = -1;
+    this.#touchCurrentCol = -1;
+  }
+
   #trackListener(target, event, handler) {
     target.addEventListener(event, handler);
     this.#cleanup.push(() => target.removeEventListener(event, handler));
@@ -332,6 +590,10 @@ export class CreatorBoard extends Component {
   unmount() {
     this.#cleanup.forEach(fn => fn());
     this.#cleanup = [];
+    if (this.#trashCan) {
+      this.#trashCan.remove();
+      this.#trashCan = null;
+    }
     super.unmount();
   }
 
