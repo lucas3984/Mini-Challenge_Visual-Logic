@@ -304,6 +304,18 @@ export class CreatorState {
     const bodyCount = collectCells(this.#grid, 'snake-body').length;
     if (bodyCount === 0) return { valid: false, reason: 'A cobra precisa de um corpo (mínimo 1 segmento)' };
 
+    const dr = head.direction === 'down' ? 1 : head.direction === 'up' ? -1 : 0;
+    const dc = head.direction === 'right' ? 1 : head.direction === 'left' ? -1 : 0;
+    const frontRow = head.row + dr;
+    const frontCol = head.col + dc;
+    if (
+      frontRow >= 0 && frontRow < 8 &&
+      frontCol >= 0 && frontCol < 8 &&
+      this.#grid[frontRow][frontCol]?.type === 'snake-body'
+    ) {
+      return { valid: false, reason: 'A cabeça não pode estar virada para o próprio corpo' };
+    }
+
     const chain = walkSnakeChain(this.#grid, head.row, head.col);
     if (chain.length !== bodyCount + 1) {
       return { valid: false, reason: 'O corpo da cobra não forma uma cadeia contínua a partir da cabeça' };
