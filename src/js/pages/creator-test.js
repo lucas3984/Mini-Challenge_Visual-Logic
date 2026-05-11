@@ -8,7 +8,6 @@ import { countAllBlocks, countLoopBlocks, countIfBlocks } from '../utils/dom.js'
 import { calculateStars } from '../utils/stars.js';
 import { setJSON, getJSON } from '../core/storage.js';
 import { navigateTo } from '../core/router-state.js';
-import { TopAppBar } from '../components/top-app-bar.js';
 import { escapeHtml } from '../utils/sanitize.js';
 import { consumeTempCreatorData, peekTempCreatorData } from '../core/creator-temp.js';
 import { clearDraft } from '../core/creator-draft.js';
@@ -33,9 +32,6 @@ export function render() {
   const wrapper = document.createElement('div');
   wrapper.className = 'page--snake page--creator-test';
   wrapper.dataset.theme = 'dark';
-
-  const topAppBar = new TopAppBar();
-  wrapper.appendChild(topAppBar.render());
 
   const root = document.createElement('div');
   root.className = 'page--snake__content';
