@@ -552,3 +552,17 @@ a:focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
+
+/*
+ * Page transition: fade between routes.
+ * The router adds .page--exiting to #page-content before swapping content,
+ * waits for the opacity transition to complete, mounts the new page, then
+ * removes the class so the new page fades back in.
+ */
+#page-content {
+  transition: opacity var(--transition-default);
+}
+
+#page-content.page--exiting {
+  opacity: 0;
+}
