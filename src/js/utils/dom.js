@@ -18,6 +18,22 @@ export function getCellElement(gridEl, row, col) {
 }
 
 /**
+ * Creates a debounced version of the function that delays invocation
+ * until `delay` milliseconds have elapsed since the last call.
+ *
+ * @param {Function} fn
+ * @param {number} delay — milliseconds
+ * @returns {Function}
+ */
+export function debounce(fn, delay) {
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn(...args), delay);
+  };
+}
+
+/**
  * Promise that resolves after ms milliseconds.
  *
  * Wraps setTimeout so it can be awaited in async execution flows
