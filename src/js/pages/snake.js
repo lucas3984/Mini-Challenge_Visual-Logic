@@ -24,8 +24,11 @@ import { navigateTo, replaceRoute } from '../core/router-state.js';
 import {
   setGameProgress, getGameProgress,
   setGameCurrentLevel, getGameCurrentLevel,
-  setGameWorkspace, getGameWorkspace, clearGameWorkspace
+  setGameWorkspace, getGameWorkspace, clearGameWorkspace,
+  setLastGameType
 } from '../core/profile-data.js';
+import { getJSON } from '../core/storage.js';
+import { saveCustomLevelScore, setCustomLevelCurrent, getCustomLevelData } from '../core/custom-level-storage.js';
 
 // Pre-compute the 8x8 checkerboard grid HTML once at module load — it never
 // changes across level transitions, so caching avoids repeated DOM string
@@ -46,6 +49,8 @@ const GRID_HTML = [0, 1, 2, 3, 4, 5, 6, 7].map((r) => {
  * @returns {HTMLElement} The fully assembled page element.
  */
 export function render(params = {}) {
+  const isCustom = params.custom === 'true';
+
   // Redirect to home if no profile is set (first-time access guard)
   if (!hasAnyProfile()) {
     navigateTo('/');
@@ -53,14 +58,28 @@ export function render(params = {}) {
   }
 
   // Extract level ID from URL to load correct level on direct navigation
-  const currentLevelId = params.levelId;
-  const currentLevelIndex = currentLevelId
-    ? parseInt(currentLevelId, 10) - 1
-    : 0;
+  let currentLevelIndex;
+  if (isCustom) {
+    const allCustomLevels = getJSON('lv_custom_levels') || [];
+    if (allCustomLevels.length === 0) {
+      navigateTo('/levels/snake');
+      return document.createElement('div');
+    }
+    if (params.levelId) {
+      currentLevelIndex = allCustomLevels.findIndex((l) => l.id === parseInt(params.levelId, 10));
+      if (currentLevelIndex === -1) currentLevelIndex = 0;
+    } else {
+      currentLevelIndex = 0;
+    }
+  } else if (params.levelId) {
+    currentLevelIndex = parseInt(params.levelId, 10) - 1;
+  } else {
+    currentLevelIndex = 0;
+  }
 
   // Guard: if the URL specifies a level beyond the current profile's progress,
   // show the access denied page instead of the game.
-  if (params.levelId) {
+  if (params.levelId && !isCustom) {
     const profile = getActiveProfile();
     const progress = getGameProgress(profile, 'snake');
     const levelIndex = parseInt(params.levelId, 10) - 1;
@@ -78,6 +97,8 @@ export function render(params = {}) {
 
   wrapper.appendChild(topAppBar.render());
 
+  const backRoute = `#/levels/snake`;
+
   const root = document.createElement('div');
   root.innerHTML = `
     <header class="app-header">
@@ -85,7 +106,7 @@ export function render(params = {}) {
         <h1 class="app-header__title">Snake Tactical</h1>
       </div>
       <div class="app-header__right">
-        <a href="#/levels/snake" class="header-btn header-btn--hub">
+        <a href="${backRoute}" class="header-btn header-btn--hub">
           <img src="src/assets/images/icons/snake-icons/icon-hub.svg" alt="" aria-hidden="true" class="btn-icon" width="24" height="24"> Voltar
         </a>
         <button id="btn-run" class="header-btn header-btn--run" aria-label="Executar código">
@@ -268,7 +289,7 @@ export function render(params = {}) {
 
   wrapper.appendChild(root);
 
-  init(root, params.levelId ? currentLevelIndex : undefined);
+  init(root, params.levelId ? currentLevelIndex : undefined, isCustom);
   return wrapper;
 }
 
@@ -284,7 +305,7 @@ export function render(params = {}) {
  * @param {HTMLElement} root - The root page element returned by render().
  * @param {number} initialLevelIndex - The initial level index from route params.
  */
-function init(root, initialLevelIndex) {
+function init(root, initialLevelIndex, isCustom) {
   const stackEl = root.querySelector('.workspace__stack');
   const appContainer = root.querySelector('.app-container');
   const gridEl = root.querySelector('.grid');
@@ -433,7 +454,12 @@ function init(root, initialLevelIndex) {
 
   let isExecuting = false;
   let highestCompletedLevel = -1;
-  let levels = getGameLevels('snake');
+  let levels;
+  if (isCustom) {
+    levels = getJSON('lv_custom_levels') || [];
+  } else {
+    levels = getGameLevels('snake');
+  }
   // Auto-advance timer: after a win, the next level loads automatically after
   // 1.5s so the player can see the success animation before transitioning.
   let autoAdvanceTimer = null;
@@ -459,17 +485,21 @@ function init(root, initialLevelIndex) {
 
     if (statusEl) statusEl.textContent = 'Vitória!';
 
-    // Track the highest level the player has *ever* reached so the level
-    // selector unlocks remain persistent across page visits.
-    highestCompletedLevel = Math.max(highestCompletedLevel, currentLevelIndex);
-    setGameProgress(profile, 'snake', highestCompletedLevel + 1);
-    syncLevels(highestCompletedLevel);
-
     const usedBlocks = countAllBlocks(stackEl);
     const starThree = level.starThree ?? Math.ceil(level.maxBlocks * 0.5);
     const starTwo = level.starTwo ?? Math.ceil(level.maxBlocks * 0.7);
     const stars = calculateStars(usedBlocks, starThree, starTwo);
-    saveLevelScore('snake', profile, currentLevelIndex + 1, stars);
+
+    if (isCustom) {
+      saveCustomLevelScore(profile, level.id, stars);
+      setCustomLevelCurrent(profile, currentLevelIndex + 2 > levels.length ? null : levels[currentLevelIndex + 1]?.id || null);
+    } else {
+      highestCompletedLevel = Math.max(highestCompletedLevel, currentLevelIndex);
+      setGameProgress(profile, 'snake', highestCompletedLevel + 1);
+      syncLevels(highestCompletedLevel);
+      saveLevelScore('snake', profile, currentLevelIndex + 1, stars);
+    }
+
     updateLevelSelect();
     audio.play('win');
     showToast(`\u2B50`.repeat(stars) + ` Nível ${currentLevelIndex + 1} completo!`);
@@ -523,6 +553,7 @@ function init(root, initialLevelIndex) {
    * @param {number} progress
    */
   function syncLevels(progress = highestCompletedLevel) {
+    if (isCustom) return;
     ensureGeneratedLevelsForProgress('snake', progress);
     levels = getGameLevels('snake');
   }
@@ -539,8 +570,11 @@ function init(root, initialLevelIndex) {
     levels.forEach((level, index) => {
       const option = document.createElement('option');
       option.value = String(index);
-      option.disabled = index > highestCompletedLevel + 1;
-      option.textContent = `Nível ${String(level.id).padStart(2, '0')} — ${level.name}${starString(index)}`;
+      if (!isCustom) {
+        option.disabled = index > highestCompletedLevel + 1;
+      }
+      const starInfo = isCustom ? '' : starString(index);
+      option.textContent = `Nível ${String(level.id).padStart(2, '0')} — ${level.name}${starInfo}`;
       levelSelect.appendChild(option);
     });
 
@@ -562,6 +596,8 @@ function init(root, initialLevelIndex) {
    * @param {number} levelIndex
    */
   function saveWorkspace(levelIndex) {
+    if (isCustom) return;
+
     // Sync live input values to value attributes so innerHTML captures them.
     // Browsers don't serialize the .value property to HTML attributes automatically.
     const inputs = stackEl.querySelectorAll('input');
@@ -603,8 +639,8 @@ function init(root, initialLevelIndex) {
   function loadLevel(index) {
     syncLevels();
 
-    // Guard against skipping locked levels.
-    if (index > highestCompletedLevel + 1) return;
+    // Guard against skipping locked levels (custom levels have no lock).
+    if (!isCustom && index > highestCompletedLevel + 1) return;
 
     // Cancel any pending auto-advance so manual level switches don't conflict
     // with the timed transition.
@@ -625,18 +661,27 @@ function init(root, initialLevelIndex) {
     currentLevelIndex = index;
 
     // Persist so the user returns to this level after page reload
-    setGameCurrentLevel(getActiveProfile(), 'snake', index);
+    if (!isCustom) {
+      setGameCurrentLevel(getActiveProfile(), 'snake', index);
+    } else {
+      setCustomLevelCurrent(getActiveProfile(), levels[index]?.id || null);
+    }
 
     // Keep URL in sync so F5 restores the correct level
-    replaceRoute(`/levels/snake/${index + 1}`);
+    replaceRoute(isCustom ? `/levels/snake/custom/${levels[index]?.id || index + 1}` : `/levels/snake/${index + 1}`);
+    setLastGameType(getActiveProfile(), 'snake', isCustom ? 'custom' : 'normal');
 
     const level = levels[index];
     snake.loadLevel(level);
     stage.render();
 
     // Restore saved workspace for this level, or start empty
-    const saved = getGameWorkspace(getActiveProfile(), 'snake', index);
-    stackEl.innerHTML = saved !== null ? saved : '';
+    if (!isCustom) {
+      const saved = getGameWorkspace(getActiveProfile(), 'snake', index);
+      stackEl.innerHTML = saved !== null ? saved : '';
+    } else {
+      stackEl.innerHTML = '';
+    }
 
     if (levelSelect) levelSelect.value = String(index);
     if (levelNameEl) levelNameEl.textContent = level.name;
@@ -766,7 +811,7 @@ function init(root, initialLevelIndex) {
       const index = parseInt(levelSelect.value, 10);
       // Reject selection of locked levels (the guard is also in loadLevel, but
       // this prevents the dropdown from visually changing briefly).
-      if (index > highestCompletedLevel + 1) {
+      if (!isCustom && index > highestCompletedLevel + 1) {
         levelSelect.value = String(currentLevelIndex);
         return;
       }
@@ -802,9 +847,13 @@ function init(root, initialLevelIndex) {
 
   // Restore progress from localStorage so the player can continue where they
   // left off across sessions.
-  const saved = getGameProgress(getActiveProfile(), 'snake');
-  if (saved > 0) {
-    highestCompletedLevel = saved - 1;  // storage stores COUNT, convert to INDEX
+  if (isCustom) {
+    highestCompletedLevel = -1;
+  } else {
+    const saved = getGameProgress(getActiveProfile(), 'snake');
+    if (saved > 0) {
+      highestCompletedLevel = saved - 1;  // storage stores COUNT, convert to INDEX
+    }
   }
 
   syncLevels(highestCompletedLevel);
@@ -814,6 +863,14 @@ function init(root, initialLevelIndex) {
   // visited level from localStorage, falling back to the next uncompleted level.
   if (initialLevelIndex !== undefined && initialLevelIndex >= 0) {
     loadLevel(initialLevelIndex);
+  } else if (isCustom) {
+    const customData = getCustomLevelData(getActiveProfile());
+    if (customData.currentLevel) {
+      const idx = levels.findIndex((l) => l.id === customData.currentLevel);
+      loadLevel(idx >= 0 ? idx : 0);
+    } else {
+      loadLevel(0);
+    }
   } else {
     const savedLevel = getGameCurrentLevel(getActiveProfile(), 'snake');
     const restoredIndex = savedLevel !== null ? savedLevel : highestCompletedLevel + 1;

@@ -41,6 +41,10 @@ router.addRoute('/creator/test', renderCreatorTest);
 router.addRoute('/levels/snake/:levelId', (params) => renderSnake({
   levelId: params.levelId
 }));
+router.addRoute('/levels/:gameId/custom/:levelId', (params) => renderSnake({
+  ...params,
+  custom: 'true'
+}));
 
 /*
  * BottomNav is persistent — mounted outside #page-content so it doesn't get
@@ -56,6 +60,13 @@ mountEl.appendChild(bottomNav.render());
  */
 router.onRouteChange = (hash) => {
   bottomNav.setActiveIndex(BottomNav.getActiveIndex(hash));
+  bottomNav.updateGameLink();
+
+  const main = document.querySelector('main');
+  if (main) {
+    main.setAttribute('tabindex', '-1');
+    main.focus({ preventScroll: true });
+  }
 };
 
 /* Re-render the current page when the user profile is edited elsewhere */

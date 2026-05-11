@@ -1,6 +1,7 @@
 import { Component } from './base.js';
 import { getActiveProfile } from '../core/profile.js';
-import { getGameCurrentLevel } from '../core/profile-data.js';
+import { getGameCurrentLevel, getLastGameType } from '../core/profile-data.js';
+import { getCustomLevelData } from '../core/custom-level-storage.js';
 
 export class BottomNav extends Component {
   #items = [];
@@ -61,7 +62,7 @@ export class BottomNav extends Component {
   static getActiveIndex(hash) {
     const path = hash.replace(/^#/, '') || '/';
     if (path === '/') return 0;
-    if (path.match(/^\/levels\/snake\/\d+$/)) return 2;
+    if (path.match(/^\/levels\/snake\/\d+$/) || path.match(/^\/levels\/snake\/custom\/\d+$/)) return 2;
     if (path.startsWith('/levels')) return 1;
     if (path.startsWith('/creator')) return 3;
     return 0;
@@ -76,8 +77,21 @@ export class BottomNav extends Component {
    */
   render() {
     const profile = getActiveProfile();
-    const currentLevel = profile ? getGameCurrentLevel(profile, 'snake') : 0;
-    const gameHash = `#/levels/snake/${currentLevel + 1}`;
+    let gameHash;
+    if (profile) {
+      const lastType = getLastGameType(profile, 'snake');
+      if (lastType === 'custom') {
+        const customData = getCustomLevelData(profile);
+        gameHash = customData.currentLevel
+          ? `#/levels/snake/custom/${customData.currentLevel}`
+          : '#/levels/snake';
+      } else {
+        const currentLevel = getGameCurrentLevel(profile, 'snake');
+        gameHash = `#/levels/snake/${currentLevel + 1}`;
+      }
+    } else {
+      gameHash = '#/levels/snake/1';
+    }
 
     const nav = document.createElement('nav');
     nav.className = 'bottom-nav';
@@ -137,6 +151,26 @@ export class BottomNav extends Component {
 
     this.#activeIndex = index;
     this.#positionIndicator();
+  }
+
+  updateGameLink() {
+    const profile = getActiveProfile();
+    if (!profile) return;
+    const items = this.#el?.querySelectorAll('.bottom-nav__item');
+    if (!items || items.length < 3) return;
+
+    const lastType = getLastGameType(profile, 'snake');
+    let href;
+    if (lastType === 'custom') {
+      const customData = getCustomLevelData(profile);
+      href = customData.currentLevel
+        ? `#/levels/snake/custom/${customData.currentLevel}`
+        : '#/levels/snake';
+    } else {
+      const currentLevel = getGameCurrentLevel(profile, 'snake');
+      href = `#/levels/snake/${currentLevel + 1}`;
+    }
+    items[2].setAttribute('href', href);
   }
 
   /*
