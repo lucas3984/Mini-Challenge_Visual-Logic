@@ -177,6 +177,21 @@
   width: 16px;
   height: 16px;
   flex-shrink: 0;
+  -webkit-user-drag: none;
+  user-drag: none;
+  pointer-events: none;
+}
+
+/* Prevent native drag on text and interactive elements inside blocks */
+.c-block__label {
+  -webkit-user-drag: none;
+  user-drag: none;
+  pointer-events: none;
+}
+
+.c-block__input,
+.c-block__select {
+  pointer-events: auto;
 }
 
 /* Icons in dark blocks (event/control) should be white */

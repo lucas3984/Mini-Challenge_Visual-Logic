@@ -54,7 +54,7 @@ export function render() {
                   tabindex="0"
                   role="listitem"
                   title="Move a cobra 1 casa na direcao atual">
-                  <img src="src/assets/images/icons/visual-programming-icons/Move-Forward-Icon.svg" class="block__icon" width="16" height="16" alt="" aria-hidden="true"> Mover Frente
+                  <img src="src/assets/images/icons/visual-programming-icons/Move-Forward-Icon.svg" class="block__icon" draggable="false" width="16" height="16" alt="" aria-hidden="true"> Mover Frente
                 </div>
               <div class="block block--action"
                   draggable="true"
@@ -62,7 +62,7 @@ export function render() {
                   tabindex="0"
                   role="listitem"
                   title="Gira a cobra 90 para a esquerda">
-                  <img src="src/assets/images/icons/visual-programming-icons/Rotate-Left-Icon.svg" class="block__icon" width="16" height="16" alt="" aria-hidden="true"> Girar Esquerda
+                  <img src="src/assets/images/icons/visual-programming-icons/Rotate-Left-Icon.svg" class="block__icon" draggable="false" width="16" height="16" alt="" aria-hidden="true"> Girar Esquerda
                 </div>
               <div class="block block--action"
                   draggable="true"
@@ -70,7 +70,7 @@ export function render() {
                   tabindex="0"
                   role="listitem"
                   title="Gira a cobra 90 para a direita">
-                  <img src="src/assets/images/icons/visual-programming-icons/Rotate-Right-Icon.svg" class="block__icon" width="16" height="16" alt="" aria-hidden="true"> Girar Direita
+                  <img src="src/assets/images/icons/visual-programming-icons/Rotate-Right-Icon.svg" class="block__icon" draggable="false" width="16" height="16" alt="" aria-hidden="true"> Girar Direita
                 </div>
             </div>
           </section>
@@ -87,7 +87,7 @@ export function render() {
                   role="listitem"
                   title="Repete os blocos dentro dele N vezes">
                 <div class="c-block__header">
-                  <img src="src/assets/images/icons/visual-programming-icons/Loop-Icon.svg" class="block__icon" width="16" height="16" alt="" aria-hidden="true">
+                  <img src="src/assets/images/icons/visual-programming-icons/Loop-Icon.svg" class="block__icon" draggable="false" width="16" height="16" alt="" aria-hidden="true">
                   <span class="c-block__label">Repetir</span>
                   <input class="c-block__input" type="number" value="3" min="1" max="99" aria-label="Número de repetições">
                   <span class="c-block__label">vezes</span>
@@ -112,7 +112,7 @@ export function render() {
                   role="listitem"
                   title="Executa os blocos dentro apenas se a condicao for verdadeira">
                 <div class="c-block__header">
-                  <img src="src/assets/images/icons/visual-programming-icons/IF-ELSE-Icon.svg" class="block__icon" width="16" height="16" alt="" aria-hidden="true">
+                  <img src="src/assets/images/icons/visual-programming-icons/IF-ELSE-Icon.svg" class="block__icon" draggable="false" width="16" height="16" alt="" aria-hidden="true">
                   <span class="c-block__label">Se</span>
                   <select class="c-block__select" aria-label="Condição">
                     <option>Comeu maçã</option>
