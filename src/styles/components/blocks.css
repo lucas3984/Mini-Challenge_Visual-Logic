@@ -476,6 +476,69 @@
   transform: scale(1.15);
 }
 
+/* Mobile tap-to-delete: show delete button when block is selected */
+.block--delete-mode .block__delete-btn,
+.c-block--delete-mode .block__delete-btn {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
+}
+
+/* ===== Floating trash can for drag-to-delete ===== */
+.trash-can {
+  position: fixed;
+  bottom: var(--space-xl);
+  left: 50%;
+  transform: translateX(-50%) scale(0.8);
+  z-index: 999;
+  background: var(--color-surface-neutral-elevated);
+  border: 2px dashed var(--color-border-neutral);
+  border-radius: var(--radius-md);
+  padding: var(--space-between) var(--space-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2xs);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 200ms ease, transform 200ms ease, visibility 200ms ease;
+  pointer-events: auto;
+}
+
+.trash-can--visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) scale(1);
+}
+
+.trash-can--active {
+  border-color: var(--color-apple);
+  background: var(--color-danger-hover);
+  border-style: solid;
+  transform: translateX(-50%) scale(1.1);
+}
+
+.trash-can .material-symbols-outlined {
+  font-size: var(--text-xl);
+  color: var(--color-apple);
+  transition: color 200ms ease;
+}
+
+.trash-can__label {
+  font-size: var(--text-xs);
+  color: var(--color-text-bright);
+  white-space: nowrap;
+  transition: color 200ms ease;
+}
+
+.trash-can--active .material-symbols-outlined {
+  color: var(--color-danger-text);
+}
+
+.trash-can--active .trash-can__label {
+  color: var(--color-danger-text);
+}
+
 /* ===== Mobile ===== */
 @media (max-width: 47.9375rem) {
   .sidebar {
