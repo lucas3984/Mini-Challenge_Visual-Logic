@@ -166,9 +166,9 @@
   --color-danger-hover: #ffcdc7;
   --color-danger-shadow: #690005;
   /* C-block input fields (number input inside Repeat/If blocks) */
-  --color-input-bg: #ffffff;
-  --color-input-text: #131316;
-  --color-input-border: rgba(0, 0, 0, 0.15);
+  --color-input-bg: #2A2A2A;
+  --color-input-text: #f0f2ff;
+  --color-input-border: rgba(255, 255, 255, 0.15);
   /* C-block dropzone (dashed area inside Repeat/If blocks) */
   --color-dropzone-border: rgba(255, 255, 255, 0.15);
   /* Surface hover state (scrollbar thumb, cancel button hover) */
@@ -182,7 +182,7 @@
   /* Workspace controls: clear button subtle background */
   --color-clear-bg: rgba(255, 180, 171, 0.1);
   /* Drag-and-drop snap preview: glow background */
-  --color-snap-bg: rgba(192, 194, 252, 0.08);
+  --color-snap-bg: rgba(69, 240, 223, 0.08);
   /* Creator page — snake body tint (page-specific) */
   --creator-snake-body: var(--color-primary);
   /* Page background: radial dot pattern color */
@@ -282,15 +282,83 @@
   --color-text-faint: rgba(229, 225, 230, 0.35);
   --color-text-ghost: rgba(229, 225, 230, 0.12);
   /* Input fields — dark mode: dark surface with light text */
-  --color-input-bg: #1a2450;
+  --color-input-bg: #2A2A2A;
   --color-input-text: #f0f2ff;
-  --color-input-border: rgba(194, 202, 232, 0.3);
+  --color-input-border: rgba(255, 255, 255, 0.15);
   /* Dropzone border inside c-blocks */
-  --color-dropzone-border: rgba(194, 202, 232, 0.15);
+  --color-dropzone-border: rgba(255, 255, 255, 0.15);
   /* Badge background in dark mode */
   --color-badge-bg: rgba(0, 0, 0, 0.5);
   /* Grid dot pattern in dark mode */
   --color-grid-dot: rgba(192, 194, 252, 0.05);
   --gradient-bg-game-home: none;
 
+
+  /* Neutral dark backgrounds matching Figma prototype */
+  --color-bg-neutral: #121212;
+  --color-surface-neutral: #1E1E1E;
+  --color-surface-neutral-elevated: #2A2A2A;
+  --color-surface-objective-card: #1E1E2E;
+  --color-border-neutral: rgba(255, 255, 255, 0.12);
+  --color-input-bg-neutral: #2A2A2A;
+  --color-input-border-neutral: rgba(255, 255, 255, 0.15);
+  --color-snap-bg-neutral: rgba(69, 240, 223, 0.08);
+  
+  /* Block colors matching Figma prototype */
+  --color-block-action: #45F0DF;
+  --color-block-action-hover: #5FF8E9;
+  --color-block-control: #2D2D44;
+  --color-block-control-hover: #3D3D54;
+  --color-block-event: #2D2D44;
+  --color-block-event-hover: #3D3D54;
+  --color-block-text-action: #00201D;
+  --color-block-text-control: #E5E1E6;
+  --radius-block: 0.75rem;
+  
+  /* Workspace clear button styling - Opção 2 (danger style) */
+  --color-clear-btn-bg: transparent;
+  --color-clear-btn-border: var(--color-clear);
+  --color-clear-btn-hover-bg: var(--color-clear);
+  --color-clear-btn-hover-border: var(--color-clear);
+  
+  /* Level Objective Card */
+  --color-card-bg: #F5F5F7;
+  --color-card-text-title: #8E8E93;
+  --color-card-text-body: #8E8E93;
+  --color-card-progress-bg: #1A1A2E;
+  --color-card-progress-fill-start: #45F0DF;
+  --color-card-progress-fill-end: #8789C0;
+  --color-card-icon: #8789C0;
+  --color-card-counter: #8789C0;
+  
+  /* Responsive layout tokens */
+  --sidebar-width-desktop: 15rem;
+  --sidebar-width-laptop: 13rem;
+  --sidebar-width-tablet: 12rem;
+  --stage-column-width-desktop: 28rem;
+  --stage-column-width-laptop: 24rem;
+  --stage-column-width-tablet: 20rem;
+  
+
+  /* Game entity colors */
+  --color-snake-body: #00d5c5;
+  --color-apple: #ffb4ab;
+  --color-apple-glow: rgba(255, 180, 171, 0.5);
+  --color-spike: #b0adb8;
+  --color-apple-stem: #4a2828;
+  --color-apple-highlight: rgba(255, 255, 255, 0.3);
+  --color-run-shadow: #005049;
+  --color-pause-text: #131546;
+  --color-shadow-pure: #000000;
+  --color-card-icon: #4a90e2;
+  --color-card-border: rgba(74, 144, 226, 0.2);
+
+  /* Layout heights (measured from real components) */
+  --layout-header-height: 5rem;       /* 80px - TopAppBar */
+  --layout-nav-height: 5.125rem;      /* 82px - BottomNav */
+
+  /* Desktop-first breakpoints specific to snake page */
+  --breakpoint-snake-laptop: 75rem;      /* 1200px */
+  --breakpoint-snake-tablet: 56.1875rem; /* 899px */
+  /* ============================================= */
 }
