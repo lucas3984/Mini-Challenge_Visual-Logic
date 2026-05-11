@@ -74,22 +74,21 @@
 .grid {
   display: flex;
   flex-direction: column;
-  width: min(100%, 100%);
-  height: min(100%, 100%);
+  width: 100%;
+  max-width: min(25rem, 100%);
   min-width: 200px;
-  min-height: 200px;
   aspect-ratio: 1;
   border: var(--border-width-game) solid var(--border-dark);
   border-radius: var(--radius-lg);
   overflow: hidden;
   box-shadow: var(--shadow-elevated);
+  background: #0A0A0A;
 }
 
 .grid__row {
   display: grid;
   grid-template-columns: repeat(8, 1fr);
   flex: 1;
-  min-height: 20px;
 }
 
 /* ===== Grid Cell ===== */
@@ -101,8 +100,8 @@
   transition: background 0.3s ease, box-shadow 0.3s ease;
 }
 
-.grid__cell--light { background: var(--bg-grid-light); }
-.grid__cell--dark  { background: var(--bg-grid-dark); }
+.grid__cell--light { background: #121212; }
+.grid__cell--dark  { background: #1A1A1A; }
 
 /* ===== Snake Head ===== */
 .grid__cell--snake-head {
@@ -352,7 +351,7 @@
 
 .sprite--snake-head {
   color: var(--color-snake-head);
-  filter: drop-shadow(0 0 0.5rem var(--color-snake-glow));
+  filter: drop-shadow(0 0 0.75rem var(--color-snake-glow));
 }
 
 .sprite--snake-body {
