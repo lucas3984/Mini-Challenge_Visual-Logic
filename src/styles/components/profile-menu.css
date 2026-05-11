@@ -152,11 +152,11 @@
 }
 
 .profile-menu__item--active {
-  background-color: color-mix(in srgb, var(--color-secondary) 12%, transparent);
+  background-color: color-mix(in srgb, var(--color-accent) 12%, transparent);
 }
 
 .profile-menu__item--active:hover {
-  background-color: color-mix(in srgb, var(--color-secondary) 18%, transparent);
+  background-color: color-mix(in srgb, var(--color-accent) 18%, transparent);
 }
 
 .profile-menu__item-icon {
@@ -166,7 +166,7 @@
 }
 
 .profile-menu__item--active .profile-menu__item-icon {
-  color: var(--color-secondary);
+  color: var(--color-accent);
 }
 
 .profile-menu__item-name {
@@ -187,8 +187,13 @@
 
 .profile-menu__item-check {
   font-size: var(--icon-md);
-  color: var(--color-secondary);
+  color: var(--color-accent);
   flex-shrink: 0;
+}
+
+/* Light mode: profile icons use dark navy instead of muted gray */
+[data-theme="light"] .profile-menu__item-icon {
+  color: var(--color-dark);
 }
 
 /* ── "+" Create button ─────────────────────────────────────────────── */
@@ -208,9 +213,9 @@
   font-family: var(--font-headline);
   font-size: var(--text-sm);
   font-weight: var(--font-weight-headline);
-  color: var(--color-secondary);
+  color: var(--color-accent);
   background-color: transparent;
-  border: 2px dashed color-mix(in srgb, var(--color-secondary) 40%, transparent);
+  border: 2px dashed color-mix(in srgb, var(--color-accent) 40%, transparent);
   border-radius: var(--radius-default);
   padding: var(--space-sm) var(--space-md);
   min-height: var(--touch-target-sm);
@@ -220,8 +225,8 @@
 }
 
 .profile-menu__add-btn:hover {
-  background-color: color-mix(in srgb, var(--color-secondary) 10%, transparent);
-  border-color: var(--color-secondary);
+  background-color: color-mix(in srgb, var(--color-accent) 10%, transparent);
+  border-color: var(--color-accent);
 }
 
 .profile-menu__add-btn:active {

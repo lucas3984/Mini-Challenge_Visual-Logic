@@ -12,6 +12,7 @@ import { escapeHtml } from '../utils/sanitize.js';
 import { getActiveProfile, setActiveProfile } from '../core/profile.js';
 import { ProfileMenu } from './profile-menu.js';
 import { ProfileModal } from './profile-modal.js';
+import { getTheme, toggleTheme } from '../core/theme.js';
 
 export class TopAppBar extends Component {
   /** @type {ProfileMenu|null} */
@@ -20,11 +21,16 @@ export class TopAppBar extends Component {
   /** @type {HTMLElement|null} */
   #userEl = null;
 
+  /** @type {HTMLElement|null} */
+  #el = null;
+
   render() {
-    const header = document.createElement('header');
+    const header = document.createElement('div');
     header.className = 'top-app-bar';
 
     const activeProfile = getActiveProfile() || 'Visitante';
+    const themeIcon = getTheme() === 'dark' ? 'dark_mode' : 'light_mode';
+    const themeLabel = getTheme() === 'dark' ? 'Alternar modo claro' : 'Alternar modo escuro';
 
     header.innerHTML = `
       <div class="top-app-bar__brand">
@@ -34,8 +40,8 @@ export class TopAppBar extends Component {
         <span class="top-app-bar__title">LogicForge</span>
       </div>
       <div class="top-app-bar__actions">
-        <button id="darkModeToggle" class="top-app-bar__btn" aria-label="Alternar modo escuro">
-          <span class="material-symbols-outlined top-app-bar__btn-icon">dark_mode</span>
+        <button id="darkModeToggle" class="top-app-bar__btn" aria-label="${themeLabel}">
+          <span class="material-symbols-outlined top-app-bar__btn-icon">${themeIcon}</span>
         </button>
         <div class="top-app-bar__user"
              tabindex="0"
@@ -49,10 +55,21 @@ export class TopAppBar extends Component {
       </div>
     `;
 
+    this.#el = header;
     this.#userEl = header.querySelector('.top-app-bar__user');
 
-    // Dark mode toggle
     this.addListener(header.querySelector('#darkModeToggle'), 'click', this.#handleDarkModeToggle);
+
+    // Keep icon in sync when theme changes externally (e.g. system preference sync)
+    this.addListener(document, 'theme-changed', (e) => {
+      const btn = this.#el?.querySelector('#darkModeToggle');
+      if (btn) {
+        const icon = e.detail.theme === 'dark' ? 'dark_mode' : 'light_mode';
+        const label = e.detail.theme === 'dark' ? 'Alternar modo claro' : 'Alternar modo escuro';
+        btn.innerHTML = `<span class="material-symbols-outlined top-app-bar__btn-icon">${icon}</span>`;
+        btn.setAttribute('aria-label', label);
+      }
+    });
 
     // Profile menu toggle
     this.addListener(this.#userEl, 'click', (e) => {
@@ -137,20 +154,13 @@ export class TopAppBar extends Component {
   // ── Dark mode ────────────────────────────────────────────────────────
 
   #handleDarkModeToggle() {
-    const html = document.documentElement;
-    const isDark = html.classList.contains('dark');
-    const btn = document.getElementById('darkModeToggle');
-
-    if (isDark) {
-      html.classList.remove('dark');
-      if (btn) {
-        btn.innerHTML = '<span class="material-symbols-outlined top-app-bar__btn-icon">light_mode</span>';
-      }
-    } else {
-      html.classList.add('dark');
-      if (btn) {
-        btn.innerHTML = '<span class="material-symbols-outlined top-app-bar__btn-icon">dark_mode</span>';
-      }
+    const next = toggleTheme();
+    const btn = this.#el?.querySelector('#darkModeToggle');
+    if (btn) {
+      const icon = next === 'dark' ? 'dark_mode' : 'light_mode';
+      const label = next === 'dark' ? 'Alternar modo claro' : 'Alternar modo escuro';
+      btn.innerHTML = `<span class="material-symbols-outlined top-app-bar__btn-icon">${icon}</span>`;
+      btn.setAttribute('aria-label', label);
     }
   }
 
@@ -162,5 +172,6 @@ export class TopAppBar extends Component {
       this.#profileMenu = null;
     }
     this.#userEl = null;
+    this.#el = null;
   }
 }

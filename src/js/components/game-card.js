@@ -15,6 +15,10 @@ export class GameCard extends Component {
       title: game.title || '',
       description: game.description || '',
       icon: game.icon || 'extension',
+      gradient: game.gradient || '',
+      iconColor: game.iconColor || '',
+      iconBorderColor: game.iconBorderColor || '',
+      iconBgColor: game.iconBgColor || '',
       difficulty: game.difficulty || 'EASY',
       difficultyColor: game.difficultyColor || 'var(--color-secondary)',
       difficultyShadow: game.difficultyShadow || 'var(--color-secondary-fixed)',
@@ -65,6 +69,26 @@ export class GameCard extends Component {
         </div>
       </div>
     `;
+
+    if (this.#game.gradient) {
+      const border = card.querySelector('.game-card__gradient-border');
+      if (border) border.style.setProperty('--card-gradient', this.#game.gradient);
+    }
+
+    if (this.#game.iconColor) {
+      const iconWrapper = card.querySelector('.game-card__icon-wrapper');
+      if (iconWrapper) iconWrapper.style.setProperty('--card-icon-color', this.#game.iconColor);
+    }
+
+    if (this.#game.iconBorderColor) {
+      const iconWrapper = card.querySelector('.game-card__icon-wrapper');
+      if (iconWrapper) iconWrapper.style.setProperty('--card-icon-border', this.#game.iconBorderColor);
+    }
+
+    if (this.#game.iconBgColor) {
+      const iconWrapper = card.querySelector('.game-card__icon-wrapper');
+      if (iconWrapper) iconWrapper.style.setProperty('--card-icon-bg', this.#game.iconBgColor);
+    }
 
     /*
      * Click on the inner button: stopPropagation so the card-level click

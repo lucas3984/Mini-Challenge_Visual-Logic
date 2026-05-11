@@ -1,4 +1,3 @@
-import { TopAppBar } from '../components/top-app-bar.js';
 import { GameCard } from '../components/game-card.js';
 import { ProgressStats } from '../components/progress-stats.js';
 import { hasAnyProfile, setActiveProfile, getActiveProfile } from '../core/profile.js';
@@ -19,6 +18,10 @@ const games = [
     title: 'Labirinto',
     description: 'Navegue por caminhos algorítmicos complexos. Encontre a rota ideal através de portões lógicos mutáveis.',
     icon: 'explore',
+    gradient: 'linear-gradient(135deg, #8789c0, #8380b6)',
+    iconColor: '#111d4a',
+    iconBorderColor: '#111d4a',
+    iconBgColor: '#8789c0',
     difficulty: 'Fácil',
     difficultyColor: 'var(--color-secondary)',
     difficultyShadow: '#005049',
@@ -30,6 +33,10 @@ const games = [
     title: 'Snake',
     description: 'A lógica clássica de crescimento e consciência espacial. Evite sua própria cauda em um grid 2D limitado.',
     icon: 'gesture',
+    gradient: 'linear-gradient(135deg, #45f0df, #c2cae8)',
+    iconColor: '#111d4a',
+    iconBorderColor: '#111d4a',
+    iconBgColor: '#45f0df',
     difficulty: 'Difícil',
     difficultyColor: 'var(--color-error)',
     difficultyShadow: '#93000a',
@@ -98,15 +105,12 @@ function deriveTitle(completed) {
  * component owns its own container lifecycle.
  */
 export function render() {
-  const main = document.createElement('main');
-  main.className = 'home-page';
+  const page = document.createElement('div');
+  page.className = 'home-page';
 
-  const topAppBar = new TopAppBar();
   const { level, progress } = computeProfileProgress();
   const progressStats = new ProgressStats(level, progress, lastProgress);
   lastProgress = progress;
-
-  main.appendChild(topAppBar.render());
 
   /* Hero section: game-style header with animated icon and tagline. */
   const heroSection = document.createElement('section');
@@ -137,8 +141,8 @@ export function render() {
   gamesSection.appendChild(gamesGrid);
   gamesSection.appendChild(progressStats.render());
 
-  main.appendChild(heroSection);
-  main.appendChild(gamesSection);
+  page.appendChild(heroSection);
+  page.appendChild(gamesSection);
 
   /*
    * Ripple effect adds tactile feedback on button clicks (gamified UI).
@@ -164,7 +168,7 @@ export function render() {
     profileModal.mount(document.body);
   }
 
-  return main;
+  return page;
 }
 
 /*
