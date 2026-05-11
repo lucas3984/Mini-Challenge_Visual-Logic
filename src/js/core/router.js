@@ -7,6 +7,8 @@
 export class Router {
   #routes;
   #mountEl;
+  #transitioning = false;
+  #transitionTimer = null;
 
   /**
    * Callback fired after every route change with the new hash value.
@@ -80,18 +82,83 @@ export class Router {
       if (match) {
         const params = match.groups || {};
         const element = handler(params);
-        this.#mountEl.innerHTML = '';
-        this.#mountEl.appendChild(element);
-        this.#mountEl.setAttribute('tabindex', '-1');
-        this.#mountEl.focus();
-        if (this.onRouteChange) {
-          this.onRouteChange(location.hash);
-        }
+        this.#swapContent(element);
         return;
       }
     }
     // Unknown route — redirect to home
     location.hash = '#/';
+  }
+
+  /**
+   * Performs the content swap with a fade transition when there is already
+   * content in the mount element. On first render (empty mount), mounts
+   * instantly without animation. On rapid navigation, aborts any in-flight
+   * transition to prevent stale DOM from lingering.
+   * @param {HTMLElement} element
+   */
+  #swapContent(element) {
+    if (this.#transitioning) {
+      this.#abortTransition();
+    }
+
+    if (this.#mountEl.children.length === 0) {
+      this.#mountInstant(element);
+      return;
+    }
+
+    this.#transitioning = true;
+    this.#mountEl.classList.add('page--exiting');
+
+    const onEnd = () => {
+      if (!this.#transitioning) return;
+      this.#transitioning = false;
+      clearTimeout(this.#transitionTimer);
+      this.#mountInstant(element);
+    };
+
+    const onTransitionEnd = (e) => {
+      if (e.target === this.#mountEl && e.propertyName === 'opacity') {
+        this.#mountEl.removeEventListener('transitionend', onTransitionEnd);
+        onEnd();
+      }
+    };
+
+    this.#mountEl.addEventListener('transitionend', onTransitionEnd);
+
+    // Safety timeout: force swap if transitionend doesn't fire (e.g. tab hidden)
+    this.#transitionTimer = setTimeout(() => {
+      this.#mountEl.removeEventListener('transitionend', onTransitionEnd);
+      onEnd();
+    }, 400);
+  }
+
+  /**
+   * Aborts the current in-flight transition, resetting classes and timers
+   * so the next navigation can proceed cleanly.
+   */
+  #abortTransition() {
+    this.#transitioning = false;
+    clearTimeout(this.#transitionTimer);
+    this.#mountEl.classList.remove('page--exiting');
+  }
+
+  /**
+   * Instantly mounts the given element into the mount container without
+   * any transition — used for first render and as the second half of the
+   * fade transition (after the exit completes).
+   * @param {HTMLElement} element
+   */
+  #mountInstant(element) {
+    clearTimeout(this.#transitionTimer);
+    this.#mountEl.innerHTML = '';
+    this.#mountEl.appendChild(element);
+    this.#mountEl.classList.remove('page--exiting');
+    this.#mountEl.setAttribute('tabindex', '-1');
+    this.#mountEl.focus();
+    if (this.onRouteChange) {
+      this.onRouteChange(location.hash);
+    }
   }
 
   /**
