@@ -526,7 +526,7 @@
   background: var(--color-surface-container);
   border-radius: var(--radius-default);
   padding: var(--space-md);
-  padding-bottom: 5rem;
+  padding-bottom: calc(var(--layout-nav-height) + var(--space-lg));
   border: var(--border-width-thin) solid var(--color-outline-variant);
   box-shadow: var(--shadow-hard);
   display: flex;
