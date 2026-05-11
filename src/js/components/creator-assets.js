@@ -1,48 +1,59 @@
 import { Component } from './base.js';
 
+// Snake-head and snake-body have tooltips explaining placement rules
+// Apple and wall are self-explanatory — no tooltip needed
 const ASSETS = [
   {
     id: 'snake-head',
     label: 'Cabeça da Cobra',
     previewClass: 'creator-assets__preview--snake',
-    spriteClass: null,
     tooltip: 'Gire a cabeça clicando nela dentro do Grid. Apenas uma cabeça, sem Ouroboros.',
-    src: '../src/assets/images/sprites/snake-sprites/snake-head.svg',
+    src: 'src/assets/images/sprites/snake-sprites/snake-head.svg',
   },
   {
     id: 'snake-body',
     label: 'Corpo da Cobra',
     previewClass: 'creator-assets__preview--body',
-    spriteClass: null,
-    tooltip: null,
-    src: '../src/assets/images/sprites/snake-sprites/snake-body.svg',
+    tooltip: 'Corpo deve ser adjacente à cabeça ou a outro corpo (não diagonal).',
+    src: 'src/assets/images/sprites/snake-sprites/snake-body.svg',
   },
   {
     id: 'apple',
     label: 'Maçã',
     previewClass: null,
-    spriteClass: null,
     tooltip: null,
-    src: '../src/assets/images/sprites/snake-sprites/apple.svg',
+    src: 'src/assets/images/sprites/snake-sprites/apple.svg',
   },
   {
     id: 'wall',
     label: 'Parede',
     previewClass: null,
-    spriteClass: null,
     tooltip: null,
-    src: '../src/assets/images/sprites/snake-sprites/wall.svg',
+    src: 'src/assets/images/sprites/snake-sprites/wall.svg',
   },
 ];
 
 export class CreatorAssets extends Component {
-  #items = [];
-  #onSelect = null;
+  #trackListener(target, event, handler) {
+    target.addEventListener(event, handler);
+    this.#cleanup.push(() => target.removeEventListener(event, handler));
+  }
 
-  constructor({ onSelect } = {}) {
+  unmount() {
+    this.#cleanup.forEach(fn => fn());
+    this.#cleanup = [];
+    super.unmount();
+  }
+  #state;
+  #items;
+  #listEl;
+  #cleanup;
+
+  constructor({ state } = {}) {
     super();
+    this.#state = state;
     this.#items = ASSETS;
-    this.#onSelect = typeof onSelect === 'function' ? onSelect : null;
+    this.#cleanup = [];
   }
 
   render() {
@@ -58,14 +69,16 @@ export class CreatorAssets extends Component {
     const list = document.createElement('div');
     list.className = 'creator-assets__list';
     list.setAttribute('role', 'list');
+    this.#listEl = list;
 
     this.#items.forEach((item) => {
       const btn = document.createElement('button');
       btn.className = 'creator-assets__item';
       btn.type = 'button';
-      btn.setAttribute('draggable', 'true');
+      btn.draggable = true;
       btn.setAttribute('aria-label', item.label);
       btn.setAttribute('role', 'listitem');
+      btn.dataset.assetId = item.id;
 
       const preview = document.createElement('div');
       preview.className = `creator-assets__preview${item.previewClass ? ` ${item.previewClass}` : ''}`;
@@ -77,7 +90,6 @@ export class CreatorAssets extends Component {
       img.width = 48;
       img.height = 48;
       preview.appendChild(img);
-
       btn.appendChild(preview);
 
       const label = document.createElement('span');
@@ -93,9 +105,22 @@ export class CreatorAssets extends Component {
         btn.appendChild(tooltip);
       }
 
-      btn.addEventListener('click', () => {
-        if (this.#onSelect) this.#onSelect(item.id);
-      });
+      const onClick = () => {
+        if (this.#state) {
+          this.#state.selectedAsset = item.id;
+        }
+      };
+      btn.addEventListener('click', onClick);
+      this.#cleanup.push(() => btn.removeEventListener('click', onClick));
+
+      const onDragStart = (e) => {
+        e.dataTransfer.setData('application/x-creator-asset', item.id);
+        e.dataTransfer.effectAllowed = 'copy';
+        const preview = btn.querySelector('.creator-assets__preview');
+        if (preview) e.dataTransfer.setDragImage(preview, 24, 24);
+      };
+      btn.addEventListener('dragstart', onDragStart);
+      this.#cleanup.push(() => btn.removeEventListener('dragstart', onDragStart));
 
       list.appendChild(btn);
     });
@@ -107,11 +132,53 @@ export class CreatorAssets extends Component {
 
     const tipText = document.createElement('p');
     tipText.className = 'creator-assets__tip-text';
-    tipText.textContent = 'Dica: Arraste e solte os elementos no tabuleiro para construir o percurso.';
+    tipText.textContent = 'Dica: Clique num elemento e depois no grid para posicionar, ou arraste da paleta direto para o grid. Arraste elementos dentro do grid para mover. Arraste para esta paleta para remover. Clique na cabeça da cobra para girá-la. Mover a cabeça remove o corpo.';
     tip.appendChild(tipText);
 
     aside.appendChild(tip);
 
+    if (this.#state) {
+      const onSelectionChange = () => this.#syncSelection();
+      this.#state.on('selection-change', onSelectionChange);
+      this.#cleanup.push(() => this.#state.off('selection-change', onSelectionChange));
+
+      this.#trackListener(aside, 'dragover', (e) => {
+        if (e.dataTransfer.types.includes('application/x-creator-grid')) {
+          e.preventDefault();
+          aside.classList.add('creator-assets--drop-target');
+          e.dataTransfer.dropEffect = 'move';
+        }
+      });
+
+      this.#trackListener(aside, 'dragleave', (e) => {
+        if (!aside.contains(e.relatedTarget)) {
+          aside.classList.remove('creator-assets--drop-target');
+        }
+      });
+
+      // Dropping a grid element on the palette acts as a trash zone — deletes it
+      this.#trackListener(aside, 'drop', (e) => {
+        e.preventDefault();
+        aside.classList.remove('creator-assets--drop-target');
+        const raw = e.dataTransfer.getData('application/x-creator-grid');
+        if (!raw) return;
+        try {
+          const { fromRow, fromCol } = JSON.parse(raw);
+          this.#state.clearCell(fromRow, fromCol);
+        } catch (err) {
+          console.warn('Failed to parse grid drag data during drop on palette:', err);
+        }
+      });
+    }
+
     return aside;
+  }
+
+  #syncSelection() {
+    const selected = this.#state ? this.#state.selectedAsset : null;
+    const items = this.#listEl.querySelectorAll('.creator-assets__item');
+    items.forEach((btn) => {
+      btn.classList.toggle('creator-assets__item--selected', btn.dataset.assetId === selected);
+    });
   }
 }
