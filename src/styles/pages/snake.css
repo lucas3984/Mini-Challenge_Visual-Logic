@@ -1447,6 +1447,8 @@
   font-size: var(--text-sm);
   color: var(--color-card-text-body);
   line-height: 1.6;
+}
+
 [data-theme="light"] .page--snake .level-objective-card__description {
   color: var(--color-dark);
 }
