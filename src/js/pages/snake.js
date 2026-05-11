@@ -213,6 +213,11 @@ export function render(params = {}) {
               <img src="src/assets/images/icons/snake-icons/icon-clear.svg" alt="" aria-hidden="true" class="btn-icon" width="16" height="16">
               Limpar
             </button>
+            ${isCustom ? `
+            <button id="btn-export" class="header-btn header-btn--clear" aria-label="Exportar fase">
+              <span class="material-symbols-outlined" aria-hidden="true" style="font-size:16px">upload</span>
+              Exportar
+            </button>` : ''}
           </div>
         </div>
         <div class="workspace__area">
@@ -482,6 +487,7 @@ function init(root, initialLevelIndex, isCustom) {
   const stageLevelEl = root.querySelector('#stage-level');
   const statusEl = root.querySelector('#stage-status');
   const descriptionEl = root.querySelector('.level-objective-card__description');
+  const btnExport = root.querySelector('#btn-export');
 
   let isExecuting = false;
   let highestCompletedLevel = -1;
@@ -796,6 +802,20 @@ function init(root, initialLevelIndex, isCustom) {
   if (modalRules) {
     modalRules.addEventListener('click', (e) => {
       if (e.target === modalRules) modalRules.hidden = true;
+    });
+  }
+
+  // --- Export button (custom levels only) ---
+  if (btnExport) {
+    btnExport.addEventListener('click', async () => {
+      const level = levels[currentLevelIndex];
+      if (!level) return;
+      try {
+        await navigator.clipboard.writeText(JSON.stringify(level, null, 2));
+        showToast('Fase copiada para a area de transferencia!');
+      } catch {
+        showToast('Erro ao copiar fase');
+      }
     });
   }
 
