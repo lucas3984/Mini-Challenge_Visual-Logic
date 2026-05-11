@@ -634,7 +634,7 @@
 
 /* Account for fixed TopAppBar and BottomNav height */
 .page--snake {
-  padding-top: var(--layout-header-height);
+  padding-top: calc(var(--layout-header-height) + var(--space-md));
   padding-bottom: var(--layout-nav-height);
 }
 

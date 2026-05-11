@@ -30,7 +30,7 @@
   max-width: var(--max-width-container, 1280px);
   margin: 0 auto;
   padding: var(--space-xl);
-  padding-top: calc(var(--layout-header-height) + var(--space-sm));
+  padding-top: calc(var(--layout-header-height) + var(--space-md));
   padding-bottom: calc(var(--layout-nav-height) + var(--space-xl));
   display: flex;
   flex-direction: column;

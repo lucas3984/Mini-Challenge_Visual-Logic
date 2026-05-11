@@ -143,7 +143,7 @@ body {
  * behind them. Flex column + center alignment stacks sections vertically.
  */
 .home-page {
-  padding-top: var(--layout-header-height);
+  padding-top: calc(var(--layout-header-height) + var(--space-md));
   padding-bottom: calc(var(--layout-nav-height) + var(--space-xl));
   padding-left: var(--space-md);
   padding-right: var(--space-md);
