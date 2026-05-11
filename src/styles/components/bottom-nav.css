@@ -1,6 +1,7 @@
 /*
  * Fixed bottom navigation — dark background blends with home page theme.
- * Items are centered as a group with consistent gap spacing.
+ * Items are spread evenly on mobile to prevent overflow.
+ * On tablet+, they switch to a centered group with generous gap.
  * position: relative creates a stacking context for the sliding indicator.
  */
 .bottom-nav {
@@ -10,11 +11,12 @@
   right: 0;
   z-index: 50;
   display: flex;
-  justify-content: center;
+  justify-content: space-evenly;
   align-items: center;
-  gap: 6rem;
-  padding: var(--space-xs)  var(--space-lg) var(--space-xs) var(--space-lg);
-  background-color: var(--color-bg-home);
+  gap: 0;
+  padding: var(--space-xs) var(--space-md);
+  padding-bottom: calc(var(--space-xs) + env(safe-area-inset-bottom, 0px));
+  background-color: var(--color-bg);
   border-top: 1px solid var(--home-color-surface-highest);
   border-radius: var(--radius-default) var(--radius-default) 0 0;
 }
@@ -130,4 +132,31 @@
   font-weight: var(--font-weight-headline);
   letter-spacing: var(--tracking-wide);
   transition: color 0.35s var(--easing-game);
+}
+
+/*
+ * Tablet+ (768px) — switch from space-evenly to centered group with
+ * generous gap, matching the original non-responsive design intent.
+ * Wider side padding gives more breathing room on larger screens.
+ */
+@media (min-width: 768px) {
+  .bottom-nav {
+    justify-content: center;
+    gap: 6rem;
+    padding: var(--space-xs) var(--space-xl) var(--space-xs) var(--space-xl);
+  }
+
+  .bottom-nav__icon-wrapper {
+    width: var(--touch-target-min);
+    height: var(--touch-target-min);
+  }
+
+  .nav-icon {
+    width: var(--icon-md);
+    height: var(--icon-md);
+  }
+
+  .bottom-nav__label {
+    font-size: var(--text-xs);
+  }
 }

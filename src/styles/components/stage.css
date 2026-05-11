@@ -6,8 +6,9 @@
 .stage {
   display: flex;
   flex-direction: column;
-  background: var(--bg-app);
-  border-left: 2px solid var(--border-dark);
+  background: var(--bg-surface);
+  border: 2px solid var(--border-dark);
+  border-radius: var(--radius-md);
   overflow: hidden;
   flex-shrink: 0;
   z-index: 20;
@@ -63,7 +64,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--space-lg);
+  padding: var(--space-sm);
   background: var(--bg-app);
   position: relative;
   overflow: hidden;
@@ -74,12 +75,14 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  max-width: var(--grid-max-width);
+  max-width: min(25rem, 100%);
+  min-width: 200px;
   aspect-ratio: 1;
   border: var(--border-width-game) solid var(--border-dark);
   border-radius: var(--radius-lg);
   overflow: hidden;
   box-shadow: var(--shadow-elevated);
+  background: #0A0A0A;
 }
 
 .grid__row {
@@ -92,6 +95,8 @@
 .grid__cell {
   position: relative;
   border: 0.5px solid var(--bg-grid-line);
+  min-width: 20px;
+  min-height: 20px;
   transition: background 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -305,6 +310,37 @@
   font-weight: 700;
 }
 
+/* ===== Stage Controls ===== */
+.stage-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-between);
+  padding: var(--space-sm) 0;
+}
+
+.stage-btn--stop {
+  background: var(--color-clear);
+  color: var(--color-danger-text);
+  box-shadow: var(--shadow-block);
+  border-bottom: var(--border-width-game) solid var(--color-danger-shadow);
+}
+
+.stage-btn--stop:hover:not(:disabled) {
+  background: var(--color-danger-hover);
+}
+
+.stage-info {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--bg-surface);
+  border-top: 1px solid var(--border-dark);
+  flex-wrap: wrap;
+}
+
 /* ===== SVG Sprites ===== */
 .sprite {
   width: 100%;
@@ -315,7 +351,7 @@
 
 .sprite--snake-head {
   color: var(--color-snake-head);
-  filter: drop-shadow(0 0 0.5rem var(--color-snake-glow));
+  filter: drop-shadow(0 0 0.75rem var(--color-snake-glow));
 }
 
 .sprite--snake-body {
@@ -340,5 +376,4 @@
     border-bottom: 2px solid var(--border-dark);
   }
   .stage__body { padding: var(--space-sm); }
-  .grid { max-width: var(--grid-max-width-mobile); }
 }

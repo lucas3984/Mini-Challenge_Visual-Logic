@@ -176,6 +176,19 @@ export function getGameWorkspace(profileName, gameId, levelIndex) {
  * @param {string} gameId
  * @param {number} levelIndex - 0-based level index
  */
+export function setLastGameType(profileName, gameId, type) {
+  const data = getProfileData(profileName);
+  const game = ensureGameState(data, gameId);
+  game.lastGameType = type;
+  saveProfileData(profileName, data);
+}
+
+export function getLastGameType(profileName, gameId) {
+  const data = getProfileData(profileName);
+  const game = data.games[gameId];
+  return game?.lastGameType || 'normal';
+}
+
 export function clearGameWorkspace(profileName, gameId, levelIndex) {
   const data = getProfileData(profileName);
   const game = data.games[gameId];

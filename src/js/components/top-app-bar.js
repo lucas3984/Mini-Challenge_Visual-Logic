@@ -37,7 +37,7 @@ export class TopAppBar extends Component {
         <div class="top-app-bar__logo">
           <span class="material-symbols-outlined top-app-bar__icon">extension</span>
         </div>
-        <span class="top-app-bar__title">LogicForge</span>
+        <span class="top-app-bar__title">Blockap</span>
       </div>
       <div class="top-app-bar__actions">
         <button id="darkModeToggle" class="top-app-bar__btn" aria-label="${themeLabel}">
@@ -49,7 +49,7 @@ export class TopAppBar extends Component {
              aria-haspopup="dialog"
              aria-label="Trocar perfil">
           <span class="material-symbols-outlined top-app-bar__user-icon">account_circle</span>
-          <span class="top-app-bar__username">${escapeHtml(activeProfile)}</span>
+          <span class="top-app-bar__username top-app-bar__username--desktop">${escapeHtml(activeProfile)}</span>
           <span class="material-symbols-outlined top-app-bar__user-arrow">arrow_drop_down</span>
         </div>
       </div>

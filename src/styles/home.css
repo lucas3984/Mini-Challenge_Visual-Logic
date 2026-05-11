@@ -133,7 +133,7 @@ a {
  * it specifically for the home route.
  */
 body {
-  background-color: var(--color-bg-home) !important;
+  background-color: var(--color-bg) !important;
   background-image: var(--gradient-bg-game-home) !important;
 }
 
@@ -143,8 +143,8 @@ body {
  * behind them. Flex column + center alignment stacks sections vertically.
  */
 .home-page {
-  padding-top: 100px;
-  padding-bottom: 120px;
+  padding-top: calc(var(--layout-header-height) + var(--space-md));
+  padding-bottom: calc(var(--layout-nav-height) + var(--space-xl));
   padding-left: var(--space-md);
   padding-right: var(--space-md);
   max-width: 1280px;
@@ -152,7 +152,6 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-xl);
 }
 
 /*
@@ -167,6 +166,7 @@ body {
 
 .hero-section__content {
   display: inline-block;
+  max-width: 100%;
 }
 
 /*
@@ -204,7 +204,7 @@ body {
 
 .hero-section__icon {
   position: relative;
-  font-size: 120px;
+  font-size: clamp(80px, 18vw, 120px);
   color: var(--color-primary);
   text-shadow: 8px 8px 0 var(--color-dark);
 }
@@ -213,6 +213,9 @@ body {
   margin-top: var(--space-lg);
   margin-bottom: var(--space-xs);
   color: var(--color-primary);
+  font-size: clamp(2rem, 8vw, var(--text-4xl));
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 /*

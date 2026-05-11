@@ -16,11 +16,13 @@
 
 .section-header__title {
   font-family: var(--font-headline);
-  font-size: var(--text-4xl);
+  font-size: clamp(2rem, 8vw, var(--text-4xl));
   font-weight: 700;
   line-height: 1.1;
   letter-spacing: -0.02em;
   color: var(--color-primary-emphasis);
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 /* === Main Content === */
@@ -28,8 +30,14 @@
   max-width: var(--max-width-container, 1280px);
   margin: 0 auto;
   padding: var(--space-xl);
-  padding-top: 100px;
-  padding-bottom: 120px;
+  padding-top: calc(var(--layout-header-height) + var(--space-md));
+  padding-bottom: calc(var(--layout-nav-height) + var(--space-xl));
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+}
+
+.level-selector-content {
   display: flex;
   flex-direction: column;
   gap: var(--space-xl);
@@ -40,47 +48,55 @@
   position: relative;
   width: 100%;
   aspect-ratio: 21/9;
-  min-height: 20rem;
+  min-height: 16rem;
   background-color: var(--color-surface-container);
   border-radius: var(--radius-lg);
   border: 1px solid var(--color-outline-variant);
   box-shadow: var(--shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.1));
+  overflow-x: hidden;
+  overflow-y: hidden;
+  display: flex;
+  flex-direction: column;
+  scroll-behavior: smooth;
+  overscroll-behavior-x: contain;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.map__scroll {
+  cursor: grab;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--color-secondary) 35%, transparent) transparent;
   overflow-x: auto;
   overflow-y: hidden;
   display: flex;
   align-items: center;
-  scroll-behavior: smooth;
-  overscroll-behavior-x: contain;
+  flex: 1;
   touch-action: pan-y;
-  user-select: none;
-  -webkit-user-select: none;
-  -webkit-tap-highlight-color: transparent;
-  cursor: grab;
-  scrollbar-width: thin;
-  scrollbar-color: color-mix(in srgb, var(--color-secondary) 35%, transparent) transparent;
+  padding: 0 var(--space-md);
 }
 
-.map::-webkit-scrollbar {
+.map__scroll::-webkit-scrollbar {
   height: 0.5rem;
 }
 
-.map::-webkit-scrollbar-track {
+.map__scroll::-webkit-scrollbar-track {
   background: transparent;
 }
 
-.map::-webkit-scrollbar-thumb {
+.map__scroll::-webkit-scrollbar-thumb {
   background-color: color-mix(in srgb, var(--color-secondary) 35%, transparent);
   border-radius: 9999px;
 }
 
-.map--dragging {
+.map--dragging .map__scroll {
   cursor: grabbing;
 }
 
 .map__track {
   position: relative;
   width: max-content;
-  min-width: 100%;
   height: 20rem;
   flex: 0 0 auto;
 }
@@ -116,8 +132,8 @@
 }
 
 .node__circle {
-  width: 5rem;
-  height: 5rem;
+  width: clamp(3.5rem, 12vw, 5rem);
+  height: clamp(3.5rem, 12vw, 5rem);
   border-radius: var(--radius-full, 9999px);
   border: 1px solid var(--color-surface-container);
   box-shadow: var(--shadow-lg, 0 10px 15px rgba(0, 0, 0, 0.2));
@@ -131,6 +147,10 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
+  max-width: 8rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* Light mode: node labels use dark navy */
@@ -144,6 +164,18 @@
 
 [data-theme="light"] .node--active .node__label {
   color: var(--color-dark);
+}
+
+[data-theme="light"] .node--locked .node__label {
+  color: var(--color-dark);
+}
+
+[data-theme="light"] .node--unlocked .node__label {
+  color: var(--color-dark);
+}
+
+[data-theme="light"] .node--unlocked .text-on-secondary {
+  color: var(--color-on-primary-container);
 }
 
 .node__badge {
@@ -186,16 +218,14 @@
   color: var(--color-secondary);
 }
 
-/* TODO: currently unused - only 3 states are used (completed, active, locked)
-   Keeping these styles for future use if 'unlocked' state is needed again
 .node--unlocked .node__circle {
   background-color: var(--color-primary-container);
+  border: 2px solid var(--color-outline);
 }
 
 .node--unlocked .node__label {
   color: var(--color-text-muted);
 }
-*/
 
 .node--locked .node__circle {
   background-color: var(--color-surface-container-highest);
@@ -203,6 +233,85 @@
 
 .node--locked .node__label {
   color: var(--color-outline);
+}
+
+/* === Toggle (segmented control) === */
+.map__toggle {
+  display: flex;
+  gap: var(--space-xs);
+  padding: var(--space-sm) var(--space-lg);
+  background-color: var(--color-surface-container);
+  border-bottom: 1px solid var(--color-outline-variant);
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.map__toggle-btn {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--radius-full, 9999px);
+  border: 1px solid var(--color-outline);
+  background-color: transparent;
+  color: var(--color-text-muted);
+  font-family: var(--font-headline);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease;
+}
+
+.map__toggle-btn:hover {
+  background-color: var(--color-surface-container-highest);
+}
+
+.map__toggle-btn--active {
+  background-color: var(--color-secondary);
+  color: var(--color-on-secondary);
+  border-color: var(--color-secondary);
+}
+
+.map__toggle-btn--active:hover {
+  background-color: var(--color-secondary);
+}
+
+/* === Empty State (no custom levels) === */
+.map__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  min-height: 12rem;
+  gap: var(--space-md);
+  color: var(--color-text-muted);
+  text-align: center;
+  padding: var(--space-xl);
+}
+
+.level-selector-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+}
+
+.map__empty-text {
+  font-family: var(--font-headline);
+  font-size: var(--text-lg);
+  font-weight: 700;
+}
+
+.map__empty-action {
+  color: var(--color-secondary);
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 /* === Ranking Section === */
@@ -289,7 +398,7 @@
 }
 
 .table__cell {
-  padding: var(--space-lg);
+  padding: var(--space-md);
   text-align: center;
 }
 
@@ -350,7 +459,7 @@
 .text-on-secondary { color: var(--color-on-secondary); }
 .text-on-primary-container { color: var(--color-on-primary-container); }
 
-.bg-background { background-color: var(--color-surface-dim); }
+.bg-background { background-color: var(--color-bg); }
 .min-h-screen { min-height: 100vh; }
 .antialiased {
   -webkit-font-smoothing: antialiased;
@@ -413,4 +522,95 @@
   padding: var(--space-xl);
   color: var(--color-text-muted);
   font-style: italic;
+}
+
+/* === Responsive: tablet+ overrides === */
+@media (min-width: 768px) {
+  .map {
+    min-height: 20rem;
+  }
+
+  .table__cell {
+    padding: var(--space-lg);
+  }
+}
+
+/* === Mobile: ranking card layout === */
+@media (max-width: 47.9375rem) {
+  .table__header {
+    display: none;
+  }
+
+  .table,
+  .table__body {
+    display: block;
+  }
+
+  .table__row {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    grid-template-areas:
+      "pos  user  score"
+      "date date  date";
+    align-items: center;
+    gap: var(--space-2xs) var(--space-md);
+    padding: var(--space-md);
+    margin-bottom: var(--space-sm);
+    border: 1px solid var(--color-outline-variant);
+    border-radius: var(--radius-default);
+    background-color: var(--color-bg);
+  }
+
+  .table__cell {
+    padding: 0;
+    border: none;
+    text-align: left;
+  }
+
+  .table__cell::before {
+    font-size: var(--text-xs);
+    font-weight: 700;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  [data-label="Posição"] {
+    grid-area: pos;
+  }
+
+  [data-label="Usuário"] {
+    grid-area: user;
+  }
+
+  [data-label="Pontuação"] {
+    grid-area: score;
+  }
+
+  [data-label="Data"] {
+    grid-area: date;
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-top: var(--space-2xs);
+    font-size: var(--text-xs);
+  }
+
+  [data-label="Data"]::before {
+    content: attr(data-label);
+  }
+
+  [data-label="Posição"]::before,
+  [data-label="Usuário"]::before,
+  [data-label="Pontuação"]::before {
+    display: none;
+  }
+
+  .table__user {
+    justify-content: flex-start;
+  }
+
+  .position-badge {
+    justify-content: flex-start;
+  }
 }

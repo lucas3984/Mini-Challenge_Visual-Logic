@@ -28,7 +28,15 @@ export class DragDrop extends Component {
   #canAddLoop;
   #canAddIf;
   #onBlockChanged;
+  #onDragStartCallback;
+  #onDragEndCallback;
   #audio;
+  #blockSwipeStartX;
+  #blockSwipeBlock;
+  #blockSwipeActive;
+  #deleteModeBlock;
+  #trashCan;
+  #trashCanActive;
 
   /**
    * @param {HTMLElement} container - The root element for event delegation
@@ -38,9 +46,11 @@ export class DragDrop extends Component {
    * @param {Function} [options.canAddLoop] - Returns true if another loop block may be added.
    * @param {Function} [options.canAddIf] - Returns true if another if block may be added.
    * @param {Function} [options.onBlockChanged] - Called after any block add/remove.
+   * @param {Function} [options.onDragStart] - Called when a touch drag starts.
+   * @param {Function} [options.onDragEnd] - Called after a touch drag completes.
    * @param {Object} [options.audio] - AudioFX instance for snap/error sounds.
    */
-  constructor(container, { canAddBlock, canAddLoop, canAddIf, onBlockChanged, audio } = {}) {
+  constructor(container, { canAddBlock, canAddLoop, canAddIf, onBlockChanged, onDragStart, onDragEnd, audio } = {}) {
     super();
     this.#dragContainer = container;
     this.#draggedBlock = null;
@@ -52,8 +62,45 @@ export class DragDrop extends Component {
     this.#canAddLoop = canAddLoop || (() => true);
     this.#canAddIf = canAddIf || (() => true);
     this.#onBlockChanged = onBlockChanged || (() => {});
+    this.#onDragStartCallback = onDragStart || (() => {});
+    this.#onDragEndCallback = onDragEnd || (() => {});
     this.#audio = audio || null;
     this.#bindEvents();
+    this.#initTrashCan();
+  }
+
+  #initTrashCan() {
+    this.#trashCan = document.createElement('div');
+    this.#trashCan.className = 'trash-can';
+    this.#trashCan.innerHTML = `
+      <span class="material-symbols-outlined" aria-hidden="true">delete</span>
+      <span class="trash-can__label">Solte para excluir</span>
+    `;
+    this.#trashCan.hidden = true;
+    this.#trashCanActive = false;
+    document.body.appendChild(this.#trashCan);
+  }
+
+  #showTrashCan() {
+    if (!this.#trashCan) return;
+    this.#trashCan.hidden = false;
+    this.#trashCanActive = false;
+    requestAnimationFrame(() => {
+      this.#trashCan.classList.add('trash-can--visible');
+    });
+  }
+
+  #hideTrashCan() {
+    if (!this.#trashCan || this.#trashCan.hidden) return;
+    this.#trashCan.classList.remove('trash-can--visible', 'trash-can--active');
+    this.#trashCanActive = false;
+    this.#trashCan.hidden = true;
+  }
+
+  #isOverTrashCan(x, y) {
+    if (!this.#trashCan || this.#trashCan.hidden) return false;
+    const rect = this.#trashCan.getBoundingClientRect();
+    return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
   }
 
   /**
@@ -73,6 +120,10 @@ export class DragDrop extends Component {
     this._onTouchEndBound = (e) => this.#onTouchEnd(e);
     this._onKeyDownBound = (e) => this.#onKeyDown(e);
     this._onClickBound = (e) => this.#onClickDelete(e);
+    this._onBlockSwipeStartBound = (e) => this.#onBlockSwipeStart(e);
+    this._onBlockSwipeMoveBound = (e) => this.#onBlockSwipeMove(e);
+    this._onBlockSwipeEndBound = (e) => this.#onBlockSwipeEnd(e);
+    this._onOutsideClickBound = (e) => this.#onOutsideClick(e);
 
     this.#dragContainer.addEventListener('dragstart', this._onDragStartBound);
     this.#dragContainer.addEventListener('dragover', this._onDragOverBound);
@@ -87,9 +138,15 @@ export class DragDrop extends Component {
     this.#dragContainer.addEventListener('touchmove', this._onTouchMoveBound, { passive: false });
     this.#dragContainer.addEventListener('touchend', this._onTouchEndBound);
 
+    // Swipe-to-delete handlers (separate from drag)
+    this.#dragContainer.addEventListener('touchstart', this._onBlockSwipeStartBound, { passive: false });
+    this.#dragContainer.addEventListener('touchmove', this._onBlockSwipeMoveBound, { passive: false });
+    this.#dragContainer.addEventListener('touchend', this._onBlockSwipeEndBound);
+
     // Keyboard listener is registered on document (not the container) so that
     // Delete/Escape work even when focus is inside the sidebar or workspace.
     document.addEventListener('keydown', this._onKeyDownBound);
+    document.addEventListener('click', this._onOutsideClickBound);
 
     this.#dragContainer.addEventListener('click', this._onClickBound);
   }
@@ -109,8 +166,16 @@ export class DragDrop extends Component {
     this.#dragContainer.removeEventListener('touchstart', this._onTouchStartBound);
     this.#dragContainer.removeEventListener('touchmove', this._onTouchMoveBound);
     this.#dragContainer.removeEventListener('touchend', this._onTouchEndBound);
+    this.#dragContainer.removeEventListener('touchstart', this._onBlockSwipeStartBound);
+    this.#dragContainer.removeEventListener('touchmove', this._onBlockSwipeMoveBound);
+    this.#dragContainer.removeEventListener('touchend', this._onBlockSwipeEndBound);
     document.removeEventListener('keydown', this._onKeyDownBound);
+    document.removeEventListener('click', this._onOutsideClickBound);
     this.#dragContainer.removeEventListener('click', this._onClickBound);
+    if (this.#trashCan) {
+      this.#trashCan.remove();
+      this.#trashCan = null;
+    }
     super.unmount();
   }
 
@@ -128,6 +193,7 @@ export class DragDrop extends Component {
     e.stopPropagation();
     const block = btn.closest('.block, .c-block');
     if (block && !block.closest('.sidebar')) {
+      this.#clearDeleteMode();
       block.remove();
       this.#onBlockChanged();
     }
@@ -165,7 +231,6 @@ export class DragDrop extends Component {
     while (el && el !== this.#dragContainer && el !== document.body) {
       if (
         el.classList.contains('c-block__dropzone') ||
-        el.classList.contains('workspace__stack') ||
         el.classList.contains('workspace__area')
       ) {
         return el;
@@ -407,15 +472,39 @@ export class DragDrop extends Component {
       this.#draggedBlock = block;
       this.#sourceContainer = block.parentElement;
 
+      // Notify that a drag started (e.g. to close sidebar)
+      this.#onDragStartCallback();
+
+      // Show trash can when dragging a workspace block
+      if (!this.#isFromSidebar(block)) {
+        this.#showTrashCan();
+      }
+
       // Create a visual clone that follows the finger; pointer-events:none
       // ensures the clone itself doesn't intercept touch events.
       this.#touchClone = block.cloneNode(true);
+
+      // Compute actual styles from original block (CSS vars are scoped to
+      // .page--snake, so clone on document.body won't inherit them)
+      const computed = getComputedStyle(block);
+      this.#touchClone.style.background = computed.background;
+      this.#touchClone.style.color = computed.color;
+      this.#touchClone.style.borderColor = computed.borderColor;
+      this.#touchClone.style.borderRadius = computed.borderRadius;
+      this.#touchClone.style.padding = computed.padding;
+      this.#touchClone.style.boxShadow = computed.boxShadow;
+
       this.#touchClone.style.position = 'fixed';
       this.#touchClone.style.pointerEvents = 'none';
       this.#touchClone.style.zIndex = '1000';
       this.#touchClone.style.opacity = '1';
       this.#touchClone.style.width = block.offsetWidth + 'px';
       document.body.appendChild(this.#touchClone);
+
+      // Hide original block so it looks like it's being moved, not cloned
+      if (!this.#isFromSidebar(block)) {
+        this.#draggedBlock.style.opacity = '0';
+      }
     }, 500);
   }
 
@@ -426,17 +515,47 @@ export class DragDrop extends Component {
    * @param {TouchEvent} e
    */
   #onTouchMove(e) {
-    if (!this.#longPressActive || !this.#draggedBlock) return;
+    // Always prevent default on touchmove to block browser swipe/scroll
+    // This applies even during the long-press wait period
     e.preventDefault();
 
-    const x = e.touches[0].clientX;
-    const y = e.touches[0].clientY;
+    if (!this.#longPressActive || !this.#draggedBlock) return;
+
+    const touch = e.touches[0];
+    const x = touch.clientX;
+    const y = touch.clientY;
+
+    // Edge scroll: accelerate scroll when near viewport boundaries
+    const edgeThreshold = 50;
+    const maxScrollSpeed = 25;
+    const nearTop = y < edgeThreshold;
+    const nearBottom = window.innerHeight - y < edgeThreshold;
+
+    if (nearTop) {
+      const intensity = 1 - (y / edgeThreshold);
+      window.scrollBy(0, -Math.floor(intensity * maxScrollSpeed));
+    } else if (nearBottom) {
+      const intensity = 1 - ((window.innerHeight - y) / edgeThreshold);
+      window.scrollBy(0, Math.floor(intensity * maxScrollSpeed));
+    }
 
     if (this.#touchClone) {
       // Center the clone horizontally under the finger, offset upward so the
       // user can see what's below the touch point.
       this.#touchClone.style.left = x - this.#touchClone.offsetWidth / 2 + 'px';
       this.#touchClone.style.top = y - 20 + 'px';
+    }
+
+    // Update trash can hover state
+    if (this.#trashCan && !this.#trashCan.hidden) {
+      const over = this.#isOverTrashCan(x, y);
+      if (over && !this.#trashCanActive) {
+        this.#trashCanActive = true;
+        this.#trashCan.classList.add('trash-can--active');
+      } else if (!over && this.#trashCanActive) {
+        this.#trashCanActive = false;
+        this.#trashCan.classList.remove('trash-can--active');
+      }
     }
 
     this.#clearSnapPreviews();
@@ -460,9 +579,56 @@ export class DragDrop extends Component {
     }
 
     this.#longPressActive = false;
+    // Clear any ongoing swipe state to prevent tap handler from firing after drag
+    this.#blockSwipeBlock = null;
+    this.#blockSwipeActive = false;
 
     const x = e.changedTouches[0].clientX;
     const y = e.changedTouches[0].clientY;
+
+    // Check if dropped on trash can
+    if (this.#isOverTrashCan(x, y)) {
+      const isSidebarSource = this.#isFromSidebar(this.#sourceContainer || this.#draggedBlock);
+
+      // Capture trash can position before hiding it
+      if (this.#touchClone && this.#trashCan) {
+        const trashRect = this.#trashCan.getBoundingClientRect();
+        const tx = trashRect.left + trashRect.width / 2 - this.#touchClone.offsetWidth / 2;
+        const ty = trashRect.top + trashRect.height / 2 - this.#touchClone.offsetHeight / 2;
+        this.#touchClone.style.transition = 'all 300ms ease';
+        this.#touchClone.style.left = tx + 'px';
+        this.#touchClone.style.top = ty + 'px';
+        this.#touchClone.style.transform = 'scale(0.2) rotate(20deg)';
+        this.#touchClone.style.opacity = '0';
+      }
+
+      this.#hideTrashCan();
+
+      if (isSidebarSource) {
+        // Sidebar source: just cancel after animation
+        setTimeout(() => {
+          if (this.#touchClone) {
+            this.#touchClone.remove();
+            this.#touchClone = null;
+          }
+          this.#cleanupDrag();
+        }, 300);
+      } else {
+        // Workspace source: delete the block after animation
+        setTimeout(() => {
+          if (this.#touchClone) {
+            this.#touchClone.remove();
+            this.#touchClone = null;
+          }
+          if (this.#draggedBlock) {
+            this.#draggedBlock.remove();
+            this.#onBlockChanged();
+          }
+          this.#cleanupDrag();
+        }, 300);
+      }
+      return;
+    }
 
     // Remove the visual clone from the DOM immediately.
     if (this.#touchClone) {
@@ -591,14 +757,17 @@ export class DragDrop extends Component {
   /**
    * Resets internal drag state without inserting anything. Used when a drag
    * operation is cancelled (finger lifted over invalid target, no valid
-   * dropzone, limit blocked the insert, etc.).
+   * dropzone, limit blocked the insert, etc.) or after a successful drop.
    */
   #cleanupDrag() {
+    this.#hideTrashCan();
     if (this.#draggedBlock) {
       this.#draggedBlock.classList.remove('block--dragging');
+      this.#draggedBlock.style.opacity = '';
       this.#draggedBlock = null;
     }
     this.#sourceContainer = null;
+    this.#onDragEndCallback();
   }
 
   /**
@@ -615,6 +784,7 @@ export class DragDrop extends Component {
     if (!active || !this.#dragContainer.contains(active)) return;
 
     if (e.key === 'Escape') {
+      this.#clearDeleteMode();
       if (this.#draggedBlock) this.#cleanupDrag();
       active.blur();
       return;
@@ -687,5 +857,111 @@ export class DragDrop extends Component {
     this.#dragContainer
       .querySelectorAll('.dropzone--snap-preview')
       .forEach((el) => el.classList.remove('dropzone--snap-preview'));
+  }
+
+  /**
+   * Begins tracking a left-swipe gesture on a workspace block.
+   * Only tracks blocks outside the sidebar; ignores blocks during active drag.
+   */
+  #onBlockSwipeStart(e) {
+    if (this.#longPressActive) return;
+    const block = this.#isDraggable(e.target);
+    if (!block || block.closest('.sidebar')) return;
+
+    this.#blockSwipeStartX = e.touches[0].clientX;
+    this.#blockSwipeBlock = block;
+    this.#blockSwipeActive = false;
+  }
+
+  /**
+   * Translates the block horizontally following the finger for left-swipe.
+   * Applies opacity fade based on distance. Only activates past a 10px dead zone.
+   */
+  #onBlockSwipeMove(e) {
+    if (!this.#blockSwipeBlock || this.#longPressActive) return;
+
+    const deltaX = e.touches[0].clientX - this.#blockSwipeStartX;
+
+    if (deltaX < -10 && deltaX > -200) {
+      this.#blockSwipeActive = true;
+      this.#blockSwipeBlock.style.transform = `translateX(${deltaX}px)`;
+      this.#blockSwipeBlock.style.opacity = 1 - (Math.abs(deltaX) / 300);
+    }
+  }
+
+  /**
+   * Completes the swipe: if the threshold (>60px left) is met, animates the
+   * block off-screen and removes it. Otherwise treats it as a tap and
+   * triggers delete-mode toggle.
+   */
+  #onBlockSwipeEnd(e) {
+    if (!this.#blockSwipeBlock) return;
+
+    const deltaX = e.changedTouches[0].clientX - this.#blockSwipeStartX;
+
+    if (deltaX < -60 && this.#blockSwipeActive) {
+      this.#blockSwipeBlock.style.transition = 'transform 200ms ease, opacity 200ms ease';
+      this.#blockSwipeBlock.style.transform = 'translateX(-120%)';
+      this.#blockSwipeBlock.style.opacity = '0';
+      setTimeout(() => {
+        if (this.#blockSwipeBlock && this.#blockSwipeBlock.parentNode) {
+          this.#blockSwipeBlock.remove();
+          this.#onBlockChanged();
+          this.#audio?.play('snap');
+        }
+        this.#blockSwipeBlock = null;
+      }, 200);
+    } else {
+      // No significant swipe — treat as tap
+      if (!this.#blockSwipeActive) {
+        e.tapHandled = true;
+        this.#onBlockTap(e);
+      }
+      this.#blockSwipeBlock.style.transition = 'transform 200ms ease, opacity 200ms ease';
+      this.#blockSwipeBlock.style.transform = '';
+      this.#blockSwipeBlock.style.opacity = '';
+      setTimeout(() => {
+        if (this.#blockSwipeBlock) this.#blockSwipeBlock.style.transition = '';
+      }, 200);
+    }
+
+    this.#blockSwipeActive = false;
+  }
+
+  /**
+   * Toggles delete mode on a workspace block when tapped (mobile only).
+   * Shows the existing delete button; clicking the button or tapping outside
+   * clears delete mode.
+   */
+  #onBlockTap(e) {
+    if (this.#longPressActive || this.#blockSwipeActive) return;
+    const block = this.#isDraggable(e.target);
+    if (!block || block.closest('.sidebar')) return;
+
+    // If tapping the delete button itself, let the click handler handle it.
+    if (e.target.classList.contains('block__delete-btn')) return;
+
+    this.#clearDeleteMode();
+    block.classList.add('block--delete-mode');
+    this.#deleteModeBlock = block;
+  }
+
+  /**
+   * Removes the delete-mode class from the currently active block.
+   */
+  #clearDeleteMode() {
+    if (this.#deleteModeBlock) {
+      this.#deleteModeBlock.classList.remove('block--delete-mode');
+      this.#deleteModeBlock = null;
+    }
+  }
+
+  /**
+   * Clears delete mode when clicking outside the active block.
+   */
+  #onOutsideClick(e) {
+    if (this.#deleteModeBlock && !this.#deleteModeBlock.contains(e.target)) {
+      this.#clearDeleteMode();
+    }
   }
 }
