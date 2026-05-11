@@ -58,6 +58,7 @@ export function render(params = {}) {
   wrapper.appendChild(topAppBar.render());
 
   const root = document.createElement('div');
+  root.className = 'page--snake__content';
   root.innerHTML = `
     <div class="app-container">
       <aside class="sidebar" aria-label="Paleta de blocos">
@@ -77,8 +78,7 @@ export function render(params = {}) {
                   data-block-type="move-forward"
                   tabindex="0"
                   role="listitem"
-                  title="Move a cobra 1 casa na direção atual"
-                  aria-grabbed="false">
+                  title="Move a cobra 1 casa na direcao atual">
                   <img src="src/assets/images/icons/visual-programming-icons/Move-Forward-Icon.svg" class="block__icon" width="16" height="16" alt="" aria-hidden="true"> Mover Frente
                 </div>
               <div class="block block--action"
@@ -86,8 +86,7 @@ export function render(params = {}) {
                   data-block-type="turn-left"
                   tabindex="0"
                   role="listitem"
-                  title="Gira a cobra 90° para a esquerda"
-                  aria-grabbed="false">
+                  title="Gira a cobra 90 para a esquerda">
                   <img src="src/assets/images/icons/visual-programming-icons/Rotate-Left-Icon.svg" class="block__icon" width="16" height="16" alt="" aria-hidden="true"> Girar Esquerda
                 </div>
               <div class="block block--action"
@@ -95,8 +94,7 @@ export function render(params = {}) {
                   data-block-type="turn-right"
                   tabindex="0"
                   role="listitem"
-                  title="Gira a cobra 90° para a direita"
-                  aria-grabbed="false">
+                  title="Gira a cobra 90 para a direita">
                   <img src="src/assets/images/icons/visual-programming-icons/Rotate-Right-Icon.svg" class="block__icon" width="16" height="16" alt="" aria-hidden="true"> Girar Direita
                 </div>
             </div>
@@ -112,8 +110,7 @@ export function render(params = {}) {
                   data-block-type="repeat"
                   tabindex="0"
                   role="listitem"
-                  title="Repete os blocos dentro dele N vezes"
-                  aria-grabbed="false">
+                  title="Repete os blocos dentro dele N vezes">
                 <div class="c-block__header">
                   <img src="src/assets/images/icons/visual-programming-icons/Loop-Icon.svg" class="block__icon" width="16" height="16" alt="" aria-hidden="true">
                   <span class="c-block__label">Repetir</span>
@@ -138,8 +135,7 @@ export function render(params = {}) {
                   data-block-type="if-apple-ahead"
                   tabindex="0"
                   role="listitem"
-                  title="Executa os blocos dentro apenas se a condição for verdadeira"
-                  aria-grabbed="false">
+                  title="Executa os blocos dentro apenas se a condicao for verdadeira">
                 <div class="c-block__header">
                   <img src="src/assets/images/icons/visual-programming-icons/IF-ELSE-Icon.svg" class="block__icon" width="16" height="16" alt="" aria-hidden="true">
                   <span class="c-block__label">Se</span>
