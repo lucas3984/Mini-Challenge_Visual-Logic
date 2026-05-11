@@ -67,13 +67,14 @@
     },
     "mcp": {
         "stitch": {
-        "type": "remote",
-        "url": "https://stitch.googleapis.com/mcp",
-        "enabled": true,
+            "type": "remote",
+            "url": "https://stitch.googleapis.com/mcp",
+            "oauth": false,
             "headers": {
+                "Accept": "application/json",
                 "X-Goog-Api-Key": "{env:STITCH_API_KEY}"
             },
-        "timeout": 60000
+            "timeout": 60000
         }
     }
 }
