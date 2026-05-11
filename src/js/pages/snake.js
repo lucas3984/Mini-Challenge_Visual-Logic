@@ -481,6 +481,7 @@ function init(root, initialLevelIndex, isCustom) {
   const btnRulesClose = root.querySelector('#btn-rules-close');
   const stageLevelEl = root.querySelector('#stage-level');
   const statusEl = root.querySelector('#stage-status');
+  const descriptionEl = root.querySelector('.level-objective-card__description');
 
   let isExecuting = false;
   let highestCompletedLevel = -1;
@@ -678,6 +679,7 @@ function init(root, initialLevelIndex, isCustom) {
     }
 
     if (stageLevelEl) stageLevelEl.textContent = `Nível ${level.id}: ${level.name}`;
+    if (descriptionEl) descriptionEl.textContent = level.description || '';
     updateBlockCounterLive();
     if (statusEl) statusEl.textContent = 'Pronto';
 
