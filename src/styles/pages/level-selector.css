@@ -45,42 +45,49 @@
   border-radius: var(--radius-lg);
   border: 1px solid var(--color-outline-variant);
   box-shadow: var(--shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.1));
+  overflow-x: hidden;
+  overflow-y: hidden;
+  display: flex;
+  flex-direction: column;
+  scroll-behavior: smooth;
+  overscroll-behavior-x: contain;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.map__scroll {
+  cursor: grab;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--color-secondary) 35%, transparent) transparent;
   overflow-x: auto;
   overflow-y: hidden;
   display: flex;
   align-items: center;
-  scroll-behavior: smooth;
-  overscroll-behavior-x: contain;
+  flex: 1;
   touch-action: pan-y;
-  user-select: none;
-  -webkit-user-select: none;
-  -webkit-tap-highlight-color: transparent;
-  cursor: grab;
-  scrollbar-width: thin;
-  scrollbar-color: color-mix(in srgb, var(--color-secondary) 35%, transparent) transparent;
 }
 
-.map::-webkit-scrollbar {
+.map__scroll::-webkit-scrollbar {
   height: 0.5rem;
 }
 
-.map::-webkit-scrollbar-track {
+.map__scroll::-webkit-scrollbar-track {
   background: transparent;
 }
 
-.map::-webkit-scrollbar-thumb {
+.map__scroll::-webkit-scrollbar-thumb {
   background-color: color-mix(in srgb, var(--color-secondary) 35%, transparent);
   border-radius: 9999px;
 }
 
-.map--dragging {
+.map--dragging .map__scroll {
   cursor: grabbing;
 }
 
 .map__track {
   position: relative;
   width: max-content;
-  min-width: 100%;
   height: 20rem;
   flex: 0 0 auto;
 }
@@ -131,6 +138,10 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
+  max-width: 8rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .node__badge {
@@ -173,16 +184,14 @@
   color: var(--color-secondary);
 }
 
-/* TODO: currently unused - only 3 states are used (completed, active, locked)
-   Keeping these styles for future use if 'unlocked' state is needed again
 .node--unlocked .node__circle {
   background-color: var(--color-primary-container);
+  border: 2px solid var(--color-outline);
 }
 
 .node--unlocked .node__label {
   color: var(--color-text-muted);
 }
-*/
 
 .node--locked .node__circle {
   background-color: var(--color-surface-container-highest);
@@ -190,6 +199,79 @@
 
 .node--locked .node__label {
   color: var(--color-outline);
+}
+
+/* === Toggle (segmented control) === */
+.map__toggle {
+  display: flex;
+  gap: var(--space-xs);
+  padding: var(--space-sm) var(--space-lg);
+  background-color: var(--color-surface-container);
+  border-bottom: 1px solid var(--color-outline-variant);
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.map__toggle-btn {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--radius-full, 9999px);
+  border: 1px solid var(--color-outline);
+  background-color: transparent;
+  color: var(--color-text-muted);
+  font-family: var(--font-headline);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease;
+}
+
+.map__toggle-btn:hover {
+  background-color: var(--color-surface-container-highest);
+}
+
+.map__toggle-btn--active {
+  background-color: var(--color-secondary);
+  color: var(--color-on-secondary);
+  border-color: var(--color-secondary);
+}
+
+.map__toggle-btn--active:hover {
+  background-color: var(--color-secondary);
+}
+
+/* === Empty State (no custom levels) === */
+.map__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  min-height: 12rem;
+  gap: var(--space-md);
+  color: var(--color-text-muted);
+  text-align: center;
+  padding: var(--space-xl);
+}
+
+.map__empty-text {
+  font-family: var(--font-headline);
+  font-size: var(--text-lg);
+  font-weight: 700;
+}
+
+.map__empty-action {
+  color: var(--color-secondary);
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 /* === Ranking Section === */
