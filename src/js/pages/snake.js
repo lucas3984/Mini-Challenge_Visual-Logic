@@ -684,7 +684,9 @@ function init(root, initialLevelIndex, isCustom) {
       stackEl.innerHTML = '';
     }
 
-    if (stageLevelEl) stageLevelEl.textContent = `Nível ${level.id}: ${level.name}`;
+    if (stageLevelEl) {
+      stageLevelEl.textContent = isCustom ? level.name : `Nível ${level.id}: ${level.name}`;
+    }
     if (descriptionEl) descriptionEl.textContent = level.description || '';
     updateBlockCounterLive();
     if (statusEl) statusEl.textContent = 'Pronto';
