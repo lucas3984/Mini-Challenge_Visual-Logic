@@ -14,7 +14,7 @@ export class AudioFX {
     // we defer until actual click/touch to avoid suspended context warnings
     const init = () => {
       if (!this.#ctx) {
-        try { this.#ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch (_) {}
+        try { this.#ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch (err) { console.warn('AudioContext not available — sounds disabled:', err); }
       }
     };
     // { once: true } because after the first gesture the context is valid forever

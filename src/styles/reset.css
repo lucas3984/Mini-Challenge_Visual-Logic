@@ -13,8 +13,8 @@
 }
 
 body {
-  background-color: var(--color-bg, #111d4a);
-  color: var(--color-text, #f0f2ff);
+  background-color: var(--color-bg);
+  color: var(--color-text);
   font-family: var(--font-body);
   font-size: var(--text-md, 1rem);
   line-height: 1.5;

@@ -166,11 +166,11 @@
   --color-danger-hover: #ffcdc7;
   --color-danger-shadow: #690005;
   /* C-block input fields (number input inside Repeat/If blocks) */
-  --color-input-bg: #2A2A2A;
-  --color-input-text: #f0f2ff;
-  --color-input-border: rgba(255, 255, 255, 0.15);
+  --color-input-bg: #ffffff;
+  --color-input-text: #111d4a;
+  --color-input-border: rgba(17, 29, 74, 0.15);
   /* C-block dropzone (dashed area inside Repeat/If blocks) */
-  --color-dropzone-border: rgba(255, 255, 255, 0.15);
+  --color-dropzone-border: rgba(17, 29, 74, 0.15);
   /* Surface hover state (scrollbar thumb, cancel button hover) */
   --color-surface-hover: #6b6b75;
   /* Modal/overlay backdrop */
@@ -302,6 +302,7 @@
   --color-bg-neutral: #121212;
   --color-surface-neutral: #1E1E1E;
   --color-surface-neutral-elevated: #2A2A2A;
+  --color-surface-modal: #1E1E2E;
   --color-border-neutral: rgba(255, 255, 255, 0.12);
   --color-input-bg-neutral: #2A2A2A;
   --color-input-border-neutral: rgba(255, 255, 255, 0.15);

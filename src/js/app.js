@@ -3,6 +3,8 @@ import { setAppRouter } from './core/router-state.js';
 import { render as renderHome } from './pages/home.js';
 import { render as renderSnake } from './pages/snake.js';
 import { render as renderLevelSelector } from './pages/level-selector.js';
+import { render as renderCreator } from './pages/creator.js';
+import { render as renderCreatorTest } from './pages/creator-test.js';
 import { BottomNav } from './components/bottom-nav.js';
 
 /*
@@ -34,8 +36,14 @@ setAppRouter(router);
 router.addRoute('/', renderHome);
 router.addRoute('/levels', () => renderLevelSelector({ gameId: 'snake' }));
 router.addRoute('/levels/:gameId', (params) => renderLevelSelector(params));
+router.addRoute('/creator', renderCreator);
+router.addRoute('/creator/test', renderCreatorTest);
 router.addRoute('/levels/snake/:levelId', (params) => renderSnake({
   levelId: params.levelId
+}));
+router.addRoute('/levels/:gameId/custom/:levelId', (params) => renderSnake({
+  ...params,
+  custom: 'true'
 }));
 
 /*
@@ -52,6 +60,13 @@ mountEl.appendChild(bottomNav.render());
  */
 router.onRouteChange = (hash) => {
   bottomNav.setActiveIndex(BottomNav.getActiveIndex(hash));
+  bottomNav.updateGameLink();
+
+  const main = document.querySelector('main');
+  if (main) {
+    main.setAttribute('tabindex', '-1');
+    main.focus({ preventScroll: true });
+  }
 };
 
 /* Re-render the current page when the user profile is edited elsewhere */
